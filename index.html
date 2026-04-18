@@ -1,52 +1,33 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3172/3172551.png">
-<link rel="manifest" href="data:application/manifest+json,{'name':'TicketFlow','short_name':'TicketFlow','start_url':'.','display':'standalone','background_color':'#ffffff','theme_color':'#6366f1','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3172/3172551.png','sizes':'512x512','type':'image/png'}]}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ticket Flow Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3172/3172551.png">
+    <link rel="manifest" href="data:application/manifest+json,{'name':'TicketFlow','short_name':'TicketFlow','start_url':'.','display':'standalone','background_color':'#ffffff','theme_color':'#6366f1','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3172/3172551.png','sizes':'512x512','type':'image/png'}]}">
     <style>
-        :root {
-            --primary: #6366f1;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --accent-up: #ef4444; 
-            --accent-down: #3b82f6; 
-        }
-
+        :root { --primary: #6366f1; --bg: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b; --accent-up: #ef4444; --accent-down: #3b82f6; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: var(--bg); color: var(--text-main); }
-
         .app-container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
-
-        /* Header */
         .header-box { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
         .logo-icon { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-
-        /* Summary Dashboard */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
         .summary-card { background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .summary-card span { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-weight: 600; }
         .summary-card strong { font-size: 16px; font-weight: 800; }
         .summary-card.main { grid-column: span 2; background: var(--primary); color: white; }
         .summary-card.main span { color: rgba(255,255,255,0.8); }
-
-        /* Input Form */
         .input-form { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 24px; }
         .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display:block; margin-bottom:12px; display: flex; align-items: center; gap: 5px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; }
-        
         .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
         .update-mode-btn { background: #10b981; }
-
-        /* List Items */
         .list-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
         .ticket-item { background: var(--card-bg); padding: 16px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #f1f5f9; }
         .item-info { display: flex; flex-direction: column; gap: 2px; }
@@ -54,12 +35,9 @@
         .item-date { font-size: 12px; color: var(--text-sub); }
         .btn-group { display: flex; gap: 10px; margin-top: 8px; }
         .btn-group button { background: none; border: none; padding: 0; font-size: 12px; color: var(--text-sub); text-decoration: underline; cursor: pointer; }
-
         .item-right { text-align: right; }
         .profit-val { font-size: 17px; font-weight: 800; }
         .calc-detail { font-size: 10px; color: #94a3b8; display: block; }
-
-        /* Chart */
         .chart-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid #f1f5f9; }
     </style>
 </head>
@@ -68,7 +46,7 @@
 <div class="app-container">
     <header class="header-box">
         <div class="logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
         </div>
         <div>
             <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
@@ -98,16 +76,7 @@
             <input type="date" id="tDate">
             <select id="tTeam">
                 <option value="">홈구단 선택</option>
-                <option value="LG">LG 트윈스</option>
-                <option value="KT">KT 위즈</option>
-                <option value="한화">한화 이글스</option>
-                <option value="두산">두산 베어스</option>
-                <option value="KIA">KIA 타이거즈</option>
-                <option value="삼성">삼성 라이온즈</option>
-                <option value="롯데">롯데 자이언츠</option>
-                <option value="NC">NC 다이노스</option>
-                <option value="SSG">SSG 랜더스</option>
-                <option value="키움">키움 히어로즈</option>
+                <option value="LG">LG 트윈스</option><option value="KT">KT 위즈</option><option value="한화">한화 이글스</option><option value="두산">두산 베어스</option><option value="KIA">KIA 타이거즈</option><option value="삼성">삼성 라이온즈</option><option value="롯데">롯데 자이언츠</option><option value="NC">NC 다이노스</option><option value="SSG">SSG 랜더스</option><option value="키움">키움 히어로즈</option>
             </select>
         </div>
         <div class="form-row">
@@ -118,7 +87,7 @@
         <button id="cancelBtn" class="add-btn" style="background:#cbd5e1; display:none; margin-top:5px;" onclick="resetForm()">취소</button>
     </div>
 
-    <div class="list-header">📊 양도 기록 리스트</div>
+    <div class="list-header">📊 양도 기록 리스트 (최신순)</div>
     <div id="recordList"></div>
 
     <div class="chart-box">
@@ -128,6 +97,7 @@
 </div>
 
 <script>
+    // 기존 데이터 보존을 위해 키값 'kbo_final' 유지
     let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
     let chart;
 
@@ -136,7 +106,11 @@
         return day === 0 || day === 6;
     }
 
-    // 저장 및 수정 통합 로직
+    // [중요] 저장 시 날짜순으로 정렬하는 함수
+    function sortDB() {
+        db.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
     function handleSave() {
         const id = document.getElementById('editId').value;
         const date = document.getElementById('tDate').value;
@@ -153,15 +127,15 @@
             const idx = db.findIndex(x => x.id === parseInt(id));
             db[idx] = record;
         } else {
-            db.unshift(record);
+            db.push(record);
         }
 
+        sortDB(); // 저장 후 즉시 정렬
         localStorage.setItem('kbo_final', JSON.stringify(db));
         resetForm();
         renderAll();
     }
 
-    // 수정 모드 진입
     function startEdit(id) {
         const item = db.find(x => x.id === id);
         document.getElementById('editId').value = item.id;
@@ -169,7 +143,6 @@
         document.getElementById('tTeam').value = item.team;
         document.getElementById('tBuy').value = item.buy;
         document.getElementById('tSell').value = item.sell;
-
         document.getElementById('formTitle').innerText = "🔄 기록 수정 중...";
         document.getElementById('submitBtn').innerText = "수정 완료하기";
         document.getElementById('submitBtn').classList.add('update-mode-btn');
@@ -198,6 +171,7 @@
     }
 
     function renderAll() {
+        sortDB(); // 렌더링 전 다시 한 번 정렬 확인
         const list = document.getElementById('recordList');
         list.innerHTML = db.map(item => {
             const we = isWeekend(item.date);
@@ -224,11 +198,9 @@
         const total = db.reduce((s, i) => s + i.profit, 0);
         const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
         const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-
         document.getElementById('totalProfit').innerText = total.toLocaleString() + "원";
         document.getElementById('wdProfit').innerText = wd.toLocaleString() + "원";
         document.getElementById('weProfit').innerText = we.toLocaleString() + "원";
-        
         updateChart();
     }
 
@@ -239,34 +211,21 @@
             const m = i.date.slice(5, 7) + "월";
             stats[m] = (stats[m] || 0) + i.profit;
         });
-
         if (chart) chart.destroy();
         chart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: Object.keys(stats),
-                datasets: [{
-                    data: Object.values(stats),
-                    backgroundColor: '#6366f1',
-                    borderRadius: 8
-                }]
+                datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: {
-                    y: { 
-                        beginAtZero: true,
-                        ticks: { callback: v => v.toLocaleString() + '원' }
-                    }
-                }
+                scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + '원' } } }
             }
         });
     }
-
     renderAll();
 </script>
-
 </body>
 </html>
