@@ -14,7 +14,8 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: var(--bg); color: var(--text-main); }
         .app-container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
-        .header-box { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .header-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .header-left { display: flex; align-items: center; gap: 12px; }
         .logo-icon { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
         .summary-card { background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
@@ -26,6 +27,10 @@
         .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display:block; margin-bottom:12px; display: flex; align-items: center; gap: 5px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; }
+        
+        /* 날짜 입력창 포커스 전 글자 색상 제어(placeholder 느낌 전용) */
+        input[type="text"]#tDate { color: #94a3b8; }
+        
         .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
         .update-mode-btn { background: #10b981; }
         .list-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
@@ -39,20 +44,34 @@
         .profit-val { font-size: 17px; font-weight: 800; }
         .calc-detail { font-size: 10px; color: #94a3b8; display: block; }
         .chart-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid #f1f5f9; }
+        .backup-zone { display: flex; gap: 8px; margin-bottom: 20px; justify-content: flex-end; }
+        .backup-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
+        
+        .pagination-zone { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 20px 0 30px 0; }
+        .page-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .page-info { font-size: 13px; font-weight: 700; color: var(--text-sub); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header class="header-box">
-        <div class="logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
-        </div>
-        <div>
-            <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
-            <p style="margin:0; color: var(--text-sub); font-size: 13px;">KBO 양도 수익 매니저</p>
+        <div class="header-left">
+            <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+            </div>
+            <div>
+                <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
+                <p style="margin:0; color: var(--text-sub); font-size: 13px;">KBO 양도 수익 매니저</p>
+            </div>
         </div>
     </header>
+
+    <div class="backup-zone">
+        <button class="backup-btn" onclick="exportData()">📥 데이터 백업</button>
+        <button class="backup-btn" onclick="importData()">📤 데이터 복구</button>
+    </div>
 
     <div class="summary-grid">
         <div class="summary-card main">
@@ -60,12 +79,20 @@
             <strong id="totalProfit">0원</strong>
         </div>
         <div class="summary-card">
-            <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 평일</span>
+            <span>📅 평일 수익</span>
             <strong id="wdProfit">0원</strong>
         </div>
         <div class="summary-card">
-            <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 8v8"/></svg> 주말</span>
+            <span>🏖️ 주말 수익</span>
             <strong id="weProfit">0원</strong>
+        </div>
+        <div class="summary-card">
+            <span>📊 총 거래 건수</span>
+            <strong id="totalCount">0건</strong>
+        </div>
+        <div class="summary-card">
+            <span>💡 건당 평균 수익</span>
+            <strong id="avgProfit">0원</strong>
         </div>
     </div>
 
@@ -73,7 +100,7 @@
         <span id="formTitle" class="form-title">📝 새 기록 입력</span>
         <input type="hidden" id="editId">
         <div class="form-row">
-            <input type="date" id="tDate">
+            <input type="text" id="tDate" placeholder="경기 일정" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'">
             <select id="tTeam">
                 <option value="">홈구단 선택</option>
                 <option value="LG">LG 트윈스</option><option value="KT">KT 위즈</option><option value="한화">한화 이글스</option><option value="두산">두산 베어스</option><option value="KIA">KIA 타이거즈</option><option value="삼성">삼성 라이온즈</option><option value="롯데">롯데 자이언츠</option><option value="NC">NC 다이노스</option><option value="SSG">SSG 랜더스</option><option value="키움">키움 히어로즈</option>
@@ -88,7 +115,14 @@
     </div>
 
     <div class="list-header">📊 양도 기록 리스트 (최신순)</div>
+    
     <div id="recordList"></div>
+
+    <div class="pagination-zone">
+        <button id="prevBtn" class="page-btn" onclick="changePage(-1)">이전</button>
+        <span id="pageInfo" class="page-info">1 / 1</span>
+        <button id="nextBtn" class="page-btn" onclick="changePage(1)">다음</button>
+    </div>
 
     <div class="chart-box">
         <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-sub);">월별 수익 현황 (원)</div>
@@ -97,16 +131,17 @@
 </div>
 
 <script>
-    // 기존 데이터 보존을 위해 키값 'kbo_final' 유지
     let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
     let chart;
+
+    let currentPage = 1;
+    const itemsPerPage = 5; 
 
     function isWeekend(d) {
         const day = new Date(d).getDay();
         return day === 0 || day === 6;
     }
 
-    // [중요] 저장 시 날짜순으로 정렬하는 함수
     function sortDB() {
         db.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
@@ -128,9 +163,10 @@
             db[idx] = record;
         } else {
             db.push(record);
+            currentPage = 1;
         }
 
-        sortDB(); // 저장 후 즉시 정렬
+        sortDB();
         localStorage.setItem('kbo_final', JSON.stringify(db));
         resetForm();
         renderAll();
@@ -139,7 +175,12 @@
     function startEdit(id) {
         const item = db.find(x => x.id === id);
         document.getElementById('editId').value = item.id;
-        document.getElementById('tDate').value = item.date;
+        
+        // 수정 모드 진입 시 강제로 date 타입으로 속성을 열어주어야 값이 정상 주입됩니다.
+        const dateInput = document.getElementById('tDate');
+        dateInput.type = 'date';
+        dateInput.value = item.date;
+        
         document.getElementById('tTeam').value = item.team;
         document.getElementById('tBuy').value = item.buy;
         document.getElementById('tSell').value = item.sell;
@@ -150,9 +191,13 @@
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
+    // 폼 초기화 시 날짜 선택창 속성도 text 원복
     function resetForm() {
         document.getElementById('editId').value = '';
-        document.getElementById('tDate').value = '';
+        const dateInput = document.getElementById('tDate');
+        dateInput.type = 'text';
+        dateInput.value = '';
+        
         document.getElementById('tTeam').value = '';
         document.getElementById('tBuy').value = '';
         document.getElementById('tSell').value = '';
@@ -166,66 +211,89 @@
         if(confirm("정말 삭제하시겠습니까?")) {
             db = db.filter(x => x.id !== id);
             localStorage.setItem('kbo_final', JSON.stringify(db));
+            
+            const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
+            if(currentPage > maxPage) currentPage = maxPage;
+
             renderAll();
         }
     }
 
-    function renderAll() {
-        sortDB(); // 렌더링 전 다시 한 번 정렬 확인
-        const list = document.getElementById('recordList');
-        list.innerHTML = db.map(item => {
-            const we = isWeekend(item.date);
-            return `
-                <div class="ticket-item">
-                    <div class="item-info">
-                        <span class="item-team">${item.team} 홈</span>
-                        <span class="item-date">${item.date} (${we ? '주말' : '평일'})</span>
-                        <div class="btn-group">
-                            <button onclick="startEdit(${item.id})">수정</button>
-                            <button onclick="deleteRecord(${item.id})" style="color:#f87171">삭제</button>
-                        </div>
-                    </div>
-                    <div class="item-right">
-                        <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
-                            ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
-                        </span>
-                        <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString()}</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        const total = db.reduce((s, i) => s + i.profit, 0);
-        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-        document.getElementById('totalProfit').innerText = total.toLocaleString() + "원";
-        document.getElementById('wdProfit').innerText = wd.toLocaleString() + "원";
-        document.getElementById('weProfit').innerText = we.toLocaleString() + "원";
-        updateChart();
+    function exportData() {
+        if(db.length === 0) return alert("백업할 데이터가 없습니다.");
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `ticket_flow_backup_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
     }
 
-    function updateChart() {
-        const ctx = document.getElementById('profitChart').getContext('2d');
-        const stats = {};
-        [...db].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
-            const m = i.date.slice(5, 7) + "월";
-            stats[m] = (stats[m] || 0) + i.profit;
-        });
-        if (chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(stats),
-                datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + '원' } } }
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+            reader.onload = readerEvent => {
+                try {
+                    const content = JSON.parse(readerEvent.target.result);
+                    if(Array.isArray(content)) {
+                        if(confirm("기존 데이터를 덮어쓰고 복구하시겠습니까?")) {
+                            db = content;
+                            localStorage.setItem('kbo_final', JSON.stringify(db));
+                            currentPage = 1;
+                            renderAll();
+                            alert("성공적으로 복구되었습니다!");
+                        }
+                    } else {
+                        alert("올바르지 않은 백업 파일 형식입니다.");
+                    }
+                } catch(err) {
+                    alert("파일을 읽는 중 오류가 발생했습니다.");
+                }
             }
-        });
+        }
+        input.click();
     }
-    renderAll();
-</script>
-</body>
-</html>
+
+    function changePage(direction) {
+        const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
+        currentPage += direction;
+        if(currentPage < 1) currentPage = 1;
+        if(currentPage > maxPage) currentPage = maxPage;
+        renderAll();
+    }
+
+    function renderAll() {
+        sortDB();
+        
+        const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pagedDb = db.slice(startIndex, endIndex);
+
+        const list = document.getElementById('recordList');
+        if (pagedDb.length === 0) {
+            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:40px; font-size:14px; font-weight:500;">📅 아직 등록된 양도 기록이 없습니다.<br>위 양식으로 새 내역을 등록해보세요!</div>`;
+        } else {
+            list.innerHTML = pagedDb.map(item => {
+                const we = isWeekend(item.date);
+                return `
+                    <div class="ticket-item">
+                        <div class="item-info">
+                            <span class="item-team">${item.team} 홈</span>
+                            <span class="item-date">${item.date} (${we ? '주말' : '평일'})</span>
+                            <div class="btn-group">
+                                <button onclick="startEdit(${item.id})">수정</button>
+                                <button onclick="deleteRecord(${item.id})" style="color:#f87171">삭제</button>
+                            </div>
+                        </div>
+                        <div class="item-right">
+                            <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
+                                ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
+                            </span>
+                            <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString
