@@ -296,4 +296,54 @@
                             <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
                                 ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
                             </span>
-                            <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString
+                            <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('pageInfo').innerText = `${currentPage} / ${maxPage}`;
+        document.getElementById('prevBtn').disabled = (currentPage === 1);
+        document.getElementById('nextBtn').disabled = (currentPage === maxPage);
+
+        const total = db.reduce((s, i) => s + i.profit, 0);
+        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
+        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
+        const count = db.length;
+        const avg = count > 0 ? Math.round(total / count) : 0;
+
+        document.getElementById('totalProfit').innerText = total.toLocaleString() + "원";
+        document.getElementById('wdProfit').innerText = wd.toLocaleString() + "원";
+        document.getElementById('weProfit').innerText = we.toLocaleString() + "원";
+        document.getElementById('totalCount').innerText = count.toLocaleString() + "건";
+        document.getElementById('avgProfit').innerText = avg.toLocaleString() + "원";
+        
+        updateChart();
+    }
+
+    function updateChart() {
+        const ctx = document.getElementById('profitChart').getContext('2d');
+        const stats = {};
+        [...db].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
+            const m = i.date.slice(5, 7) + "월";
+            stats[m] = (stats[m] || 0) + i.profit;
+        });
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(stats),
+                datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + '원' } } }
+            }
+        });
+    }
+    renderAll();
+</script>
+</body>
+</html>
