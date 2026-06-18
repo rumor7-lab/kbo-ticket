@@ -22,25 +22,29 @@ TEAM_MAP = {
 }
 
 STADIUM_MAP = {
-    "Seoul-Jamsil":    "잠실",
-    "Suwon":           "수원",
-    "Incheon":         "인천",
-    "Incheon-Munhak":  "인천",
-    "Daejeon":         "대전",
-    "Gwangju":         "광주",
-    "Daegu":           "대구",
-    "Busan-Sajik":     "사직",
-    "Changwon":        "창원",
-    "Seoul-Gocheok":   "고척",
-    "Pohang":          "포항",
-    "Ulsan":           "울산",
-    "Cheongju":        "청주",
+    "Seoul-Jamsil":   "잠실",
+    "Suwon":          "수원",
+    "Incheon":        "인천",
+    "Incheon-Munhak": "인천",
+    "Daejeon":        "대전",
+    "Gwangju":        "광주",
+    "Daegu":          "대구",
+    "Busan-Sajik":    "사직",
+    "Changwon":       "창원",
+    "Seoul-Gocheok":  "고척",
+    "Pohang":         "포항",
+    "Ulsan":          "울산",
+    "Cheongju":       "청주",
 }
 
 HOME_STADIUM = {
-    "LG":"잠실","두산":"잠실","KT":"수원","SSG":"인천",
-    "한화":"대전","KIA":"광주","삼성":"대구",
-    "롯데":"사직","NC":"창원","키움":"고척",
+    "LG":"잠실","두산":"잠실","KT":"수원","SSG":"인천","한화":"대전",
+    "KIA":"광주","삼성":"대구","롯데":"사직","NC":"창원","키움":"고척",
+}
+
+SLUG_MAP = {
+    "Kia":"KIA","KT":"KT","LG":"LG","NC":"NC","SSG":"SSG",
+    "Doosan":"두산","Hanwha":"한화","Lotte":"롯데","Samsung":"삼성","Kiwoom":"키움",
 }
 
 MONTH_MAP = {
@@ -49,122 +53,82 @@ MONTH_MAP = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; KBOScheduleBot/2.0)",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
 }
 
-def norm_team(name):
-    return TEAM_MAP.get(name.strip(), name.strip())
-
-def norm_stadium(name):
-    name = name.strip()
-    return STADIUM_MAP.get(name, name)
-
+def norm_team(name): return TEAM_MAP.get(name.strip(), name.strip())
+def norm_stadium(name): return STADIUM_MAP.get(name.strip(), name.strip())
 def parse_time(t):
-    """'6:30pm' → '18:30'"""
     t = t.strip().lower()
-    try:
-        return datetime.strptime(t, "%I:%M%p").strftime("%H:%M")
-    except:
-        return t
+    try: return datetime.strptime(t, "%I:%M%p").strftime("%H:%M")
+    except: return t
 
-def parse_html(html):
+def parse_html(html, debug=False):
+    """mykbostats.com 마크다운 변환 HTML 파싱"""
     games = []
     current_date = None
 
-    # 날짜 헤더: ### Tuesday June 19, 2026
-    date_re = re.compile(r"#{2,4}\s+\w+\s+(\w+)\s+(\d+),\s+(\d{4})")
+    if debug:
+        # 처음 50줄 출력해서 실제 구조 확인
+        lines = html.splitlines()
+        print(f"  [DEBUG] 총 {len(lines)}줄, 처음 60줄:")
+        for i, l in enumerate(lines[:60]):
+            if l.strip():
+                print(f"    {i:3d}: {l[:120]}")
 
-    # URL 슬러그에서 홈/원정 추출: games/ID-Away-vs-Home-DATE
-    # 예) 13602-Kia-vs-KT-20260619 → away=Kia, home=KT
+    date_re = re.compile(r"#{2,4}\s+\w+\s+(\w+)\s+(\d+),\s+(\d{4})")
     slug_re = re.compile(r"/games/\d+-(.+?)-vs-(.+?)-\d{8}")
 
-    # 팀명 역매핑 (슬러그용)
-    SLUG_MAP = {
-        "Kia":"KIA","KT":"KT","LG":"LG","NC":"NC","SSG":"SSG",
-        "Doosan":"두산","Hanwha":"한화","Lotte":"롯데",
-        "Samsung":"삼성","Kiwoom":"키움",
-    }
+    team_names = sorted(TEAM_MAP.keys(), key=len, reverse=True)
+    tp = "|".join(re.escape(t) for t in team_names)
 
-    # 예정 경기: [Team1 TIME STADIUM Team2](url)
-    # 예) [Kia Tigers 6:30pm Suwon KT Wiz](url)
-    team_names = list(TEAM_MAP.keys())
-    # 팀명 중 가장 긴 것부터 매칭하기 위해 정렬
-    team_names_sorted = sorted(team_names, key=len, reverse=True)
-    team_pattern = "|".join(re.escape(t) for t in team_names_sorted)
-
-    # 예정 경기 패턴
+    # 예정 경기: [Away TIME STADIUM Home](url)
     sched_re = re.compile(
-        rf"\[({team_pattern})\s+(\d+:\d+(?:am|pm))\s+([A-Za-z\-]+)\s+({team_pattern})\]\((https?://[^)]+)\)"
+        rf"\[({tp})\s+(\d+:\d+(?:am|pm))\s+([A-Za-z\-]+)\s+({tp})\]\(([^)]+)\)"
     )
-    # 결과 경기 패턴: [Team1 N : N Final Team2](url)
+    # 결과 경기: [Team1 N : N Final Team2](url)
     result_re = re.compile(
-        rf"\[({team_pattern})\s+\d+\s*:\s*\d+\s*(?:Final|Cancelled|Postponed|Suspended)[^]]*?({team_pattern})\]\((https?://[^)]+)\)"
+        rf"\[({tp})\s+\d+\s*:\s*\d+\s*(?:Final|Cancelled|Postponed|Suspended)[^\]]*?({tp})\]\(([^)]+)\)"
     )
 
+    matched_lines = 0
     for line in html.splitlines():
         line = line.strip()
 
-        # 날짜 헤더
         dm = date_re.search(line)
         if dm:
             month = MONTH_MAP.get(dm.group(1), 0)
-            day = int(dm.group(2))
-            year = int(dm.group(3))
             if month:
-                current_date = f"{year}-{month:02d}-{day:02d}"
+                current_date = f"{dm.group(3)}-{month:02d}-{int(dm.group(2)):02d}"
+                if debug: print(f"  [DEBUG] 날짜: {current_date}")
             continue
 
         if not current_date:
             continue
 
-        # 예정 경기
         for m in sched_re.finditer(line):
-            away_en = m.group(1)
-            time_raw = m.group(2)
-            stadium_raw = m.group(3)
-            home_en = m.group(4)
-            url = m.group(5)
+            matched_lines += 1
+            away = norm_team(m.group(1))
+            home = norm_team(m.group(4))
+            stadium = norm_stadium(m.group(3)) or HOME_STADIUM.get(home, "")
+            games.append({"date": current_date, "home": home, "away": away,
+                          "stadium": stadium, "time": parse_time(m.group(2))})
 
-            away = norm_team(away_en)
-            home = norm_team(home_en)
-            stadium = norm_stadium(stadium_raw)
-            if not stadium:
-                stadium = HOME_STADIUM.get(home, "")
-            time_fmt = parse_time(time_raw)
-
-            games.append({
-                "date": current_date,
-                "home": home,
-                "away": away,
-                "stadium": stadium,
-                "time": time_fmt,
-            })
-
-        # 결과 경기 (아직 stadium/time 정보 없으나 날짜는 있음)
         for m in result_re.finditer(line):
-            team1_en = m.group(1)
-            team2_en = m.group(2)
-            url = m.group(3)
-
-            # URL 슬러그로 홈/원정 판별
-            sm = slug_re.search(url)
+            matched_lines += 1
+            sm = slug_re.search(m.group(3))
             if sm:
-                away_slug = sm.group(1)
-                home_slug = sm.group(2)
-                away = SLUG_MAP.get(away_slug, norm_team(team1_en))
-                home = SLUG_MAP.get(home_slug, norm_team(team2_en))
+                away = SLUG_MAP.get(sm.group(1), norm_team(m.group(1)))
+                home = SLUG_MAP.get(sm.group(2), norm_team(m.group(2)))
             else:
-                away = norm_team(team1_en)
-                home = norm_team(team2_en)
+                away, home = norm_team(m.group(1)), norm_team(m.group(2))
+            games.append({"date": current_date, "home": home, "away": away,
+                          "stadium": HOME_STADIUM.get(home, ""), "time": ""})
 
-            stadium = HOME_STADIUM.get(home, "")
-            games.append({
-                "date": current_date,
-                "home": home,
-                "away": away,
-                "stadium": stadium,
-                "time": "",
-            })
+    if debug:
+        print(f"  [DEBUG] 매칭된 경기 라인: {matched_lines}개, 파싱된 경기: {len(games)}개")
 
     return games
 
@@ -181,7 +145,6 @@ def main():
     now = datetime.now()
     print(f"📅 KBO 일정 수집 시작 ({now.strftime('%Y-%m-%d %H:%M')})")
 
-    # 이번 주부터 7주 치 수집
     seen = set()
     all_games = []
 
@@ -191,7 +154,9 @@ def main():
         date_str = monday.strftime("%Y-%m-%d")
         try:
             html = fetch_week(date_str)
-            games = parse_html(html)
+            # 첫 번째 주만 디버그 출력
+            debug = (week_offset == 0)
+            games = parse_html(html, debug=debug)
             new = 0
             for g in games:
                 key = (g["date"], g["home"], g["away"])
