@@ -1,7 +1,8 @@
 """
 KBO 경기 일정 수집 스크립트 (mykbostats.com 기반)
+GitHub Actions에서 매일 새벽 자동 실행됩니다.
 """
-import json, re, requests, sys
+import json, re, requests
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
@@ -13,7 +14,7 @@ TEAM_MAP = {
 STADIUM_MAP = {
     "Seoul-Jamsil":"잠실","Suwon":"수원","Incheon":"인천","Incheon-Munhak":"인천",
     "Daejeon":"대전","Gwangju":"광주","Daegu":"대구","Busan-Sajik":"사직",
-    "Changwon":"창원","Seoul-Gocheok":"고척","Pohang":"포항","Ulsan":"울산",
+    "Changwon":"창원","Seoul-Gocheok":"고척","Pohang":"포항","Ulsan":"울산","Cheongju":"청주",
 }
 HOME_STADIUM = {
     "LG":"잠실","두산":"잠실","KT":"수원","SSG":"인천","한화":"대전",
@@ -33,36 +34,66 @@ HEADERS = {
     "Accept-Language": "en-US,en;q=0.9",
 }
 
-def norm_team(n): return TEAM_MAP.get(n.strip(), n.strip())
-def norm_stadium(n): return STADIUM_MAP.get(n.strip(), n.strip())
 def parse_time(t):
     t = t.strip().lower()
     try: return datetime.strptime(t, "%I:%M%p").strftime("%H:%M")
     except: return t
 
-def parse_html(html, debug=False):
+def extract_game_info(tag, away_slug, home_slug):
+    """
+    링크 태그의 자식 노드들을 개별로 읽어서 시간/구장 추출
+    구조: span.away_team | span.time | span.stadium | span.home_team
+    또는 텍스트가 붙어있는 경우 slug에서만 홈/원정 판별
+    """
+    away = SLUG_MAP.get(away_slug, away_slug)
+    home = SLUG_MAP.get(home_slug, home_slug)
+
+    # 자식 span/div 텍스트를 리스트로 추출
+    children = [c.get_text(strip=True) for c in tag.children
+                if hasattr(c, 'get_text') and c.get_text(strip=True)]
+
+    time_re = re.compile(r"^(\d+:\d+(?:am|pm))$", re.I)
+    result_re = re.compile(r"\d+\s*:\s*\d+", re.I)
+    status_re = re.compile(r"^(Final|Cancelled|Postponed|Suspended)$", re.I)
+
+    time_val = ""
+    stadium_val = HOME_STADIUM.get(home, "")
+    is_scheduled = False
+    is_result = False
+
+    for ch in children:
+        if time_re.match(ch):
+            time_val = parse_time(ch)
+            is_scheduled = True
+        elif status_re.match(ch):
+            is_result = True
+        elif result_re.search(ch) and ":" in ch:
+            # 스코어 포함 (결과 경기)
+            is_result = True
+        elif ch in STADIUM_MAP:
+            stadium_val = STADIUM_MAP[ch]
+        elif ch in TEAM_MAP:
+            pass  # 팀명은 slug로 이미 처리
+
+    # children이 모두 붙어있는 경우(공백 없음) → tag 전체 텍스트로 재시도
+    full_text = tag.get_text(separator="|", strip=True)
+    parts = [p.strip() for p in full_text.split("|") if p.strip()]
+
+    for p in parts:
+        if time_re.match(p):
+            time_val = parse_time(p)
+            is_scheduled = True
+        elif p in STADIUM_MAP:
+            stadium_val = STADIUM_MAP[p]
+        elif status_re.match(p) or (result_re.search(p) and ":" in p):
+            is_result = True
+
+    return away, home, time_val, stadium_val, is_scheduled or is_result
+
+def parse_html(html):
     soup = BeautifulSoup(html, "html.parser")
     games = []
-
-    if debug:
-        h3s = soup.find_all("h3")
-        links = [a for a in soup.find_all("a") if "/games/" in a.get("href","")]
-        print(f"  [DEBUG] h3 태그: {len(h3s)}개, games 링크: {len(links)}개")
-        if len(h3s) == 0:
-            # JS 렌더링 여부 확인용: script 태그 수와 body 텍스트 일부 출력
-            scripts = soup.find_all("script")
-            print(f"  [DEBUG] script 태그: {len(scripts)}개")
-            body = soup.find("body")
-            if body:
-                print(f"  [DEBUG] body 텍스트 처음 300자: {body.get_text()[:300]!r}")
-        for h in h3s[:3]:
-            print(f"  [DEBUG] h3: {h.get_text(strip=True)!r}")
-        for l in links[:3]:
-            print(f"  [DEBUG] link: href={l.get('href')} text={l.get_text(strip=True)[:60]!r}")
-
     slug_re = re.compile(r"/games/\d+-(.+?)-vs-(.+?)-\d{8}")
-    time_re = re.compile(r"(\d+:\d+(?:am|pm))", re.I)
-    result_re = re.compile(r"\d+\s*:\s*\d+\s*(?:Final|Cancelled|Postponed|Suspended)", re.I)
     current_date = None
 
     for tag in soup.find_all(["h3", "a"]):
@@ -75,21 +106,19 @@ def parse_html(html, debug=False):
         elif tag.name == "a" and current_date:
             href = tag.get("href", "")
             sm = slug_re.search(href)
-            if not sm: continue
-            away = SLUG_MAP.get(sm.group(1), sm.group(1))
-            home = SLUG_MAP.get(sm.group(2), sm.group(2))
-            text = tag.get_text(separator=" ", strip=True)
-            tm = time_re.search(text)
-            if tm:
-                after = text[tm.end():].strip()
-                for k in sorted(TEAM_MAP.keys(), key=len, reverse=True):
-                    after = after.replace(k, "").strip()
-                stadium = norm_stadium(after) or HOME_STADIUM.get(home, "")
-                games.append({"date":current_date,"home":home,"away":away,
-                              "stadium":stadium,"time":parse_time(tm.group(1))})
-            elif result_re.search(text):
-                games.append({"date":current_date,"home":home,"away":away,
-                              "stadium":HOME_STADIUM.get(home,""),"time":""})
+            if not sm:
+                continue
+            away, home, time_val, stadium, valid = extract_game_info(
+                tag, sm.group(1), sm.group(2)
+            )
+            if valid:
+                games.append({
+                    "date": current_date,
+                    "home": home,
+                    "away": away,
+                    "stadium": stadium,
+                    "time": time_val,
+                })
     return games
 
 def fetch_week(date_str):
@@ -111,27 +140,28 @@ def main():
         date_str = week_monday(target).strftime("%Y-%m-%d")
         try:
             html = fetch_week(date_str)
-            games = parse_html(html, debug=(week_offset == 0))
-            new = sum(1 for g in games if (g["date"],g["home"],g["away"]) not in seen
-                      and not seen.add((g["date"],g["home"],g["away"])))
-            all_games.extend(g for g in games if True)
+            games = parse_html(html)
+            new = 0
+            for g in games:
+                k = (g["date"], g["home"], g["away"])
+                if k not in seen:
+                    seen.add(k)
+                    all_games.append(g)
+                    new += 1
             print(f"  {date_str}: {new}경기")
         except Exception as e:
             print(f"  {date_str}: 실패 - {e}")
 
-    # 중복 제거 및 정렬
-    seen2, unique = set(), []
-    for g in all_games:
-        k = (g["date"],g["home"],g["away"])
-        if k not in seen2:
-            seen2.add(k); unique.append(g)
-    unique.sort(key=lambda x:(x["date"],x["home"]))
-
-    output = {"updated":now.strftime("%Y-%m-%d %H:%M"),
-              "source":"mykbostats.com","count":len(unique),"games":unique}
-    with open("schedule.json","w",encoding="utf-8") as f:
+    all_games.sort(key=lambda x: (x["date"], x["home"]))
+    output = {
+        "updated": now.strftime("%Y-%m-%d %H:%M"),
+        "source": "mykbostats.com",
+        "count": len(all_games),
+        "games": all_games,
+    }
+    with open("schedule.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-    print(f"✅ schedule.json 저장 완료 (총 {len(unique)}경기)")
+    print(f"✅ schedule.json 저장 완료 (총 {len(all_games)}경기)")
 
 if __name__ == "__main__":
     main()
