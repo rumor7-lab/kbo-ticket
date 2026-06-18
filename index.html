@@ -332,12 +332,8 @@
     .rank-other { background: transparent; color: var(--muted); }
     .streak-w { color: var(--red); font-weight: 800; }
     .streak-l { color: var(--blue); font-weight: 800; }
-    .last10-bar {
-      display: flex; gap: 2px; justify-content: center; align-items: center;
-    }
-    .last10-w { width: 6px; height: 14px; background: var(--red); border-radius: 2px; }
-    .last10-l { width: 6px; height: 14px; background: var(--blue); border-radius: 2px; }
-    .last10-d { width: 6px; height: 14px; background: #D1D5DB; border-radius: 2px; }
+    .standings-table { white-space: nowrap; }
+    .standings-table td, .standings-table th { white-space: nowrap; }
     .divider-row td {
       border-top: 2px dashed var(--primary) !important;
     }
@@ -501,16 +497,6 @@ function renderStandings() {
     const rankCls = s.rank===1?'rank-1':s.rank===2?'rank-2':s.rank===3?'rank-3':s.rank<=5?'rank-ps':'rank-other';
     const streakCls = s.streak.includes('W') ? 'streak-w' : 'streak-l';
 
-    // last10 바 시각화: "6W 0D 4L" 파싱
-    let barHtml = '';
-    const last10m = s.last10.match(/(\d+)W\s*(\d+)D\s*(\d+)L/);
-    if (last10m) {
-      const [, w, d, l] = last10m.map(Number);
-      for(let i=0;i<w;i++) barHtml += `<div class="last10-w"></div>`;
-      for(let i=0;i<d;i++) barHtml += `<div class="last10-d"></div>`;
-      for(let i=0;i<l;i++) barHtml += `<div class="last10-l"></div>`;
-    }
-
     // 5위와 6위 사이 포스트시즌 구분선
     const divClass = s.rank === 6 ? ' class="divider-row"' : '';
 
@@ -525,7 +511,6 @@ function renderStandings() {
       <td style="font-weight:800">${s.pct}</td>
       <td>${s.gb}</td>
       <td><span class="${streakCls}">${s.streak}</span></td>
-      <td><div class="last10-bar">${barHtml}</div></td>
     </tr>`;
   });
 
@@ -534,13 +519,13 @@ function renderStandings() {
       <thead>
         <tr>
           <th>팀</th><th>승</th><th>패</th><th>무</th>
-          <th>승률</th><th>GB</th><th>연속</th><th>최근10</th>
+          <th>승률</th><th>GB</th><th>연속</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>
     <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center">
-      🔵 포스트시즌 진출권 (5위 이상) &nbsp;|&nbsp; 빨간색: 승 · 파란색: 패
+      🔵 1~5위 포스트시즌 진출권 &nbsp;|&nbsp; 연속: 빨간=연승, 파란=연패
     </div>`;
 }
 
@@ -594,7 +579,12 @@ function filterSchedule() {
   games.forEach(g => { (map[g.date] = map[g.date] || []).push(g); });
   filteredDays = Object.entries(map).sort(([a],[b]) => a.localeCompare(b)).map(([date, gs]) => ({date, games: gs}));
 
-  schedPage = 0;
+  // 오늘 날짜에 가장 가까운 페이지로 이동
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayIdx = filteredDays.findIndex(d => d.date >= todayStr);
+  const startIdx = todayIdx >= 0 ? todayIdx : Math.max(0, filteredDays.length - SCHED_PER_PAGE);
+  schedPage = Math.floor(startIdx / SCHED_PER_PAGE);
+
   renderSchedulePage();
 }
 
