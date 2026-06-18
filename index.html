@@ -5,95 +5,288 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Ticket Flow Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #6366f1; --primary-light: #eef2ff;
-      --bg: #f8fafc; --card: #fff; --border: #f1f5f9;
-      --text: #1e293b; --sub: #64748b;
-      --red: #ef4444; --blue: #3b82f6; --green: #10b981;
+      --primary: #5B5FED;
+      --primary-light: #EEEFFE;
+      --primary-dark: #4347D4;
+      --bg: #F2F4F8;
+      --card: #FFFFFF;
+      --border: #E8ECF2;
+      --text: #111827;
+      --sub: #6B7280;
+      --muted: #9CA3AF;
+      --red: #EF4444;
+      --blue: #3B82F6;
+      --green: #10B981;
+      --radius-sm: 10px;
+      --radius: 16px;
+      --radius-lg: 22px;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
+      --shadow: 0 4px 16px rgba(0,0,0,.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.10);
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.5;
+    }
 
-    .tab-nav { position: sticky; top: 0; z-index: 100; background: var(--card); border-bottom: 1px solid var(--border); display: flex; }
-    .tab-btn { flex: 1; padding: 14px 0; border: none; background: none; font-size: 13px; font-weight: 700; color: var(--sub); cursor: pointer; border-bottom: 3px solid transparent; transition: all .2s; }
+    /* ── NAV ── */
+    .tab-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      box-shadow: var(--shadow-sm);
+    }
+    .tab-btn {
+      flex: 1; padding: 16px 0;
+      border: none; background: none;
+      font-size: 15px; font-weight: 700;
+      color: var(--muted); cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all .2s; letter-spacing: -.3px;
+    }
     .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
+    /* ── LAYOUT ── */
     .panel { display: none; }
     .panel.active { display: block; }
-    .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 80px; }
+    .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 100px; }
 
-    /* TRACKER */
-    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .logo { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 4px 12px rgba(99,102,241,.3); flex-shrink: 0; }
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 15px; }
-    .card.span2 { grid-column: span 2; background: var(--primary); color: #fff; }
-    .card label { font-size: 11px; font-weight: 700; color: var(--sub); display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
-    .card.span2 label { color: rgba(255,255,255,.8); }
-    .card strong { font-size: 18px; font-weight: 800; }
+    /* ── HEADER ── */
+    .header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+    .logo {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(91,95,237,.35);
+    }
+    .header h1 { font-size: 24px; font-weight: 900; letter-spacing: -.5px; }
+    .header p { font-size: 14px; color: var(--sub); margin-top: 1px; }
 
-    .form-box { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 10px 20px -5px rgba(0,0,0,.06); margin-bottom: 20px; }
-    .form-title { font-size: 14px; font-weight: 700; color: var(--sub); display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+    /* ── SUMMARY ── */
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+    .scard {
+      background: var(--card); border-radius: var(--radius);
+      padding: 18px; box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+    .scard.main {
+      grid-column: span 2;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; border: none;
+      box-shadow: 0 4px 20px rgba(91,95,237,.3);
+    }
+    .scard label { font-size: 13px; font-weight: 600; color: var(--sub); display: block; margin-bottom: 8px; }
+    .scard.main label { color: rgba(255,255,255,.75); }
+    .scard strong { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+    .scard.main strong { font-size: 28px; }
+
+    /* ── FORM ── */
+    .form-box {
+      background: var(--card); padding: 22px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+    .form-title { font-size: 15px; font-weight: 700; color: var(--sub); display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    input, select { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; background: #fff; transition: border-color .2s; }
-    input:focus, select:focus { border-color: var(--primary); }
-    .btn { width: 100%; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s; }
-    .btn:active { opacity: .8; }
-    .btn-primary { background: var(--primary); color: #fff; }
+    input, select {
+      width: 100%; padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px; font-weight: 500;
+      outline: none; background: #fff;
+      color: var(--text);
+      transition: border-color .2s, box-shadow .2s;
+      font-family: inherit;
+    }
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(91,95,237,.12);
+    }
+    input::placeholder { color: var(--muted); }
+    .btn {
+      width: 100%; border: none; padding: 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 800; font-size: 16px;
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+      transition: opacity .15s, transform .1s;
+      font-family: inherit; letter-spacing: -.2px;
+    }
+    .btn:active { opacity: .85; transform: scale(.98); }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(91,95,237,.3); }
     .btn-green { background: var(--green); color: #fff; }
-    .btn-gray { background: #cbd5e1; color: #fff; margin-top: 6px; display: none; }
+    .btn-gray { background: #E5E7EB; color: var(--sub); margin-top: 8px; display: none; }
 
-    .section-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
-    .record { background: var(--card); padding: 16px; border-radius: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; border: 1px solid var(--border); }
-    .record-left { display: flex; flex-direction: column; gap: 3px; }
-    .record-team { font-weight: 800; font-size: 15px; }
-    .record-date { font-size: 12px; color: var(--sub); }
+    /* ── RECORDS ── */
+    .section-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .section-title { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+    .page-info { font-size: 13px; color: var(--sub); font-weight: 600; }
+
+    .record {
+      background: var(--card); padding: 18px;
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .2s;
+    }
+    .record:active { box-shadow: var(--shadow); }
+    .record-left { display: flex; flex-direction: column; gap: 4px; }
+    .record-team { font-weight: 800; font-size: 16px; letter-spacing: -.3px; }
+    .record-date { font-size: 13px; color: var(--sub); font-weight: 500; }
+    .record-badge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px; margin-top: 2px;
+    }
+    .badge-we { background: #FEF2F2; color: var(--red); }
+    .badge-wd { background: #EFF6FF; color: var(--blue); }
     .record-actions { display: flex; gap: 12px; margin-top: 8px; }
-    .record-actions button { background: none; border: none; font-size: 12px; color: var(--sub); text-decoration: underline; cursor: pointer; padding: 0; }
+    .record-actions button {
+      background: none; border: none;
+      font-size: 13px; color: var(--muted);
+      text-decoration: underline; cursor: pointer;
+      font-family: inherit; padding: 0;
+    }
     .record-right { text-align: right; }
-    .profit { font-size: 17px; font-weight: 800; }
-    .profit-detail { font-size: 10px; color: #94a3b8; margin-top: 2px; display: block; }
-    .chart-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid var(--border); margin-top: 20px; }
+    .profit { font-size: 19px; font-weight: 800; letter-spacing: -.5px; }
+    .profit-detail { font-size: 12px; color: var(--muted); margin-top: 3px; display: block; }
 
-    /* SCHEDULE */
-    .sched-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .sched-top h2 { font-size: 20px; font-weight: 800; }
-    .kbo-link { font-size: 12px; color: var(--primary); text-decoration: none; font-weight: 700; background: var(--primary-light); padding: 6px 12px; border-radius: 20px; }
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-top: 16px;
+    }
+    .pg-btn {
+      border: 1.5px solid var(--border); background: var(--card);
+      color: var(--text); font-size: 14px; font-weight: 700;
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .pg-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .pg-arrow {
+      border: 1.5px solid var(--border); background: var(--card);
+      color: var(--text); font-size: 16px;
+      padding: 8px 12px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: all .15s;
+    }
+    .pg-arrow:disabled { opacity: .35; cursor: not-allowed; }
 
-    .filter-box { background: var(--card); border-radius: 16px; padding: 14px; margin-bottom: 14px; border: 1px solid var(--border); }
+    /* ── CHART ── */
+    .chart-box {
+      background: var(--card); padding: 22px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      margin-top: 22px;
+      box-shadow: var(--shadow-sm);
+    }
+    .chart-title { font-size: 14px; font-weight: 700; color: var(--sub); margin-bottom: 16px; }
+
+    /* ── SCHEDULE ── */
+    .sched-top {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 16px;
+    }
+    .sched-top h2 { font-size: 22px; font-weight: 900; letter-spacing: -.5px; }
+    .kbo-link {
+      font-size: 13px; color: var(--primary);
+      text-decoration: none; font-weight: 700;
+      background: var(--primary-light); padding: 7px 14px;
+      border-radius: 20px;
+    }
+
+    .filter-box {
+      background: var(--card); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 16px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+    }
     .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .filter-row select { font-size: 13px; padding: 10px 12px; }
+    .filter-row select { font-size: 14px; padding: 12px 14px; }
 
-    /* 업데이트 상태 */
-    .update-bar { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--sub); }
-    .update-bar .status { display: flex; align-items: center; gap: 6px; }
-    .dot-live { width: 7px; height: 7px; background: var(--green); border-radius: 50%; }
-    .dot-stale { width: 7px; height: 7px; background: #f59e0b; border-radius: 50%; }
-    .dot-error { width: 7px; height: 7px; background: var(--red); border-radius: 50%; }
+    .update-bar {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 11px 16px;
+      margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--sub); font-weight: 500;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; }
+    .dot-ok { background: var(--green); }
+    .dot-warn { background: #F59E0B; }
+    .dot-err { background: var(--red); }
 
-    .notice { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 11px 14px; margin-bottom: 14px; font-size: 12px; color: #92400e; line-height: 1.6; }
+    .notice {
+      background: #FFFBEB; border: 1px solid #FDE68A;
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      margin-bottom: 16px; font-size: 13px; color: #92400E; line-height: 1.6;
+    }
 
-    .day-card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 10px; }
-    .day-header { background: var(--primary-light); padding: 10px 16px; font-size: 13px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-    .badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
-    .badge-we { background: #fef2f2; color: var(--red); }
-    .badge-hol { background: #fff7ed; color: #ea580c; }
-    .badge-star { background: #fef9c3; color: #854d0e; }
-    .game-row { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .game-teams { font-size: 14px; font-weight: 700; }
-    .game-meta { font-size: 11px; color: var(--sub); margin-top: 2px; }
-    .game-note { font-size: 11px; color: #ea580c; margin-top: 2px; }
+    /* Day card */
+    .day-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+      margin-bottom: 10px; box-shadow: var(--shadow-sm);
+    }
+    .day-header {
+      background: var(--primary-light); padding: 12px 18px;
+      font-size: 14px; font-weight: 800; color: var(--primary);
+      display: flex; align-items: center; gap: 8px;
+      letter-spacing: -.2px;
+    }
+    .sbadge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .sbadge-we { background: #FEF2F2; color: var(--red); }
+    .sbadge-hol { background: #FFF7ED; color: #EA580C; }
+    .sbadge-star { background: #FEF9C3; color: #854D0E; }
+
+    .game-row {
+      padding: 14px 18px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .game-teams { font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
+    .game-meta { font-size: 13px; color: var(--sub); margin-top: 3px; font-weight: 500; }
+    .game-note { font-size: 12px; color: #EA580C; margin-top: 2px; }
     .game-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .game-time { font-size: 13px; font-weight: 700; color: var(--primary); }
-    .add-btn-sm { background: var(--primary-light); color: var(--primary); border: none; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; cursor: pointer; }
+    .game-time { font-size: 14px; font-weight: 800; color: var(--primary); }
+    .add-btn-sm {
+      background: var(--primary-light); color: var(--primary);
+      border: none; font-size: 12px; font-weight: 700;
+      padding: 5px 12px; border-radius: 8px; cursor: pointer;
+      font-family: inherit;
+    }
+    .add-btn-sm:active { opacity: .75; }
 
-    .empty { text-align: center; padding: 50px 20px; color: var(--sub); }
-    .empty .icon { font-size: 44px; margin-bottom: 12px; }
-    .empty strong { display: block; font-size: 15px; margin-bottom: 6px; color: var(--text); }
+    .empty { text-align: center; padding: 56px 20px; color: var(--sub); }
+    .empty .icon { font-size: 48px; margin-bottom: 14px; }
+    .empty strong { display: block; font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+    .empty span { font-size: 14px; }
 
-    .loading { text-align: center; padding: 40px; color: var(--sub); }
-    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+    .loading { text-align: center; padding: 48px; color: var(--sub); }
+    .spinner {
+      width: 34px; height: 34px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 14px;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -109,28 +302,28 @@
 <div class="wrap">
   <header class="header">
     <div class="logo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
         <path d="M13 5v2M13 17v2M13 11v2"/>
       </svg>
     </div>
     <div>
-      <h1 style="font-size:22px;font-weight:800;">Ticket Flow</h1>
-      <p style="font-size:13px;color:var(--sub);">KBO 양도 수익 매니저</p>
+      <h1>Ticket Flow</h1>
+      <p>KBO 양도 수익 매니저</p>
     </div>
   </header>
 
   <div class="summary-grid">
-    <div class="card span2"><label>💰 누적 수익</label><strong id="totalProfit">0원</strong></div>
-    <div class="card"><label>📅 평일</label><strong id="wdProfit">0원</strong></div>
-    <div class="card"><label>🎉 주말</label><strong id="weProfit">0원</strong></div>
+    <div class="scard main"><label>💰 누적 수익</label><strong id="totalProfit">0원</strong></div>
+    <div class="scard"><label>📅 평일 수익</label><strong id="wdProfit">0원</strong></div>
+    <div class="scard"><label>🎉 주말 수익</label><strong id="weProfit">0원</strong></div>
   </div>
 
   <div class="form-box">
     <div id="formTitle" class="form-title">📝 새 기록 입력</div>
     <input type="hidden" id="editId">
     <div class="row2">
-      <input type="date" id="tDate">
+      <input type="date" id="tDate" placeholder="경기 일정">
       <select id="tTeam">
         <option value="">홈구단 선택</option>
         <option>LG</option><option>KT</option><option>한화</option><option>두산</option>
@@ -139,17 +332,22 @@
       </select>
     </div>
     <div class="row2">
-      <input type="number" id="tBuy" placeholder="구매가">
-      <input type="number" id="tSell" placeholder="양도가">
+      <input type="number" id="tBuy" placeholder="구매가 (원)">
+      <input type="number" id="tSell" placeholder="양도가 (원)">
     </div>
     <button id="submitBtn" class="btn btn-primary" onclick="handleSave()">저장하기</button>
     <button id="cancelBtn" class="btn btn-gray" onclick="resetForm()">취소</button>
   </div>
 
-  <div class="section-title">📊 양도 기록 (최신순)</div>
+  <div class="section-header">
+    <div class="section-title">📊 양도 기록</div>
+    <div class="page-info" id="recordPageInfo"></div>
+  </div>
   <div id="recordList"></div>
+  <div class="pagination" id="recordPagination"></div>
+
   <div class="chart-box">
-    <div style="font-size:14px;font-weight:700;margin-bottom:14px;color:var(--sub);">월별 수익 현황 (원)</div>
+    <div class="chart-title">월별 수익 현황 (원)</div>
     <div style="height:200px"><canvas id="profitChart"></canvas></div>
   </div>
 </div>
@@ -159,17 +357,16 @@
 <div id="tab-schedule" class="panel">
 <div class="wrap">
   <div class="sched-top">
-    <h2>📅 KBO 경기 일정</h2>
+    <h2>📅 KBO 일정</h2>
     <a class="kbo-link" href="https://www.koreabaseball.com/schedule/schedule.aspx" target="_blank">KBO 공식 ↗</a>
   </div>
 
-  <!-- 업데이트 상태 -->
   <div class="update-bar">
-    <div class="status" id="updateStatus">
-      <div class="dot-stale"></div>
-      <span>일정 불러오는 중...</span>
+    <div style="display:flex;align-items:center">
+      <div class="dot dot-warn" id="updateDot"></div>
+      <span id="updateStatus">일정 불러오는 중...</span>
     </div>
-    <span id="updateTime"></span>
+    <span id="updateTime" style="font-size:12px;color:var(--muted)"></span>
   </div>
 
   <div class="notice">
@@ -179,13 +376,13 @@
 
   <div class="filter-box">
     <div class="filter-row">
-      <select id="filterTeam" onchange="renderSchedule()">
+      <select id="filterTeam" onchange="filterSchedule()">
         <option value="전체">전체 구단</option>
         <option>LG</option><option>KT</option><option>한화</option><option>두산</option>
         <option>KIA</option><option>삼성</option><option>롯데</option><option>NC</option>
         <option>SSG</option><option>키움</option>
       </select>
-      <select id="filterMonth" onchange="renderSchedule()">
+      <select id="filterMonth" onchange="filterSchedule()">
         <option value="all">전체 기간</option>
         <option value="06">6월</option>
         <option value="07">7월</option>
@@ -196,146 +393,166 @@
     </div>
   </div>
 
+  <div class="section-header" style="margin-bottom:12px">
+    <div class="section-title" style="font-size:15px" id="schedDayInfo"></div>
+    <div class="page-info" id="schedPageInfo"></div>
+  </div>
+
   <div id="scheduleList">
     <div class="loading"><div class="spinner"></div>일정 로딩 중...</div>
   </div>
+  <div class="pagination" id="schedPagination"></div>
 </div>
 </div>
 
 <script>
-// ──────────────────────────────────────────
-//  탭 전환
-// ──────────────────────────────────────────
+// ── 탭 ──────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.querySelectorAll('.tab-btn')[tab === 'tracker' ? 0 : 1].classList.add('active');
-  if (tab === 'schedule' && !window._scheduleLoaded) loadSchedule();
+  if (tab === 'schedule' && !window._schedLoaded) loadSchedule();
 }
 
-// ──────────────────────────────────────────
-//  schedule.json 로딩
-// ──────────────────────────────────────────
+// ── 스케줄 로딩 ──────────────────────────────
 let scheduleData = [];
-window._scheduleLoaded = false;
+let filteredDays = []; // [{date, games[]}]
+let schedPage = 0;
+const SCHED_PER_PAGE = 5; // 날짜(일) 기준 페이지당 5일
+window._schedLoaded = false;
 
 async function loadSchedule() {
   try {
-    // 캐시 버스팅으로 항상 최신 파일 가져오기
     const res = await fetch('./schedule.json?t=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    
     scheduleData = data.games || [];
-    window._scheduleLoaded = true;
-
-    // 업데이트 시간 표시
-    const bar = document.getElementById('updateStatus');
-    bar.innerHTML = `<div class="dot-live"></div><span>최신 데이터</span>`;
+    window._schedLoaded = true;
+    const dot = document.getElementById('updateDot');
+    dot.className = 'dot dot-ok';
+    document.getElementById('updateStatus').textContent = '최신 데이터';
     document.getElementById('updateTime').textContent = data.updated ? `업데이트: ${data.updated}` : '';
-
-    renderSchedule();
+    filterSchedule();
   } catch (e) {
-    document.getElementById('updateStatus').innerHTML = `<div class="dot-error"></div><span>schedule.json 로드 실패</span>`;
+    document.getElementById('updateDot').className = 'dot dot-err';
+    document.getElementById('updateStatus').textContent = 'schedule.json 로드 실패';
     document.getElementById('scheduleList').innerHTML = `
       <div class="empty">
         <div class="icon">⚠️</div>
         <strong>일정 파일을 찾을 수 없어요</strong>
-        <span style="font-size:13px;margin-top:8px;display:block;">
-          GitHub Actions가 아직 실행 전이거나<br>
-          <code>schedule.json</code>이 없는 상태예요.<br><br>
-          저장소에서 Actions → <strong>KBO 일정 자동 업데이트</strong> →<br>
-          <strong>Run workflow</strong>를 수동으로 한 번 실행해 주세요.
-        </span>
+        <span>Actions → KBO 일정 자동 업데이트 → Run workflow를 실행해 주세요.</span>
       </div>`;
   }
 }
 
-// ──────────────────────────────────────────
-//  일정 렌더링
-// ──────────────────────────────────────────
-const DAYS = ['일','월','화','수','목','금','토'];
-const TEAM_EMOJI = {LG:'🔵',KT:'🔴',한화:'🟠',두산:'🔵',KIA:'⚫',SSG:'🔴',삼성:'🔵',롯데:'🔵',NC:'🟢',키움:'🔴'};
-
-function renderSchedule() {
-  if (!window._scheduleLoaded) return;
-
+function filterSchedule() {
   const teamF = document.getElementById('filterTeam').value;
   const monthF = document.getElementById('filterMonth').value;
   const today = new Date().toISOString().slice(0, 10);
 
-  let games = scheduleData.filter(g => {
+  const games = scheduleData.filter(g => {
     if (monthF !== 'all' && g.date.slice(5, 7) !== monthF) return false;
     if (teamF !== '전체' && g.home !== teamF && g.away !== teamF) return false;
     return true;
   });
 
-  if (games.length === 0) {
-    document.getElementById('scheduleList').innerHTML = `
-      <div class="empty"><div class="icon">😕</div><strong>해당 일정이 없어요</strong></div>`;
+  // 날짜별 그룹
+  const map = {};
+  games.forEach(g => { (map[g.date] = map[g.date] || []).push(g); });
+  filteredDays = Object.entries(map).sort(([a],[b]) => a.localeCompare(b)).map(([date, gs]) => ({date, games: gs}));
+
+  schedPage = 0;
+  renderSchedulePage();
+}
+
+function renderSchedulePage() {
+  if (filteredDays.length === 0) {
+    document.getElementById('scheduleList').innerHTML = `<div class="empty"><div class="icon">😕</div><strong>해당 일정이 없어요</strong><span>필터를 변경해보세요</span></div>`;
+    document.getElementById('schedPagination').innerHTML = '';
+    document.getElementById('schedPageInfo').textContent = '';
+    document.getElementById('schedDayInfo').textContent = '';
     return;
   }
 
-  // 날짜별 그룹
-  const grouped = {};
-  games.forEach(g => { (grouped[g.date] = grouped[g.date] || []).push(g); });
+  const totalPages = Math.ceil(filteredDays.length / SCHED_PER_PAGE);
+  const pageDays = filteredDays.slice(schedPage * SCHED_PER_PAGE, (schedPage + 1) * SCHED_PER_PAGE);
+  const today = new Date().toISOString().slice(0, 10);
+
+  const DAYS = ['일','월','화','수','목','금','토'];
+  const TEAM_EMOJI = {LG:'🔵',KT:'🔴',한화:'🟠',두산:'🔵',KIA:'⚫',SSG:'🔴',삼성:'🔵',롯데:'🔵',NC:'🟢',키움:'🔴'};
+
+  document.getElementById('schedDayInfo').textContent =
+    `${filteredDays.length}일 일정`;
+  document.getElementById('schedPageInfo').textContent =
+    `${schedPage + 1} / ${totalPages} 페이지`;
 
   let html = '';
-  Object.entries(grouped).sort(([a],[b]) => a.localeCompare(b)).forEach(([date, list]) => {
+  pageDays.forEach(({date, games}) => {
     const d = new Date(date + 'T00:00:00');
     const dow = d.getDay();
     const isWE = dow === 0 || dow === 6;
     const isPast = date < today;
     const label = `${parseInt(date.slice(5,7))}/${parseInt(date.slice(8,10))} (${DAYS[dow]})`;
 
-    let badges = isWE ? `<span class="badge badge-we">주말</span>` : '';
-    if (list.some(g => g.note)) {
-      const note = list.find(g => g.note)?.note || '';
-      if (note.includes('올스타')) badges += `<span class="badge badge-star">⭐ 올스타전</span>`;
-      else badges += `<span class="badge badge-hol">공휴일</span>`;
-    }
+    let badges = isWE ? `<span class="sbadge sbadge-we">주말</span>` : '';
+    const specialNote = games.find(g => g.note);
+    if (specialNote?.note?.includes('올스타')) badges += `<span class="sbadge sbadge-star">⭐ 올스타</span>`;
+    else if (specialNote) badges += `<span class="sbadge sbadge-hol">공휴일</span>`;
 
-    html += `<div class="day-card" style="${isPast ? 'opacity:.55' : ''}">
+    html += `<div class="day-card" style="${isPast ? 'opacity:.5' : ''}">
       <div class="day-header">📆 ${label} ${badges}</div>`;
 
-    list.forEach(g => {
+    games.forEach(g => {
       if (g.note && !g.home) {
-        html += `<div style="padding:14px 16px;text-align:center;font-size:14px;font-weight:700;color:#854d0e;border-top:1px solid var(--border);">${g.note}</div>`;
+        html += `<div style="padding:14px 18px;text-align:center;font-size:15px;font-weight:800;color:#854D0E;border-top:1px solid var(--border)">${g.note}</div>`;
       } else {
         const emoji = TEAM_EMOJI[g.home] || '⚾';
         html += `<div class="game-row">
           <div>
-            <div class="game-teams">${emoji} ${g.home} <span style="color:var(--sub);font-weight:400;font-size:12px">vs</span> ${g.away}</div>
+            <div class="game-teams">${emoji} ${g.home} <span style="color:var(--muted);font-weight:500;font-size:13px">vs</span> ${g.away}</div>
             <div class="game-meta">🏟️ ${g.stadium || '-'}</div>
             ${g.note ? `<div class="game-note">${g.note}</div>` : ''}
           </div>
           <div class="game-right">
-            <span class="game-time">${g.time || ''}</span>
+            ${g.time ? `<span class="game-time">${g.time}</span>` : ''}
             ${!isPast ? `<button class="add-btn-sm" onclick="quickAdd('${date}','${g.home}')">+ 기록 추가</button>` : ''}
           </div>
         </div>`;
       }
     });
-    html += '</div>';
+    html += `</div>`;
   });
 
   document.getElementById('scheduleList').innerHTML = html;
+  renderSchedPagination(totalPages);
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-function quickAdd(date, team) {
-  switchTab('tracker');
-  document.getElementById('tDate').value = date;
-  document.getElementById('tTeam').value = team;
-  document.getElementById('tBuy').focus();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function renderSchedPagination(totalPages) {
+  if (totalPages <= 1) { document.getElementById('schedPagination').innerHTML = ''; return; }
+  let html = `<button class="pg-arrow" onclick="schedGoPage(${schedPage-1})" ${schedPage===0?'disabled':''}>‹</button>`;
+  const range = getPageRange(schedPage, totalPages);
+  range.forEach(p => {
+    if (p === '...') html += `<span style="padding:0 4px;color:var(--muted)">…</span>`;
+    else html += `<button class="pg-btn ${p===schedPage?'active':''}" onclick="schedGoPage(${p})">${p+1}</button>`;
+  });
+  html += `<button class="pg-arrow" onclick="schedGoPage(${schedPage+1})" ${schedPage===totalPages-1?'disabled':''}>›</button>`;
+  document.getElementById('schedPagination').innerHTML = html;
 }
 
-// ──────────────────────────────────────────
-//  수익 트래커
-// ──────────────────────────────────────────
+function schedGoPage(p) {
+  const total = Math.ceil(filteredDays.length / SCHED_PER_PAGE);
+  if (p < 0 || p >= total) return;
+  schedPage = p;
+  renderSchedulePage();
+}
+
+// ── 수익 트래커 ──────────────────────────────
 let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
 let chart;
+let recordPage = 0;
+const REC_PER_PAGE = 8;
 
 function isWE(d) { const day = new Date(d).getDay(); return day === 0 || day === 6; }
 function sortDB() { db.sort((a,b) => new Date(b.date) - new Date(a.date)); }
@@ -385,33 +602,82 @@ function deleteRecord(id) {
   }
 }
 
+function getPageRange(current, total) {
+  if (total <= 7) return Array.from({length: total}, (_, i) => i);
+  const pages = [0];
+  if (current > 2) pages.push('...');
+  for (let i = Math.max(1, current-1); i <= Math.min(total-2, current+1); i++) pages.push(i);
+  if (current < total - 3) pages.push('...');
+  pages.push(total - 1);
+  return pages;
+}
+
 function renderAll() {
   sortDB();
-  document.getElementById('recordList').innerHTML = db.map(it => `
-    <div class="record">
-      <div class="record-left">
-        <span class="record-team">${it.team} 홈</span>
-        <span class="record-date">${it.date} (${isWE(it.date) ? '주말' : '평일'})</span>
-        <div class="record-actions">
-          <button onclick="startEdit(${it.id})">수정</button>
-          <button onclick="deleteRecord(${it.id})" style="color:var(--red)">삭제</button>
-        </div>
-      </div>
-      <div class="record-right">
-        <span class="profit" style="color:${it.profit >= 0 ? 'var(--red)' : 'var(--blue)'}">
-          ${it.profit >= 0 ? '+' : ''}${it.profit.toLocaleString()}원
-        </span>
-        <span class="profit-detail">${it.sell.toLocaleString()} − ${it.buy.toLocaleString()}</span>
-      </div>
-    </div>`).join('');
-
   const total = db.reduce((s,i) => s+i.profit, 0);
   const wd = db.filter(x => !isWE(x.date)).reduce((s,i) => s+i.profit, 0);
   const we = db.filter(x => isWE(x.date)).reduce((s,i) => s+i.profit, 0);
   document.getElementById('totalProfit').innerText = total.toLocaleString() + '원';
   document.getElementById('wdProfit').innerText = wd.toLocaleString() + '원';
   document.getElementById('weProfit').innerText = we.toLocaleString() + '원';
+  renderRecordPage();
   updateChart();
+}
+
+function renderRecordPage() {
+  const totalPages = Math.ceil(db.length / REC_PER_PAGE);
+  if (recordPage >= totalPages) recordPage = Math.max(0, totalPages - 1);
+  const pageItems = db.slice(recordPage * REC_PER_PAGE, (recordPage + 1) * REC_PER_PAGE);
+
+  document.getElementById('recordPageInfo').textContent =
+    db.length > 0 ? `${db.length}건 · ${recordPage+1}/${Math.max(1,totalPages)}p` : '';
+
+  document.getElementById('recordList').innerHTML = pageItems.length === 0
+    ? `<div class="empty"><div class="icon">📋</div><strong>기록이 없어요</strong><span>첫 번째 양도 기록을 입력해보세요!</span></div>`
+    : pageItems.map(it => `
+    <div class="record">
+      <div class="record-left">
+        <span class="record-team">${it.team} 홈</span>
+        <span class="record-date">${it.date}</span>
+        <span class="record-badge ${isWE(it.date) ? 'badge-we' : 'badge-wd'}">${isWE(it.date) ? '주말' : '평일'}</span>
+        <div class="record-actions">
+          <button onclick="startEdit(${it.id})">수정</button>
+          <button onclick="deleteRecord(${it.id})" style="color:var(--red)">삭제</button>
+        </div>
+      </div>
+      <div class="record-right">
+        <span class="profit" style="color:${it.profit>=0?'var(--red)':'var(--blue)'}">
+          ${it.profit>=0?'+':''}${it.profit.toLocaleString()}원
+        </span>
+        <span class="profit-detail">${it.sell.toLocaleString()} − ${it.buy.toLocaleString()}</span>
+      </div>
+    </div>`).join('');
+
+  // 페이지네이션
+  if (totalPages <= 1) { document.getElementById('recordPagination').innerHTML = ''; return; }
+  let html = `<button class="pg-arrow" onclick="recGoPage(${recordPage-1})" ${recordPage===0?'disabled':''}>‹</button>`;
+  getPageRange(recordPage, totalPages).forEach(p => {
+    if (p === '...') html += `<span style="padding:0 4px;color:var(--muted)">…</span>`;
+    else html += `<button class="pg-btn ${p===recordPage?'active':''}" onclick="recGoPage(${p})">${p+1}</button>`;
+  });
+  html += `<button class="pg-arrow" onclick="recGoPage(${recordPage+1})" ${recordPage===totalPages-1?'disabled':''}>›</button>`;
+  document.getElementById('recordPagination').innerHTML = html;
+}
+
+function recGoPage(p) {
+  const total = Math.ceil(db.length / REC_PER_PAGE);
+  if (p < 0 || p >= total) return;
+  recordPage = p;
+  renderRecordPage();
+  document.getElementById('recordList').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function quickAdd(date, team) {
+  switchTab('tracker');
+  document.getElementById('tDate').value = date;
+  document.getElementById('tTeam').value = team;
+  document.getElementById('tBuy').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function updateChart() {
@@ -423,14 +689,25 @@ function updateChart() {
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
     type: 'bar',
-    data: { labels: Object.keys(stats), datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString()+'원' } } } }
+    data: {
+      labels: Object.keys(stats),
+      datasets: [{
+        data: Object.values(stats),
+        backgroundColor: Object.values(stats).map(v => v >= 0 ? 'rgba(91,95,237,.85)' : 'rgba(239,68,68,.75)'),
+        borderRadius: 8, borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { font: {size:12}, callback: v => v.toLocaleString()+'원' }, grid: {color:'#F2F4F8'} },
+                x: { ticks: {font:{size:13}} } }
+    }
   });
 }
 
 // 초기화
 window.addEventListener('DOMContentLoaded', () => {
-  // 이번 달 필터 기본값
   const m = String(new Date().getMonth() + 1).padStart(2, '0');
   const sel = document.getElementById('filterMonth');
   for (const opt of sel.options) { if (opt.value === m) { opt.selected = true; break; } }
