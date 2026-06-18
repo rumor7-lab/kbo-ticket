@@ -1,0 +1,41 @@
+name: KBO 일정 자동 업데이트
+
+on:
+  schedule:
+    # 매일 새벽 6시 (KST) = UTC 21:00 (전날)
+    - cron: '0 21 * * *'
+  workflow_dispatch:  # 수동 실행 버튼도 활성화
+
+permissions:
+  contents: write  # schedule.json 커밋을 위해 필요
+
+jobs:
+  update-schedule:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 의존성 설치
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: KBO 일정 수집
+        run: python fetch_schedule.py
+
+      - name: schedule.json 변경 확인 및 커밋
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add schedule.json
+          if git diff --cached --quiet; then
+            echo "변경 없음 - 커밋 스킵"
+          else
+            git commit -m "chore: KBO 일정 업데이트 $(date +'%Y-%m-%d')"
+            git push
+          fi
