@@ -394,7 +394,6 @@
   </div>
 
   <div class="section-header" style="margin-bottom:12px">
-    <div class="section-title" style="font-size:15px" id="schedDayInfo"></div>
     <div class="page-info" id="schedPageInfo"></div>
   </div>
 
@@ -471,7 +470,6 @@ function renderSchedulePage() {
     document.getElementById('scheduleList').innerHTML = `<div class="empty"><div class="icon">😕</div><strong>해당 일정이 없어요</strong><span>필터를 변경해보세요</span></div>`;
     document.getElementById('schedPagination').innerHTML = '';
     document.getElementById('schedPageInfo').textContent = '';
-    document.getElementById('schedDayInfo').textContent = '';
     return;
   }
 
@@ -482,8 +480,6 @@ function renderSchedulePage() {
   const DAYS = ['일','월','화','수','목','금','토'];
   const TEAM_EMOJI = {LG:'🔵',KT:'🔴',한화:'🟠',두산:'🔵',KIA:'⚫',SSG:'🔴',삼성:'🔵',롯데:'🔵',NC:'🟢',키움:'🔴'};
 
-  document.getElementById('schedDayInfo').textContent =
-    `${filteredDays.length}일 일정`;
   document.getElementById('schedPageInfo').textContent =
     `${schedPage + 1} / ${totalPages} 페이지`;
 
@@ -496,11 +492,12 @@ function renderSchedulePage() {
     const label = `${parseInt(date.slice(5,7))}/${parseInt(date.slice(8,10))} (${DAYS[dow]})`;
 
     let badges = isWE ? `<span class="sbadge sbadge-we">주말</span>` : '';
+    if (isPast) badges += `<span class="sbadge" style="background:#F3F4F6;color:var(--muted)">종료</span>`;
     const specialNote = games.find(g => g.note);
     if (specialNote?.note?.includes('올스타')) badges += `<span class="sbadge sbadge-star">⭐ 올스타</span>`;
     else if (specialNote) badges += `<span class="sbadge sbadge-hol">공휴일</span>`;
 
-    html += `<div class="day-card" style="${isPast ? 'opacity:.5' : ''}">
+    html += `<div class="day-card">
       <div class="day-header">📆 ${label} ${badges}</div>`;
 
     games.forEach(g => {
@@ -515,7 +512,7 @@ function renderSchedulePage() {
             ${g.note ? `<div class="game-note">${g.note}</div>` : ''}
           </div>
           <div class="game-right">
-            ${g.time ? `<span class="game-time">${g.time}</span>` : ''}
+            ${g.time ? `<span class="game-time">${g.time}</span>` : '<span class="game-time" style="color:var(--muted)">-</span>'}
             ${!isPast ? `<button class="add-btn-sm" onclick="quickAdd('${date}','${g.home}')">+ 기록 추가</button>` : ''}
           </div>
         </div>`;
