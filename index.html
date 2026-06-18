@@ -7,34 +7,77 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3172/3172551.png">
-    <link rel="manifest" href="data:application/manifest+json,{'name':'TicketFlow','short_name':'TicketFlow','start_url':'.','display':'standalone','background_color':'#ffffff','theme_color':'#6366f1','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3172/3172551.png','sizes':'512x512','type':'image/png'}]}">
     <style>
-        :root { --primary: #6366f1; --bg: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b; --accent-up: #ef4444; --accent-down: #3b82f6; }
+        :root {
+            --primary: #6366f1;
+            --primary-light: #eef2ff;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --accent-up: #ef4444;
+            --accent-down: #3b82f6;
+            --border: #f1f5f9;
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: var(--bg); color: var(--text-main); }
-        .app-container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
-        .header-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .logo-icon { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+
+        /* ── Tab Navigation ── */
+        .tab-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            padding: 0 16px;
+            gap: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 14px 0;
+            border: none;
+            background: none;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-sub);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* ── Panels ── */
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .app-container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 60px; }
+
+        /* ── Summary Cards ── */
+        .header-box { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .logo-icon { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-        .summary-card { background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .summary-card { background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); }
         .summary-card span { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-weight: 600; }
         .summary-card strong { font-size: 16px; font-weight: 800; }
         .summary-card.main { grid-column: span 2; background: var(--primary); color: white; }
         .summary-card.main span { color: rgba(255,255,255,0.8); }
+
+        /* ── Input Form ── */
         .input-form { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display:block; margin-bottom:12px; display: flex; align-items: center; gap: 5px; }
+        .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display: flex; align-items: center; gap: 5px; margin-bottom: 12px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; }
-        
-        /* 날짜 입력창 포커스 전 글자 색상 제어(placeholder 느낌 전용) */
-        input[type="text"]#tDate { color: #94a3b8; }
-        
-        .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-        .update-mode-btn { background: #10b981; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; background: white; }
+        input:focus, select:focus { border-color: var(--primary); }
+        .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: opacity 0.2s; }
+        .add-btn:active { opacity: 0.85; }
+        .update-mode-btn { background: #10b981 !important; }
+
+        /* ── Record List ── */
         .list-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-        .ticket-item { background: var(--card-bg); padding: 16px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #f1f5f9; }
+        .ticket-item { background: var(--card-bg); padding: 16px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
         .item-info { display: flex; flex-direction: column; gap: 2px; }
         .item-team { font-weight: 800; font-size: 15px; }
         .item-date { font-size: 12px; color: var(--text-sub); }
@@ -43,67 +86,181 @@
         .item-right { text-align: right; }
         .profit-val { font-size: 17px; font-weight: 800; }
         .calc-detail { font-size: 10px; color: #94a3b8; display: block; }
-        .chart-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid #f1f5f9; }
-        .backup-zone { display: flex; gap: 8px; margin-bottom: 20px; justify-content: flex-end; }
-        .backup-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
-        
-        .pagination-zone { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 20px 0 30px 0; }
-        .page-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .page-info { font-size: 13px; font-weight: 700; color: var(--text-sub); }
+        .chart-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid var(--border); }
+
+        /* ── Schedule Panel ── */
+        .schedule-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .schedule-header h2 { font-size: 18px; font-weight: 800; margin: 0; }
+
+        .search-controls { background: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+        .search-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .fetch-btn {
+            width: 100%; background: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .fetch-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* API Key Input */
+        .apikey-box { background: #fefce8; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+        .apikey-box label { font-size: 12px; font-weight: 700; color: #92400e; display: block; margin-bottom: 6px; }
+        .apikey-row { display: flex; gap: 8px; }
+        .apikey-row input { flex: 1; font-size: 13px; padding: 10px 12px; border-radius: 10px; }
+        .apikey-save-btn { background: #f59e0b; color: white; border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+        .apikey-status { font-size: 11px; margin-top: 6px; color: #78716c; }
+
+        /* Schedule Results */
+        .schedule-results { display: flex; flex-direction: column; gap: 10px; }
+        .schedule-day-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .schedule-day-header {
+            background: var(--primary-light);
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .schedule-day-header .weekend-badge {
+            background: #fef2f2;
+            color: #ef4444;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        .game-row {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .game-teams { font-size: 14px; font-weight: 700; }
+        .game-meta { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+        .game-time { font-size: 13px; font-weight: 600; color: var(--primary); }
+
+        /* Loading & States */
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-sub);
+        }
+        .loading-spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-sub);
+        }
+        .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+
+        .error-card {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 14px;
+            padding: 16px;
+            color: #991b1b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Add-to-tracker quick button */
+        .quick-add-btn {
+            background: var(--primary-light);
+            border: none;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .quick-add-btn:active { opacity: 0.7; }
+
+        /* Raw text fallback */
+        .raw-schedule {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: var(--text-main);
+        }
     </style>
 </head>
 <body>
 
+<!-- Tab Navigation -->
+<nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('tracker')">📋 수익 관리</button>
+    <button class="tab-btn" onclick="switchTab('schedule')">📅 경기 일정</button>
+</nav>
+
+<!-- ────────────────────────────────
+     TAB 1: Profit Tracker
+──────────────────────────────── -->
+<div id="tab-tracker" class="panel active">
 <div class="app-container">
     <header class="header-box">
-        <div class="header-left">
-            <div class="logo-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
-            </div>
-            <div>
-                <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
-                <p style="margin:0; color: var(--text-sub); font-size: 13px;">KBO 양도 수익 매니저</p>
-            </div>
+        <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+        </div>
+        <div>
+            <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
+            <p style="margin:0; color: var(--text-sub); font-size: 13px;">KBO 양도 수익 매니저</p>
         </div>
     </header>
 
-    <div class="backup-zone">
-        <button class="backup-btn" onclick="exportData()">📥 데이터 백업</button>
-        <button class="backup-btn" onclick="importData()">📤 데이터 복구</button>
-    </div>
-
     <div class="summary-grid">
         <div class="summary-card main">
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 누적 수익</span>
+            <span>💰 누적 수익</span>
             <strong id="totalProfit">0원</strong>
         </div>
         <div class="summary-card">
-            <span>📅 평일 수익</span>
+            <span>📅 평일</span>
             <strong id="wdProfit">0원</strong>
         </div>
         <div class="summary-card">
-            <span>🏖️ 주말 수익</span>
+            <span>🎉 주말</span>
             <strong id="weProfit">0원</strong>
-        </div>
-        <div class="summary-card">
-            <span>📊 총 거래 건수</span>
-            <strong id="totalCount">0건</strong>
-        </div>
-        <div class="summary-card">
-            <span>💡 건당 평균 수익</span>
-            <strong id="avgProfit">0원</strong>
         </div>
     </div>
 
     <div class="input-form">
-        <span id="formTitle" class="form-title">📝 새 기록 입력</span>
+        <div id="formTitle" class="form-title">📝 새 기록 입력</div>
         <input type="hidden" id="editId">
         <div class="form-row">
-            <input type="text" id="tDate" placeholder="경기 일정" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'">
+            <input type="date" id="tDate">
             <select id="tTeam">
                 <option value="">홈구단 선택</option>
-                <option value="LG">LG 트윈스</option><option value="KT">KT 위즈</option><option value="한화">한화 이글스</option><option value="두산">두산 베어스</option><option value="KIA">KIA 타이거즈</option><option value="삼성">삼성 라이온즈</option><option value="롯데">롯데 자이언츠</option><option value="NC">NC 다이노스</option><option value="SSG">SSG 랜더스</option><option value="키움">키움 히어로즈</option>
+                <option value="LG">LG 트윈스</option>
+                <option value="KT">KT 위즈</option>
+                <option value="한화">한화 이글스</option>
+                <option value="두산">두산 베어스</option>
+                <option value="KIA">KIA 타이거즈</option>
+                <option value="삼성">삼성 라이온즈</option>
+                <option value="롯데">롯데 자이언츠</option>
+                <option value="NC">NC 다이노스</option>
+                <option value="SSG">SSG 랜더스</option>
+                <option value="키움">키움 히어로즈</option>
             </select>
         </div>
         <div class="form-row">
@@ -115,235 +272,424 @@
     </div>
 
     <div class="list-header">📊 양도 기록 리스트 (최신순)</div>
-    
     <div id="recordList"></div>
-
-    <div class="pagination-zone">
-        <button id="prevBtn" class="page-btn" onclick="changePage(-1)">이전</button>
-        <span id="pageInfo" class="page-info">1 / 1</span>
-        <button id="nextBtn" class="page-btn" onclick="changePage(1)">다음</button>
-    </div>
 
     <div class="chart-box">
         <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-sub);">월별 수익 현황 (원)</div>
         <div style="height: 200px;"><canvas id="profitChart"></canvas></div>
     </div>
 </div>
+</div>
+
+<!-- ────────────────────────────────
+     TAB 2: KBO Schedule
+──────────────────────────────── -->
+<div id="tab-schedule" class="panel">
+<div class="app-container">
+    <div class="schedule-header">
+        <h2>📅 KBO 경기 일정</h2>
+    </div>
+
+    <!-- API Key -->
+    <div class="apikey-box" id="apikeyBox">
+        <label>🔑 Anthropic API Key</label>
+        <div class="apikey-row">
+            <input type="password" id="apikeyInput" placeholder="sk-ant-...">
+            <button class="apikey-save-btn" onclick="saveApiKey()">저장</button>
+        </div>
+        <div class="apikey-status" id="apikeyStatus">API 키를 입력하면 웹 검색으로 최신 일정을 불러옵니다.</div>
+    </div>
+
+    <!-- Search Controls -->
+    <div class="search-controls">
+        <div class="search-row">
+            <select id="scheduleTeam">
+                <option value="전체">전체 구단</option>
+                <option value="LG">LG 트윈스</option>
+                <option value="KT">KT 위즈</option>
+                <option value="한화">한화 이글스</option>
+                <option value="두산">두산 베어스</option>
+                <option value="KIA">KIA 타이거즈</option>
+                <option value="삼성">삼성 라이온즈</option>
+                <option value="롯데">롯데 자이언츠</option>
+                <option value="NC">NC 다이노스</option>
+                <option value="SSG">SSG 랜더스</option>
+                <option value="키움">키움 히어로즈</option>
+            </select>
+            <select id="scheduleRange">
+                <option value="이번주">이번 주</option>
+                <option value="다음주">다음 주</option>
+                <option value="이번달">이번 달</option>
+            </select>
+        </div>
+        <button class="fetch-btn" id="fetchBtn" onclick="fetchSchedule()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            최신 일정 불러오기
+        </button>
+    </div>
+
+    <div id="scheduleResults">
+        <div class="empty-state">
+            <div class="icon">🏟️</div>
+            <div style="font-weight:700; margin-bottom:6px;">일정을 불러와 보세요</div>
+            <div style="font-size:13px;">API 키를 입력하고 버튼을 누르면<br>최신 KBO 경기 일정을 확인할 수 있어요</div>
+        </div>
+    </div>
+</div>
+</div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
-    let chart;
+// ═══════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════
+function switchTab(tab) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.querySelectorAll('.tab-btn')[tab === 'tracker' ? 0 : 1].classList.add('active');
+}
 
-    let currentPage = 1;
-    const itemsPerPage = 5; 
-
-    function isWeekend(d) {
-        const day = new Date(d).getDay();
-        return day === 0 || day === 6;
+// ═══════════════════════════════════════════
+//  API KEY MANAGEMENT
+// ═══════════════════════════════════════════
+function saveApiKey() {
+    const key = document.getElementById('apikeyInput').value.trim();
+    if (!key.startsWith('sk-ant-')) {
+        document.getElementById('apikeyStatus').textContent = '⚠️ 올바른 Anthropic API 키 형식이 아닙니다.';
+        document.getElementById('apikeyStatus').style.color = '#ef4444';
+        return;
     }
+    localStorage.setItem('tfp_apikey', key);
+    document.getElementById('apikeyInput').value = '••••••••••••••••';
+    document.getElementById('apikeyStatus').textContent = '✅ API 키가 저장되었습니다.';
+    document.getElementById('apikeyStatus').style.color = '#059669';
+}
 
-    function sortDB() {
-        db.sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
+function getApiKey() {
+    return localStorage.getItem('tfp_apikey') || '';
+}
 
-    function handleSave() {
-        const id = document.getElementById('editId').value;
-        const date = document.getElementById('tDate').value;
-        const team = document.getElementById('tTeam').value;
-        const buy = parseInt(document.getElementById('tBuy').value) || 0;
-        const sell = parseInt(document.getElementById('tSell').value) || 0;
-
-        if(!date || !team) return alert("날짜와 팀을 선택해주세요.");
-
-        const profit = sell - buy;
-        const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell, profit };
-
-        if(id) {
-            const idx = db.findIndex(x => x.id === parseInt(id));
-            db[idx] = record;
-        } else {
-            db.push(record);
-            currentPage = 1;
-        }
-
-        sortDB();
-        localStorage.setItem('kbo_final', JSON.stringify(db));
-        resetForm();
-        renderAll();
-    }
-
-    function startEdit(id) {
-        const item = db.find(x => x.id === id);
-        document.getElementById('editId').value = item.id;
-        
-        // 수정 모드 진입 시 강제로 date 타입으로 속성을 열어주어야 값이 정상 주입됩니다.
-        const dateInput = document.getElementById('tDate');
-        dateInput.type = 'date';
-        dateInput.value = item.date;
-        
-        document.getElementById('tTeam').value = item.team;
-        document.getElementById('tBuy').value = item.buy;
-        document.getElementById('tSell').value = item.sell;
-        document.getElementById('formTitle').innerText = "🔄 기록 수정 중...";
-        document.getElementById('submitBtn').innerText = "수정 완료하기";
-        document.getElementById('submitBtn').classList.add('update-mode-btn');
-        document.getElementById('cancelBtn').style.display = 'block';
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
-
-    // 폼 초기화 시 날짜 선택창 속성도 text 원복
-    function resetForm() {
-        document.getElementById('editId').value = '';
-        const dateInput = document.getElementById('tDate');
-        dateInput.type = 'text';
-        dateInput.value = '';
-        
-        document.getElementById('tTeam').value = '';
-        document.getElementById('tBuy').value = '';
-        document.getElementById('tSell').value = '';
-        document.getElementById('formTitle').innerText = "📝 새 기록 입력";
-        document.getElementById('submitBtn').innerText = "저장하기";
-        document.getElementById('submitBtn').classList.remove('update-mode-btn');
-        document.getElementById('cancelBtn').style.display = 'none';
-    }
-
-    function deleteRecord(id) {
-        if(confirm("정말 삭제하시겠습니까?")) {
-            db = db.filter(x => x.id !== id);
-            localStorage.setItem('kbo_final', JSON.stringify(db));
-            
-            const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
-            if(currentPage > maxPage) currentPage = maxPage;
-
-            renderAll();
-        }
-    }
-
-    function exportData() {
-        if(db.length === 0) return alert("백업할 데이터가 없습니다.");
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `ticket_flow_backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = e => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.readAsText(file, 'UTF-8');
-            reader.onload = readerEvent => {
-                try {
-                    const content = JSON.parse(readerEvent.target.result);
-                    if(Array.isArray(content)) {
-                        if(confirm("기존 데이터를 덮어쓰고 복구하시겠습니까?")) {
-                            db = content;
-                            localStorage.setItem('kbo_final', JSON.stringify(db));
-                            currentPage = 1;
-                            renderAll();
-                            alert("성공적으로 복구되었습니다!");
-                        }
-                    } else {
-                        alert("올바르지 않은 백업 파일 형식입니다.");
-                    }
-                } catch(err) {
-                    alert("파일을 읽는 중 오류가 발생했습니다.");
-                }
-            }
-        }
-        input.click();
-    }
-
-    function changePage(direction) {
-        const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
-        currentPage += direction;
-        if(currentPage < 1) currentPage = 1;
-        if(currentPage > maxPage) currentPage = maxPage;
-        renderAll();
-    }
-
-    function renderAll() {
-        sortDB();
-        
-        const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const pagedDb = db.slice(startIndex, endIndex);
-
-        const list = document.getElementById('recordList');
-        if (pagedDb.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:40px; font-size:14px; font-weight:500;">📅 아직 등록된 양도 기록이 없습니다.<br>위 양식으로 새 내역을 등록해보세요!</div>`;
-        } else {
-            list.innerHTML = pagedDb.map(item => {
-                const we = isWeekend(item.date);
-                return `
-                    <div class="ticket-item">
-                        <div class="item-info">
-                            <span class="item-team">${item.team} 홈</span>
-                            <span class="item-date">${item.date} (${we ? '주말' : '평일'})</span>
-                            <div class="btn-group">
-                                <button onclick="startEdit(${item.id})">수정</button>
-                                <button onclick="deleteRecord(${item.id})" style="color:#f87171">삭제</button>
-                            </div>
-                        </div>
-                        <div class="item-right">
-                            <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
-                                ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
-                            </span>
-                            <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString()}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        document.getElementById('pageInfo').innerText = `${currentPage} / ${maxPage}`;
-        document.getElementById('prevBtn').disabled = (currentPage === 1);
-        document.getElementById('nextBtn').disabled = (currentPage === maxPage);
-
-        const total = db.reduce((s, i) => s + i.profit, 0);
-        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-        const count = db.length;
-        const avg = count > 0 ? Math.round(total / count) : 0;
-
-        document.getElementById('totalProfit').innerText = total.toLocaleString() + "원";
-        document.getElementById('wdProfit').innerText = wd.toLocaleString() + "원";
-        document.getElementById('weProfit').innerText = we.toLocaleString() + "원";
-        document.getElementById('totalCount').innerText = count.toLocaleString() + "건";
-        document.getElementById('avgProfit').innerText = avg.toLocaleString() + "원";
-        
-        updateChart();
-    }
-
-    function updateChart() {
-        const ctx = document.getElementById('profitChart').getContext('2d');
-        const stats = {};
-        [...db].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
-            const m = i.date.slice(5, 7) + "월";
-            stats[m] = (stats[m] || 0) + i.profit;
-        });
-        if (chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(stats),
-                datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + '원' } } }
-            }
-        });
+// On load: show saved key status
+window.addEventListener('DOMContentLoaded', () => {
+    if (getApiKey()) {
+        document.getElementById('apikeyInput').value = '••••••••••••••••';
+        document.getElementById('apikeyStatus').textContent = '✅ 저장된 API 키가 있습니다.';
+        document.getElementById('apikeyStatus').style.color = '#059669';
     }
     renderAll();
+});
+
+// ═══════════════════════════════════════════
+//  SCHEDULE FETCH (Claude API + Web Search)
+// ═══════════════════════════════════════════
+async function fetchSchedule() {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+        document.getElementById('scheduleResults').innerHTML = `
+            <div class="error-card">🔑 API 키를 먼저 입력해주세요.</div>`;
+        return;
+    }
+
+    const team = document.getElementById('scheduleTeam').value;
+    const range = document.getElementById('scheduleRange').value;
+    const btn = document.getElementById('fetchBtn');
+
+    btn.disabled = true;
+    btn.innerHTML = `<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;"></div> 검색 중...`;
+
+    document.getElementById('scheduleResults').innerHTML = `
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <div style="font-weight:600;">KBO 일정을 검색하고 있어요...</div>
+            <div style="font-size:12px;margin-top:4px;">웹에서 최신 정보를 가져옵니다</div>
+        </div>`;
+
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+    const teamQuery = team === '전체' ? 'KBO 프로야구 전 구단' : `KBO ${team}`;
+    const prompt = `오늘 날짜는 ${dateStr}입니다.
+웹 검색을 통해 ${teamQuery}의 ${range} KBO 프로야구 경기 일정을 찾아주세요.
+
+반드시 아래 JSON 형식으로만 응답해주세요 (다른 텍스트 없이):
+{
+  "games": [
+    {
+      "date": "2025-06-20",
+      "dayOfWeek": "금",
+      "isWeekend": false,
+      "time": "18:30",
+      "home": "LG",
+      "away": "한화",
+      "stadium": "잠실"
+    }
+  ],
+  "source": "검색 출처 한 줄",
+  "note": "추가 메모 (없으면 빈 문자열)"
+}
+
+JSON 외 다른 내용은 절대 포함하지 마세요.`;
+
+    try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-beta': 'interleaved-thinking-2025-05-14'
+            },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-6',
+                max_tokens: 2000,
+                tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+                messages: [{ role: 'user', content: prompt }]
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || `API 오류 (${response.status})`);
+        }
+
+        // Extract text from content blocks
+        const textContent = data.content
+            .filter(b => b.type === 'text')
+            .map(b => b.text)
+            .join('');
+
+        // Try to parse JSON
+        let parsed = null;
+        try {
+            const jsonMatch = textContent.match(/\{[\s\S]*\}/);
+            if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+        } catch(e) {}
+
+        if (parsed && parsed.games) {
+            renderScheduleCards(parsed, team, range);
+        } else {
+            // Fallback: show raw text nicely
+            renderScheduleRaw(textContent, range);
+        }
+
+    } catch (err) {
+        document.getElementById('scheduleResults').innerHTML = `
+            <div class="error-card">
+                ⚠️ 오류가 발생했습니다.<br><br>
+                <strong>${err.message}</strong><br><br>
+                API 키를 확인하거나 잠시 후 다시 시도해주세요.
+            </div>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> 최신 일정 불러오기`;
+    }
+}
+
+function renderScheduleCards(data, team, range) {
+    if (!data.games || data.games.length === 0) {
+        document.getElementById('scheduleResults').innerHTML = `
+            <div class="empty-state">
+                <div class="icon">😕</div>
+                <div style="font-weight:700;">예정된 경기가 없어요</div>
+                <div style="font-size:13px;margin-top:6px;">다른 기간이나 구단을 선택해보세요</div>
+            </div>`;
+        return;
+    }
+
+    // Group by date
+    const grouped = {};
+    data.games.forEach(g => {
+        if (!grouped[g.date]) grouped[g.date] = [];
+        grouped[g.date].push(g);
+    });
+
+    const TEAM_LOGOS = {
+        'LG':'🔵','KT':'🔴','한화':'🟠','두산':'🔵','KIA':'⚫',
+        'SSG':'🔴','삼성':'🔵','롯데':'🔵','NC':'🟢','키움':'🔴'
+    };
+
+    let html = '';
+
+    if (data.note) {
+        html += `<div style="font-size:12px;color:var(--text-sub);margin-bottom:12px;padding:8px 12px;background:var(--card-bg);border-radius:10px;border:1px solid var(--border);">ℹ️ ${data.note}</div>`;
+    }
+
+    Object.entries(grouped).forEach(([date, games]) => {
+        const d = new Date(date);
+        const dayNames = ['일','월','화','수','목','금','토'];
+        const dayName = dayNames[d.getDay()];
+        const isWE = d.getDay() === 0 || d.getDay() === 6;
+        const formattedDate = `${date.slice(5).replace('-','/')} (${dayName})`;
+
+        html += `<div class="schedule-day-card">
+            <div class="schedule-day-header">
+                📆 ${formattedDate}
+                ${isWE ? '<span class="weekend-badge">주말</span>' : ''}
+            </div>`;
+
+        games.forEach(g => {
+            const homeLogo = TEAM_LOGOS[g.home] || '⚾';
+            html += `<div class="game-row">
+                <div>
+                    <div class="game-teams">${homeLogo} ${g.home} vs ${g.away}</div>
+                    <div class="game-meta">🏟️ ${g.stadium || '-'}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                    <span class="game-time">${g.time || ''}</span>
+                    <button class="quick-add-btn" onclick="quickAddToTracker('${date}','${g.home}')">+ 기록 추가</button>
+                </div>
+            </div>`;
+        });
+
+        html += `</div>`;
+    });
+
+    if (data.source) {
+        html += `<div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:12px;">출처: ${data.source}</div>`;
+    }
+
+    document.getElementById('scheduleResults').innerHTML = html;
+}
+
+function renderScheduleRaw(text, range) {
+    document.getElementById('scheduleResults').innerHTML = `
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:10px;">📋 ${range} 검색 결과</div>
+        <div class="raw-schedule">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+}
+
+// Quick add: jump to tracker tab with date & team pre-filled
+function quickAddToTracker(date, team) {
+    switchTab('tracker');
+    document.getElementById('tDate').value = date;
+    document.getElementById('tTeam').value = team;
+    document.getElementById('tBuy').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════
+//  TRACKER LOGIC (original, preserved)
+// ═══════════════════════════════════════════
+let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
+let chart;
+
+function isWeekend(d) {
+    const day = new Date(d).getDay();
+    return day === 0 || day === 6;
+}
+
+function sortDB() {
+    db.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+function handleSave() {
+    const id = document.getElementById('editId').value;
+    const date = document.getElementById('tDate').value;
+    const team = document.getElementById('tTeam').value;
+    const buy = parseInt(document.getElementById('tBuy').value) || 0;
+    const sell = parseInt(document.getElementById('tSell').value) || 0;
+    if (!date || !team) return alert("날짜와 팀을 선택해주세요.");
+    const profit = sell - buy;
+    const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell, profit };
+    if (id) {
+        const idx = db.findIndex(x => x.id === parseInt(id));
+        db[idx] = record;
+    } else {
+        db.push(record);
+    }
+    sortDB();
+    localStorage.setItem('kbo_final', JSON.stringify(db));
+    resetForm();
+    renderAll();
+}
+
+function startEdit(id) {
+    const item = db.find(x => x.id === id);
+    document.getElementById('editId').value = item.id;
+    document.getElementById('tDate').value = item.date;
+    document.getElementById('tTeam').value = item.team;
+    document.getElementById('tBuy').value = item.buy;
+    document.getElementById('tSell').value = item.sell;
+    document.getElementById('formTitle').innerText = "🔄 기록 수정 중...";
+    document.getElementById('submitBtn').innerText = "수정 완료하기";
+    document.getElementById('submitBtn').classList.add('update-mode-btn');
+    document.getElementById('cancelBtn').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+    document.getElementById('editId').value = '';
+    document.getElementById('tDate').value = '';
+    document.getElementById('tTeam').value = '';
+    document.getElementById('tBuy').value = '';
+    document.getElementById('tSell').value = '';
+    document.getElementById('formTitle').innerText = "📝 새 기록 입력";
+    document.getElementById('submitBtn').innerText = "저장하기";
+    document.getElementById('submitBtn').classList.remove('update-mode-btn');
+    document.getElementById('cancelBtn').style.display = 'none';
+}
+
+function deleteRecord(id) {
+    if (confirm("정말 삭제하시겠습니까?")) {
+        db = db.filter(x => x.id !== id);
+        localStorage.setItem('kbo_final', JSON.stringify(db));
+        renderAll();
+    }
+}
+
+function renderAll() {
+    sortDB();
+    const list = document.getElementById('recordList');
+    list.innerHTML = db.map(item => {
+        const we = isWeekend(item.date);
+        return `
+            <div class="ticket-item">
+                <div class="item-info">
+                    <span class="item-team">${item.team} 홈</span>
+                    <span class="item-date">${item.date} (${we ? '주말' : '평일'})</span>
+                    <div class="btn-group">
+                        <button onclick="startEdit(${item.id})">수정</button>
+                        <button onclick="deleteRecord(${item.id})" style="color:#f87171">삭제</button>
+                    </div>
+                </div>
+                <div class="item-right">
+                    <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
+                        ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
+                    </span>
+                    <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString()}</span>
+                </div>
+            </div>`;
+    }).join('');
+
+    const total = db.reduce((s, i) => s + i.profit, 0);
+    const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
+    const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
+    document.getElementById('totalProfit').innerText = total.toLocaleString() + "원";
+    document.getElementById('wdProfit').innerText = wd.toLocaleString() + "원";
+    document.getElementById('weProfit').innerText = we.toLocaleString() + "원";
+    updateChart();
+}
+
+function updateChart() {
+    const ctx = document.getElementById('profitChart').getContext('2d');
+    const stats = {};
+    [...db].sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(i => {
+        const m = i.date.slice(5, 7) + "월";
+        stats[m] = (stats[m] || 0) + i.profit;
+    });
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(stats),
+            datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + '원' } } }
+        }
+    });
+}
 </script>
 </body>
 </html>
