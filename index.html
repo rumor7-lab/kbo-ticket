@@ -265,6 +265,17 @@
     .game-note { font-size: 12px; color: #EA580C; margin-top: 2px; }
     .game-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
     .game-time { font-size: 14px; font-weight: 800; color: var(--primary); }
+    .score-box {
+      display: flex; align-items: center; gap: 6px;
+      background: #F8F9FA; border-radius: 8px; padding: 4px 10px;
+    }
+    .score-num {
+      font-size: 17px; font-weight: 900; letter-spacing: -1px; min-width: 20px; text-align: center;
+    }
+    .score-sep { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .score-win { color: var(--red); }
+    .score-lose { color: var(--blue); }
+    .score-tie { color: var(--sub); }
     .add-btn-sm {
       background: var(--primary-light); color: var(--primary);
       border: none; font-size: 12px; font-weight: 700;
@@ -288,6 +299,48 @@
       margin: 0 auto 14px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── STANDINGS ── */
+    .standings-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      background: var(--card); border-radius: var(--radius-lg);
+      overflow: hidden; box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .standings-table th {
+      background: var(--primary); color: #fff;
+      padding: 12px 10px; font-size: 12px; font-weight: 700;
+      text-align: center; letter-spacing: .3px;
+    }
+    .standings-table th:first-child { text-align: left; padding-left: 16px; }
+    .standings-table td {
+      padding: 13px 10px; font-size: 14px; font-weight: 600;
+      text-align: center; border-top: 1px solid var(--border);
+      color: var(--text);
+    }
+    .standings-table td:first-child { text-align: left; padding-left: 12px; }
+    .standings-table tr:hover td { background: var(--primary-light); }
+    .rank-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      font-size: 13px; font-weight: 800; margin-right: 8px;
+    }
+    .rank-1 { background: #FEF08A; color: #854D0E; }
+    .rank-2 { background: #E2E8F0; color: #374151; }
+    .rank-3 { background: #FED7AA; color: #9A3412; }
+    .rank-ps { background: var(--primary-light); color: var(--primary); }
+    .rank-other { background: transparent; color: var(--muted); }
+    .streak-w { color: var(--red); font-weight: 800; }
+    .streak-l { color: var(--blue); font-weight: 800; }
+    .last10-bar {
+      display: flex; gap: 2px; justify-content: center; align-items: center;
+    }
+    .last10-w { width: 6px; height: 14px; background: var(--red); border-radius: 2px; }
+    .last10-l { width: 6px; height: 14px; background: var(--blue); border-radius: 2px; }
+    .last10-d { width: 6px; height: 14px; background: #D1D5DB; border-radius: 2px; }
+    .divider-row td {
+      border-top: 2px dashed var(--primary) !important;
+    }
   </style>
 </head>
 <body>
@@ -295,6 +348,7 @@
 <nav class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('tracker')">📋 수익 관리</button>
   <button class="tab-btn" onclick="switchTab('schedule')">📅 경기 일정</button>
+  <button class="tab-btn" onclick="switchTab('standings')">🏆 순위</button>
 </nav>
 
 <!-- ═══ TRACKER ═══ -->
@@ -404,14 +458,90 @@
 </div>
 </div>
 
+
+<!-- ═══ STANDINGS ═══ -->
+<div id="tab-standings" class="panel">
+<div class="wrap">
+  <div class="sched-top">
+    <h2>🏆 팀 순위</h2>
+    <span id="standingsUpdated" style="font-size:12px;color:var(--muted)"></span>
+  </div>
+
+  <div id="standingsList">
+    <div class="loading"><div class="spinner"></div>순위 불러오는 중...</div>
+  </div>
+</div>
+</div>
+
 <script>
 // ── 탭 ──────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  document.querySelectorAll('.tab-btn')[tab === 'tracker' ? 0 : 1].classList.add('active');
-  if (tab === 'schedule' && !window._schedLoaded) loadSchedule();
+  const idx = {tracker:0, schedule:1, standings:2}[tab] || 0;
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  if ((tab === 'schedule' || tab === 'standings') && !window._schedLoaded) loadSchedule();
+  if (tab === 'standings' && window._schedLoaded) renderStandings();
+}
+
+function renderStandings() {
+  const data = window._schedData;
+  if (!data || !data.standings || data.standings.length === 0) {
+    document.getElementById('standingsList').innerHTML =
+      `<div class="empty"><div class="icon">😕</div><strong>순위 데이터가 없어요</strong><span>Actions를 실행해 schedule.json을 업데이트해 주세요.</span></div>`;
+    return;
+  }
+  document.getElementById('standingsUpdated').textContent = data.updated ? `기준: ${data.updated}` : '';
+
+  const TEAM_EMOJI = {LG:'🔵',KT:'🔴',한화:'🟠',두산:'🔵',KIA:'⚫',SSG:'🔴',삼성:'🔵',롯데:'🔵',NC:'🟢',키움:'🔴'};
+
+  let rows = '';
+  data.standings.forEach((s, i) => {
+    const rankCls = s.rank===1?'rank-1':s.rank===2?'rank-2':s.rank===3?'rank-3':s.rank<=5?'rank-ps':'rank-other';
+    const streakCls = s.streak.includes('W') ? 'streak-w' : 'streak-l';
+
+    // last10 바 시각화: "6W 0D 4L" 파싱
+    let barHtml = '';
+    const last10m = s.last10.match(/(\d+)W\s*(\d+)D\s*(\d+)L/);
+    if (last10m) {
+      const [, w, d, l] = last10m.map(Number);
+      for(let i=0;i<w;i++) barHtml += `<div class="last10-w"></div>`;
+      for(let i=0;i<d;i++) barHtml += `<div class="last10-d"></div>`;
+      for(let i=0;i<l;i++) barHtml += `<div class="last10-l"></div>`;
+    }
+
+    // 5위와 6위 사이 포스트시즌 구분선
+    const divClass = s.rank === 6 ? ' class="divider-row"' : '';
+
+    rows += `<tr${divClass}>
+      <td>
+        <span class="rank-num ${rankCls}">${s.rank}</span>
+        ${TEAM_EMOJI[s.team]||'⚾'} ${s.team}
+      </td>
+      <td>${s.w}</td>
+      <td>${s.l}</td>
+      <td>${s.d}</td>
+      <td style="font-weight:800">${s.pct}</td>
+      <td>${s.gb}</td>
+      <td><span class="${streakCls}">${s.streak}</span></td>
+      <td><div class="last10-bar">${barHtml}</div></td>
+    </tr>`;
+  });
+
+  document.getElementById('standingsList').innerHTML = `
+    <table class="standings-table">
+      <thead>
+        <tr>
+          <th>팀</th><th>승</th><th>패</th><th>무</th>
+          <th>승률</th><th>GB</th><th>연속</th><th>최근10</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center">
+      🔵 포스트시즌 진출권 (5위 이상) &nbsp;|&nbsp; 빨간색: 승 · 파란색: 패
+    </div>`;
 }
 
 // ── 스케줄 로딩 ──────────────────────────────
@@ -432,7 +562,10 @@ async function loadSchedule() {
     dot.className = 'dot dot-ok';
     document.getElementById('updateStatus').textContent = '최신 데이터';
     document.getElementById('updateTime').textContent = data.updated ? `업데이트: ${data.updated}` : '';
+    window._schedData = data;
     filterSchedule();
+    // 순위 탭이 열려있으면 바로 렌더
+    if (document.getElementById('tab-standings').classList.contains('active')) renderStandings();
   } catch (e) {
     document.getElementById('updateDot').className = 'dot dot-err';
     document.getElementById('updateStatus').textContent = 'schedule.json 로드 실패';
@@ -512,7 +645,20 @@ function renderSchedulePage() {
             ${g.note ? `<div class="game-note">${g.note}</div>` : ''}
           </div>
           <div class="game-right">
-            ${g.time ? `<span class="game-time">${g.time}</span>` : '<span class="game-time" style="color:var(--muted)">-</span>'}
+            ${isPast && g.score_home !== undefined
+              ? (() => {
+                  const aw = g.score_away, hw = g.score_home;
+                  const awCls = aw > hw ? 'score-win' : aw < hw ? 'score-lose' : 'score-tie';
+                  const hwCls = hw > aw ? 'score-win' : hw < aw ? 'score-lose' : 'score-tie';
+                  return `<div class="score-box">
+                    <span class="score-num ${awCls}">${aw}</span>
+                    <span class="score-sep">:</span>
+                    <span class="score-num ${hwCls}">${hw}</span>
+                  </div>`;
+                })()
+              : g.time ? `<span class="game-time">${g.time}</span>`
+              : '<span class="game-time" style="color:var(--muted)">-</span>'
+            }
             ${!isPast ? `<button class="add-btn-sm" onclick="quickAdd('${date}','${g.home}')">+ 기록 추가</button>` : ''}
           </div>
         </div>`;
