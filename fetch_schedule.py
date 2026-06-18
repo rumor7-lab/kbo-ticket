@@ -8,151 +8,155 @@ import re
 import requests
 from datetime import datetime, timedelta
 
-# ── 팀명 변환 (영문 → 한국어) ──────────────────────────
 TEAM_MAP = {
-    "Doosan Bears":   "두산",
-    "Hanwha Eagles":  "한화",
-    "Kia Tigers":     "KIA",
-    "Kiwoom Heroes":  "키움",
-    "KT Wiz":         "KT",
-    "LG Twins":       "LG",
-    "Lotte Giants":   "롯데",
-    "NC Dinos":       "NC",
-    "Samsung Lions":  "삼성",
-    "SSG Landers":    "SSG",
+    "Doosan Bears":  "두산",
+    "Hanwha Eagles": "한화",
+    "Kia Tigers":    "KIA",
+    "Kiwoom Heroes": "키움",
+    "KT Wiz":        "KT",
+    "LG Twins":      "LG",
+    "Lotte Giants":  "롯데",
+    "NC Dinos":      "NC",
+    "Samsung Lions": "삼성",
+    "SSG Landers":   "SSG",
 }
 
-# ── 구장명 변환 ────────────────────────────────────────
 STADIUM_MAP = {
-    "Seoul-Jamsil":  "잠실",
-    "Suwon":         "수원",
-    "Incheon":       "인천",
-    "Daejeon":       "대전",
-    "Gwangju":       "광주",
-    "Daegu":         "대구",
-    "Busan-Sajik":   "사직",
-    "Changwon":      "창원",
-    "Seoul-Gocheok": "고척",
-    "Pohang":        "포항",
-    "Ulsan":         "울산",
-    "Cheongju":      "청주",
+    "Seoul-Jamsil":    "잠실",
+    "Suwon":           "수원",
+    "Incheon":         "인천",
+    "Incheon-Munhak":  "인천",
+    "Daejeon":         "대전",
+    "Gwangju":         "광주",
+    "Daegu":           "대구",
+    "Busan-Sajik":     "사직",
+    "Changwon":        "창원",
+    "Seoul-Gocheok":   "고척",
+    "Pohang":          "포항",
+    "Ulsan":           "울산",
+    "Cheongju":        "청주",
 }
 
-# 홈팀 기준 기본 구장 (구장 정보 없을 때 폴백)
 HOME_STADIUM = {
-    "LG": "잠실", "두산": "잠실", "KT": "수원", "SSG": "인천",
-    "한화": "대전", "KIA": "광주", "삼성": "대구",
-    "롯데": "사직", "NC": "창원", "키움": "고척",
+    "LG":"잠실","두산":"잠실","KT":"수원","SSG":"인천",
+    "한화":"대전","KIA":"광주","삼성":"대구",
+    "롯데":"사직","NC":"창원","키움":"고척",
+}
+
+MONTH_MAP = {
+    "January":1,"February":2,"March":3,"April":4,"May":5,"June":6,
+    "July":7,"August":8,"September":9,"October":10,"November":11,"December":12
 }
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; KBOScheduleBot/2.0)",
-    "Accept-Language": "en-US,en;q=0.9",
 }
 
-def normalize_team(name):
-    name = name.strip()
-    return TEAM_MAP.get(name, name)
+def norm_team(name):
+    return TEAM_MAP.get(name.strip(), name.strip())
 
-def normalize_stadium(name):
+def norm_stadium(name):
     name = name.strip()
-    for k, v in STADIUM_MAP.items():
-        if k.lower() in name.lower():
-            return v
-    return name
+    return STADIUM_MAP.get(name, name)
 
-def parse_time(time_str):
-    """'6:30pm KST' → '18:30' 형태로 변환"""
-    time_str = time_str.strip().lower().replace(" kst", "")
+def parse_time(t):
+    """'6:30pm' → '18:30'"""
+    t = t.strip().lower()
     try:
-        t = datetime.strptime(time_str, "%I:%M%p")
-        return t.strftime("%H:%M")
+        return datetime.strptime(t, "%I:%M%p").strftime("%H:%M")
     except:
-        return time_str
+        return t
 
-def fetch_week(date_str):
-    """한 주치 전체 경기 일정 가져오기"""
-    url = f"https://mykbostats.com/schedule/week_of/{date_str}"
-    resp = requests.get(url, headers=HEADERS, timeout=15)
-    resp.raise_for_status()
-    return resp.text
-
-def parse_games_from_html(html):
-    """
-    mykbostats.com HTML에서 경기 파싱
-    패턴 예시:
-      ### Tuesday June 9, 2026
-      [Doosan Bears 6 : 5 Final Lotte Giants](url)
-      [Kia Tigers · 6:30pm · Daejeon · Hanwha Eagles](url)  ← 예정 경기
-    """
+def parse_html(html):
     games = []
     current_date = None
 
-    # 날짜 헤더 패턴
-    date_pattern = re.compile(
-        r"#{2,3}\s+\w+\s+(\w+)\s+(\d+),\s+(\d{4})"
-    )
-    # 결과 있는 경기: [Team1 N : N Final/Status Team2](url)
-    result_pattern = re.compile(
-        r"\[([A-Za-z\s]+?)\s+\d+\s*:\s*\d+\s*(?:Final|Cancelled|Postponed|Suspended)[^\]]*?([A-Za-z\s]+?)\]\(([^)]+)\)"
-    )
-    # 예정 경기: [Team1 · time · stadium · Team2](url)
-    scheduled_pattern = re.compile(
-        r"\[([A-Za-z\s]+?)\s*·\s*([\d:apm]+(?:\s*KST)?)\s*·\s*([^·\]]+?)\s*·\s*([A-Za-z\s]+?)\]\(([^)]+)\)"
-    )
+    # 날짜 헤더: ### Tuesday June 19, 2026
+    date_re = re.compile(r"#{2,4}\s+\w+\s+(\w+)\s+(\d+),\s+(\d{4})")
 
-    MONTH_MAP = {
-        "January":1,"February":2,"March":3,"April":4,"May":5,"June":6,
-        "July":7,"August":8,"September":9,"October":10,"November":11,"December":12
+    # URL 슬러그에서 홈/원정 추출: games/ID-Away-vs-Home-DATE
+    # 예) 13602-Kia-vs-KT-20260619 → away=Kia, home=KT
+    slug_re = re.compile(r"/games/\d+-(.+?)-vs-(.+?)-\d{8}")
+
+    # 팀명 역매핑 (슬러그용)
+    SLUG_MAP = {
+        "Kia":"KIA","KT":"KT","LG":"LG","NC":"NC","SSG":"SSG",
+        "Doosan":"두산","Hanwha":"한화","Lotte":"롯데",
+        "Samsung":"삼성","Kiwoom":"키움",
     }
 
-    for line in html.split("\n"):
+    # 예정 경기: [Team1 TIME STADIUM Team2](url)
+    # 예) [Kia Tigers 6:30pm Suwon KT Wiz](url)
+    team_names = list(TEAM_MAP.keys())
+    # 팀명 중 가장 긴 것부터 매칭하기 위해 정렬
+    team_names_sorted = sorted(team_names, key=len, reverse=True)
+    team_pattern = "|".join(re.escape(t) for t in team_names_sorted)
+
+    # 예정 경기 패턴
+    sched_re = re.compile(
+        rf"\[({team_pattern})\s+(\d+:\d+(?:am|pm))\s+([A-Za-z\-]+)\s+({team_pattern})\]\((https?://[^)]+)\)"
+    )
+    # 결과 경기 패턴: [Team1 N : N Final Team2](url)
+    result_re = re.compile(
+        rf"\[({team_pattern})\s+\d+\s*:\s*\d+\s*(?:Final|Cancelled|Postponed|Suspended)[^]]*?({team_pattern})\]\((https?://[^)]+)\)"
+    )
+
+    for line in html.splitlines():
         line = line.strip()
 
-        # 날짜 파싱
-        dm = date_pattern.search(line)
+        # 날짜 헤더
+        dm = date_re.search(line)
         if dm:
-            month_name, day, year = dm.group(1), dm.group(2), dm.group(3)
-            month = MONTH_MAP.get(month_name, 0)
+            month = MONTH_MAP.get(dm.group(1), 0)
+            day = int(dm.group(2))
+            year = int(dm.group(3))
             if month:
-                current_date = f"{year}-{month:02d}-{int(day):02d}"
+                current_date = f"{year}-{month:02d}-{day:02d}"
             continue
 
         if not current_date:
             continue
 
-        # 예정 경기 파싱 (우선)
-        sm = scheduled_pattern.search(line)
-        if sm:
-            away = normalize_team(sm.group(1))
-            time_raw = sm.group(2)
-            stadium_raw = sm.group(3)
-            home = normalize_team(sm.group(4))
-            time_fmt = parse_time(time_raw)
-            stadium = normalize_stadium(stadium_raw)
+        # 예정 경기
+        for m in sched_re.finditer(line):
+            away_en = m.group(1)
+            time_raw = m.group(2)
+            stadium_raw = m.group(3)
+            home_en = m.group(4)
+            url = m.group(5)
+
+            away = norm_team(away_en)
+            home = norm_team(home_en)
+            stadium = norm_stadium(stadium_raw)
             if not stadium:
                 stadium = HOME_STADIUM.get(home, "")
-            if home and away and home in TEAM_MAP.values() or away in TEAM_MAP.values():
-                games.append({
-                    "date": current_date,
-                    "home": home,
-                    "away": away,
-                    "stadium": stadium,
-                    "time": time_fmt,
-                    "status": "scheduled"
-                })
-            continue
+            time_fmt = parse_time(time_raw)
 
-        # 결과 있는 경기 파싱
-        rm = result_pattern.search(line)
-        if rm:
-            team1 = normalize_team(rm.group(1).strip())
-            team2 = normalize_team(rm.group(2).strip())
-            game_url = rm.group(3)
-            # URL에서 구장 유추 불가 → 홈팀 기본 구장 사용
-            # mykbostats에서는 첫 번째 팀이 원정, 두 번째가 홈 (또는 반대)
-            # URL 슬러그에서 판별: games/ID-Away-vs-Home-DATE
-            home, away = team2, team1  # 기본값
+            games.append({
+                "date": current_date,
+                "home": home,
+                "away": away,
+                "stadium": stadium,
+                "time": time_fmt,
+            })
+
+        # 결과 경기 (아직 stadium/time 정보 없으나 날짜는 있음)
+        for m in result_re.finditer(line):
+            team1_en = m.group(1)
+            team2_en = m.group(2)
+            url = m.group(3)
+
+            # URL 슬러그로 홈/원정 판별
+            sm = slug_re.search(url)
+            if sm:
+                away_slug = sm.group(1)
+                home_slug = sm.group(2)
+                away = SLUG_MAP.get(away_slug, norm_team(team1_en))
+                home = SLUG_MAP.get(home_slug, norm_team(team2_en))
+            else:
+                away = norm_team(team1_en)
+                home = norm_team(team2_en)
+
             stadium = HOME_STADIUM.get(home, "")
             games.append({
                 "date": current_date,
@@ -160,49 +164,46 @@ def parse_games_from_html(html):
                 "away": away,
                 "stadium": stadium,
                 "time": "",
-                "status": "final"
             })
 
     return games
 
-def get_mondays_for_range(start_date, end_date):
-    """기간 내 모든 주의 월요일(또는 해당 주 시작일) 반환"""
-    dates = []
-    d = start_date - timedelta(days=start_date.weekday())  # 해당 주 월요일
-    while d <= end_date:
-        dates.append(d.strftime("%Y-%m-%d"))
-        d += timedelta(weeks=1)
-    return dates
+def fetch_week(date_str):
+    url = f"https://mykbostats.com/schedule/week_of/{date_str}"
+    r = requests.get(url, headers=HEADERS, timeout=15)
+    r.raise_for_status()
+    return r.text
+
+def week_monday(d):
+    return d - timedelta(days=d.weekday())
 
 def main():
     now = datetime.now()
     print(f"📅 KBO 일정 수집 시작 ({now.strftime('%Y-%m-%d %H:%M')})")
 
-    # 오늘부터 6주 뒤까지 수집
-    start = now
-    end = now + timedelta(weeks=6)
-    week_starts = get_mondays_for_range(start, end)
-
-    all_games = []
+    # 이번 주부터 7주 치 수집
     seen = set()
+    all_games = []
 
-    for week_date in week_starts:
+    for week_offset in range(8):
+        target = now + timedelta(weeks=week_offset)
+        monday = week_monday(target)
+        date_str = monday.strftime("%Y-%m-%d")
         try:
-            html = fetch_week(week_date)
-            games = parse_games_from_html(html)
+            html = fetch_week(date_str)
+            games = parse_html(html)
             new = 0
             for g in games:
-                key = (g["date"], g.get("home",""), g.get("away",""))
+                key = (g["date"], g["home"], g["away"])
                 if key not in seen:
                     seen.add(key)
                     all_games.append(g)
                     new += 1
-            print(f"  {week_date}: {new}경기")
+            print(f"  {date_str}: {new}경기")
         except Exception as e:
-            print(f"  {week_date}: 실패 - {e}")
+            print(f"  {date_str}: 실패 - {e}")
 
-    # 날짜순 정렬
-    all_games.sort(key=lambda x: (x["date"], x.get("home","")))
+    all_games.sort(key=lambda x: (x["date"], x["home"]))
 
     output = {
         "updated": now.strftime("%Y-%m-%d %H:%M"),
