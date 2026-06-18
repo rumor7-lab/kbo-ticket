@@ -35,65 +35,27 @@ HEADERS = {
 }
 
 def parse_time(t):
-    t = t.strip().lower()
-    try: return datetime.strptime(t, "%I:%M%p").strftime("%H:%M")
-    except: return t
-
-def extract_game_info(tag, away_slug, home_slug):
-    """
-    링크 태그의 자식 노드들을 개별로 읽어서 시간/구장 추출
-    구조: span.away_team | span.time | span.stadium | span.home_team
-    또는 텍스트가 붙어있는 경우 slug에서만 홈/원정 판별
-    """
-    away = SLUG_MAP.get(away_slug, away_slug)
-    home = SLUG_MAP.get(home_slug, home_slug)
-
-    # 자식 span/div 텍스트를 리스트로 추출
-    children = [c.get_text(strip=True) for c in tag.children
-                if hasattr(c, 'get_text') and c.get_text(strip=True)]
-
-    time_re = re.compile(r"^(\d+:\d+(?:am|pm))$", re.I)
-    result_re = re.compile(r"\d+\s*:\s*\d+", re.I)
-    status_re = re.compile(r"^(Final|Cancelled|Postponed|Suspended)$", re.I)
-
-    time_val = ""
-    stadium_val = HOME_STADIUM.get(home, "")
-    is_scheduled = False
-    is_result = False
-
-    for ch in children:
-        if time_re.match(ch):
-            time_val = parse_time(ch)
-            is_scheduled = True
-        elif status_re.match(ch):
-            is_result = True
-        elif result_re.search(ch) and ":" in ch:
-            # 스코어 포함 (결과 경기)
-            is_result = True
-        elif ch in STADIUM_MAP:
-            stadium_val = STADIUM_MAP[ch]
-        elif ch in TEAM_MAP:
-            pass  # 팀명은 slug로 이미 처리
-
-    # children이 모두 붙어있는 경우(공백 없음) → tag 전체 텍스트로 재시도
-    full_text = tag.get_text(separator="|", strip=True)
-    parts = [p.strip() for p in full_text.split("|") if p.strip()]
-
-    for p in parts:
-        if time_re.match(p):
-            time_val = parse_time(p)
-            is_scheduled = True
-        elif p in STADIUM_MAP:
-            stadium_val = STADIUM_MAP[p]
-        elif status_re.match(p) or (result_re.search(p) and ":" in p):
-            is_result = True
-
-    return away, home, time_val, stadium_val, is_scheduled or is_result
+    """'6:30pm' 또는 '18:30' → '18:30'"""
+    t = t.strip().lower().replace(" kst","")
+    if re.match(r'^\d{1,2}:\d{2}$', t):
+        return t  # 이미 24시간 형식
+    try:
+        return datetime.strptime(t, "%I:%M%p").strftime("%H:%M")
+    except:
+        try:
+            return datetime.strptime(t, "%I:%M %p").strftime("%H:%M")
+        except:
+            return ""
 
 def parse_html(html):
     soup = BeautifulSoup(html, "html.parser")
     games = []
     slug_re = re.compile(r"/games/\d+-(.+?)-vs-(.+?)-\d{8}")
+    # 시간 패턴: 6:30pm, 5:00pm, 2:00pm 등
+    time_re = re.compile(r"\b(\d{1,2}:\d{2}(?:am|pm))\b", re.I)
+    # 결과 경기 패턴: 숫자:숫자 형태 스코어
+    score_re = re.compile(r"\b\d+\s*:\s*\d+\b")
+    status_re = re.compile(r"\b(Final|Cancelled|Postponed|Suspended)\b", re.I)
     current_date = None
 
     for tag in soup.find_all(["h3", "a"]):
@@ -103,22 +65,57 @@ def parse_html(html):
                 month = MONTH_MAP.get(m.group(1), 0)
                 if month:
                     current_date = f"{m.group(3)}-{month:02d}-{int(m.group(2)):02d}"
-        elif tag.name == "a" and current_date:
-            href = tag.get("href", "")
-            sm = slug_re.search(href)
-            if not sm:
-                continue
-            away, home, time_val, stadium, valid = extract_game_info(
-                tag, sm.group(1), sm.group(2)
-            )
-            if valid:
-                games.append({
-                    "date": current_date,
-                    "home": home,
-                    "away": away,
-                    "stadium": stadium,
-                    "time": time_val,
-                })
+            continue
+
+        if not current_date:
+            continue
+        href = tag.get("href", "")
+        sm = slug_re.search(href)
+        if not sm:
+            continue
+
+        away = SLUG_MAP.get(sm.group(1), sm.group(1))
+        home = SLUG_MAP.get(sm.group(2), sm.group(2))
+
+        # 링크 내부 모든 텍스트 노드를 개별로 수집
+        # BeautifulSoup의 strings로 공백 없이 붙어있는 문제 해결
+        texts = list(tag.strings)  # 각 텍스트 노드 분리
+        full_text = tag.get_text(separator=" ", strip=True)
+
+        # 시간 추출 (텍스트 노드에서 직접)
+        time_val = ""
+        for t in texts:
+            tm = time_re.search(t.strip())
+            if tm:
+                time_val = parse_time(tm.group(1))
+                break
+        # 못 찾으면 전체 텍스트에서 재시도
+        if not time_val:
+            tm = time_re.search(full_text)
+            if tm:
+                time_val = parse_time(tm.group(1))
+
+        # 구장명 추출 (텍스트 노드에서)
+        stadium_val = HOME_STADIUM.get(home, "")
+        for t in texts:
+            t = t.strip()
+            if t in STADIUM_MAP:
+                stadium_val = STADIUM_MAP[t]
+                break
+
+        # 예정 경기 vs 결과 경기 판별
+        is_result = bool(score_re.search(full_text) and status_re.search(full_text))
+        is_scheduled = bool(time_val and not is_result)
+
+        if is_scheduled or is_result:
+            games.append({
+                "date": current_date,
+                "home": home,
+                "away": away,
+                "stadium": stadium_val,
+                "time": time_val if is_scheduled else "",
+            })
+
     return games
 
 def fetch_week(date_str):
@@ -145,9 +142,7 @@ def main():
             for g in games:
                 k = (g["date"], g["home"], g["away"])
                 if k not in seen:
-                    seen.add(k)
-                    all_games.append(g)
-                    new += 1
+                    seen.add(k); all_games.append(g); new += 1
             print(f"  {date_str}: {new}경기")
         except Exception as e:
             print(f"  {date_str}: 실패 - {e}")
