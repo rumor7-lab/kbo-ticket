@@ -864,6 +864,22 @@ window.addEventListener('DOMContentLoaded', () => {
           .catch(e => console.log('SW 등록 실패:', e));
       });
     }
+
+    // 앱이 포그라운드로 돌아올 때 schedule.json 자동 갱신
+    let lastFocusTime = Date.now();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        const elapsed = Date.now() - lastFocusTime;
+        // 5분 이상 백그라운드였으면 자동 새로고침
+        if (elapsed > 5 * 60 * 1000) {
+          window._schedLoaded = false;
+          loadSchedule();
+        }
+        lastFocusTime = Date.now();
+      } else {
+        lastFocusTime = Date.now();
+      }
+    });
   </script>
 </body>
 </html>
