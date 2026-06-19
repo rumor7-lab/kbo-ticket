@@ -682,28 +682,28 @@
 <script>
 
 // ── 팀 정보 (로고, 컬러) ──────────────────────────────
-const TEAM_INFO = {
-  'LG':  { color: '#C60C30', bg: '#fff0f0', logo: 'https://lgtwins.com/resources/images/common/logo.png' },
-  'KT':  { color: '#000000', bg: '#f5f5f5', logo: 'https://www.ktwiz.co.kr/img/common/logo_ktwiz.png' },
-  '한화': { color: '#FF6600', bg: '#fff5ef', logo: 'https://www.hanwhaeagles.co.kr/images/common/logo.png' },
-  '두산': { color: '#131230', bg: '#f0f0f5', logo: 'https://www.doosanbears.com/images/common/logo_bears.png' },
-  'KIA': { color: '#EA0029', bg: '#fff0f0', logo: 'https://www.kia-tigers.co.kr/resources/images/common/logo.png' },
-  '삼성': { color: '#1428A0', bg: '#f0f2ff', logo: 'https://www.samsunglions.com/resources/images/common/logo.png' },
-  '롯데': { color: '#041E42', bg: '#f0f2f5', logo: 'https://www.lottegiantssports.com/images/common/logo.png' },
-  'NC':  { color: '#071D49', bg: '#f0f2f8', logo: 'https://www.ncdinos.com/resources/images/common/logo.png' },
-  'SSG': { color: '#CE0E2D', bg: '#fff0f0', logo: 'https://www.ssglanders.com/resources/images/common/logo.png' },
-  '키움': { color: '#570514', bg: '#f5f0f0', logo: 'https://www.heroesbaseball.co.kr/resources/images/common/logo.png' },
+// 팀 정보: 팀컬러 + 약자 기반 SVG 뱃지 (외부 이미지 의존 없음)
+const TEAM_META = {
+  'LG':  { color: '#C60C30', text: '#fff', short: 'LG' },
+  'KT':  { color: '#000000', text: '#fff', short: 'KT' },
+  '한화': { color: '#FF6600', text: '#fff', short: '한화' },
+  '두산': { color: '#131230', text: '#fff', short: '두산' },
+  'KIA': { color: '#EA0029', text: '#fff', short: 'KIA' },
+  '삼성': { color: '#1428A0', text: '#fff', short: '삼성' },
+  '롯데': { color: '#041E42', text: '#fff', short: '롯데' },
+  'NC':  { color: '#071D49', text: '#C4A44A', short: 'NC' },
+  'SSG': { color: '#CE0E2D', text: '#fff', short: 'SSG' },
+  '키움': { color: '#570514', text: '#C4A44A', short: '키움' },
 };
 
-// 로고 img 태그 생성 (fallback: 이모지)
-const TEAM_EMOJI_FB = {LG:'🔵',KT:'⚫',한화:'🟠',두산:'🔵',KIA:'🔴',SSG:'🔴',삼성:'🔵',롯데:'🔵',NC:'🟢',키움:'🟤'};
-function teamLogo(team, size=32) {
-  const info = TEAM_INFO[team];
-  if (!info) return `<span style="font-size:${size*0.7}px">${TEAM_EMOJI_FB[team]||'⚾'}</span>`;
-  return `<img src="${info.logo}" alt="${team}"
-    style="width:${size}px;height:${size}px;object-fit:contain;vertical-align:middle"
-    onerror="this.style.display='none';this.nextSibling.style.display='inline'">
-    <span style="display:none;font-size:${size*0.6}px">${TEAM_EMOJI_FB[team]||'⚾'}</span>`;
+function teamLogo(team, size=40) {
+  const m = TEAM_META[team] || { color: '#6366f1', text: '#fff', short: team };
+  const fs = size <= 32 ? (team.length > 2 ? size*0.28 : size*0.32) : (team.length > 2 ? size*0.26 : size*0.30);
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">'
+    + '<circle cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + (size/2) + '" fill="' + m.color + '"/>'
+    + '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" '
+    + 'fill="' + m.text + '" font-size="' + fs + '" font-weight="900" font-family="Pretendard,-apple-system,sans-serif">'
+    + m.short + '</text></svg>';
 }
 
 // ── 탭 ──────────────────────────────────────
