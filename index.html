@@ -547,7 +547,7 @@ window._schedLoaded = false;
 
 async function loadSchedule() {
   try {
-    const res = await fetch('./schedule.json?t=' + Date.now());
+    const res = await fetch('./schedule.json?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     scheduleData = data.games || [];
