@@ -589,7 +589,7 @@ function filterSchedule() {
   filteredDays = Object.entries(map).sort(([a],[b]) => a.localeCompare(b)).map(([date, gs]) => ({date, games: gs}));
 
   // 오늘 날짜에 가장 가까운 페이지로 이동
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const todayIdx = filteredDays.findIndex(d => d.date >= todayStr);
   const startIdx = todayIdx >= 0 ? todayIdx : Math.max(0, filteredDays.length - SCHED_PER_PAGE);
   schedPage = Math.floor(startIdx / SCHED_PER_PAGE);
@@ -607,7 +607,8 @@ function renderSchedulePage() {
 
   const totalPages = Math.ceil(filteredDays.length / SCHED_PER_PAGE);
   const pageDays = filteredDays.slice(schedPage * SCHED_PER_PAGE, (schedPage + 1) * SCHED_PER_PAGE);
-  const today = new Date().toISOString().slice(0, 10);
+  const kstNow = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+  const today = kstNow.toISOString().slice(0, 10);
 
   const DAYS = ['일','월','화','수','목','금','토'];
   const TEAM_EMOJI = {LG:'🔵',KT:'🔴',한화:'🟠',두산:'🔵',KIA:'⚫',SSG:'🔴',삼성:'🔵',롯데:'🔵',NC:'🟢',키움:'🔴'};
