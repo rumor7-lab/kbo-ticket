@@ -2,17 +2,23 @@ name: KBO 일정 자동 업데이트
 
 on:
   schedule:
-    # 매일 새벽 6시 (KST) = UTC 21:00 (전날)
-    - cron: '0 21 * * *'
-  workflow_dispatch:  # 수동 실행 버튼도 활성화
+    # 경기 없는 시간대 제외, 주요 시간대에 집중
+    # KST = UTC+9, 아래는 모두 UTC 기준
+    - cron: '0 0 * * *'   # KST 09:00 (아침 - 당일 선발투수 공개 후)
+    - cron: '0 4 * * *'   # KST 13:00 (오후 - 경기 전)
+    - cron: '0 7 * * *'   # KST 16:00 (경기 시작 2시간 전)
+    - cron: '0 9 * * *'   # KST 18:00 (경기 시작 직전)
+    - cron: '0 11 * * *'  # KST 20:00 (경기 중반)
+    - cron: '0 13 * * *'  # KST 22:00 (경기 종료 후)
+    - cron: '0 15 * * *'  # KST 00:00 (자정 - 결과 최종 반영)
+  workflow_dispatch:
 
 permissions:
-  contents: write  # schedule.json 커밋을 위해 필요
+  contents: write
 
 jobs:
   update-schedule:
     runs-on: ubuntu-latest
-    
     steps:
       - name: 저장소 체크아웃
         uses: actions/checkout@v4
@@ -25,10 +31,10 @@ jobs:
       - name: 의존성 설치
         run: pip install requests beautifulsoup4 lxml
 
-      - name: KBO 일정 수집
+      - name: KBO 데이터 수집
         run: python fetch_schedule.py
 
-      - name: schedule.json 변경 확인 및 커밋
+      - name: schedule.json 커밋
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -36,6 +42,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "변경 없음 - 커밋 스킵"
           else
-            git commit -m "chore: KBO 일정 업데이트 $(date +'%Y-%m-%d')"
+            git commit -m "chore: KBO 데이터 업데이트 $(date +'%Y-%m-%d %H:%M')"
             git push
           fi
