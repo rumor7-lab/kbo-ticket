@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Ticket Flow Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <!-- PWA -->
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#5B5FED">
@@ -13,532 +14,160 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ticket Flow">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
-
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #5B5FED;
-      --primary-light: #EEEFFE;
-      --primary-dark: #4347D4;
-      --bg: #F2F4F8;
-      --card: #FFFFFF;
-      --border: #E8ECF2;
-      --text: #111827;
-      --sub: #6B7280;
-      --muted: #9CA3AF;
-      --red: #EF4444;
-      --blue: #3B82F6;
-      --green: #10B981;
-      --radius-sm: 10px;
-      --radius: 16px;
-      --radius-lg: 22px;
-      --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
-      --shadow: 0 4px 16px rgba(0,0,0,.08);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,.10);
+      --primary:#5B5FED; --primary-light:#EEEFFE; --primary-dark:#4347D4;
+      --bg:#F2F4F8; --card:#FFF; --border:#E8ECF2;
+      --text:#111827; --sub:#6B7280; --muted:#9CA3AF;
+      --red:#EF4444; --blue:#3B82F6; --green:#10B981;
+      --radius-sm:10px; --radius:16px; --radius-lg:22px;
+      --shadow-sm:0 1px 4px rgba(0,0,0,.06); --shadow:0 4px 16px rgba(0,0,0,.08);
     }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-    body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 16px;
-      line-height: 1.5;
-    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+    body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5}
 
-    /* ── NAV ── */
-    .tab-nav {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      box-shadow: var(--shadow-sm);
-    }
-    .tab-btn {
-      flex: 1; padding: 16px 0;
-      border: none; background: none;
-      font-size: 15px; font-weight: 700;
-      color: var(--muted); cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all .2s; letter-spacing: -.3px;
-    }
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    /* NAV */
+    .tab-nav{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);display:flex;box-shadow:var(--shadow-sm)}
+    .tab-btn{flex:1;padding:15px 0;border:none;background:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;font-family:inherit;letter-spacing:-.3px}
+    .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
 
-    /* ── LAYOUT ── */
-    .panel { display: none; }
-    .panel.active { display: block; }
-    .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 100px; }
+    /* LAYOUT */
+    .panel{display:none}.panel.active{display:block}
+    .wrap{max-width:480px;margin:0 auto;padding:20px 16px 100px}
 
-    /* ── HEADER ── */
-    .header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
-    .logo {
-      width: 48px; height: 48px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; flex-shrink: 0;
-      box-shadow: 0 4px 14px rgba(91,95,237,.35);
-    }
-    .header h1 { font-size: 24px; font-weight: 900; letter-spacing: -.5px; }
-    .header p { font-size: 14px; color: var(--sub); margin-top: 1px; }
+    /* HEADER */
+    .header{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+    .logo{width:48px;height:48px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;box-shadow:0 4px 14px rgba(91,95,237,.35)}
+    .header h1{font-size:24px;font-weight:900;letter-spacing:-.5px}
+    .header p{font-size:14px;color:var(--sub);margin-top:1px}
 
-    /* ── SUMMARY ── */
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
-    .scard {
-      background: var(--card); border-radius: var(--radius);
-      padding: 18px; box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border);
-    }
-    .scard.main {
-      grid-column: span 2;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: #fff; border: none;
-      box-shadow: 0 4px 20px rgba(91,95,237,.3);
-    }
-    .scard label { font-size: 13px; font-weight: 600; color: var(--sub); display: block; margin-bottom: 8px; }
-    .scard.main label { color: rgba(255,255,255,.75); }
-    .scard strong { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
-    .scard.main strong { font-size: 28px; }
+    /* SUMMARY */
+    .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+    .scard{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+    .scard.main{grid-column:span 2;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;box-shadow:0 4px 20px rgba(91,95,237,.3)}
+    .scard label{font-size:13px;font-weight:600;color:var(--sub);display:block;margin-bottom:8px}
+    .scard.main label{color:rgba(255,255,255,.75)}
+    .scard strong{font-size:22px;font-weight:800;letter-spacing:-.5px}
+    .scard.main strong{font-size:28px}
 
-    /* ── FORM ── */
-    .form-box {
-      background: var(--card); padding: 22px;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
-      border: 1px solid var(--border);
-    }
-    .form-title { font-size: 15px; font-weight: 700; color: var(--sub); display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
-    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    input, select {
-      width: 100%; padding: 14px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 15px; font-weight: 500;
-      outline: none; background: #fff;
-      color: var(--text);
-      transition: border-color .2s, box-shadow .2s;
-      font-family: inherit;
-    }
-    input:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(91,95,237,.12);
-    }
-    input::placeholder { color: var(--muted); }
-    .btn {
-      width: 100%; border: none; padding: 16px;
-      border-radius: var(--radius-sm);
-      font-weight: 800; font-size: 16px;
-      cursor: pointer; display: flex; align-items: center;
-      justify-content: center; gap: 8px;
-      transition: opacity .15s, transform .1s;
-      font-family: inherit; letter-spacing: -.2px;
-    }
-    .btn:active { opacity: .85; transform: scale(.98); }
-    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px rgba(91,95,237,.3); }
-    .btn-green { background: var(--green); color: #fff; }
-    .btn-gray { background: #E5E7EB; color: var(--sub); margin-top: 8px; display: none; }
+    /* FORM */
+    .form-box{background:var(--card);padding:22px;border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-bottom:24px;border:1px solid var(--border)}
+    .form-title{font-size:15px;font-weight:700;color:var(--sub);display:flex;align-items:center;gap:6px;margin-bottom:16px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+    input,select{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;font-weight:500;outline:none;background:#fff;color:var(--text);transition:border-color .2s,box-shadow .2s;font-family:inherit}
+    input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,95,237,.12)}
+    input::placeholder{color:var(--muted)}
+    .btn{width:100%;border:none;padding:16px;border-radius:var(--radius-sm);font-weight:800;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s,transform .1s;font-family:inherit;letter-spacing:-.2px}
+    .btn:active{opacity:.85;transform:scale(.98)}
+    .btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 14px rgba(91,95,237,.3)}
+    .btn-green{background:var(--green);color:#fff}
+    .btn-gray{background:#E5E7EB;color:var(--sub);margin-top:8px;display:none}
 
-    /* ── RECORDS ── */
-    .section-header {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-    .section-title { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
-    .page-info { font-size: 13px; color: var(--sub); font-weight: 600; }
+    /* RECORDS */
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .section-title{font-size:17px;font-weight:800;letter-spacing:-.3px}
+    .page-info{font-size:13px;color:var(--sub);font-weight:600}
+    .record{background:var(--card);padding:18px;border-radius:var(--radius);margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+    .record-left{display:flex;flex-direction:column;gap:4px}
+    .record-team{font-weight:800;font-size:16px;letter-spacing:-.3px}
+    .record-date{font-size:13px;color:var(--sub);font-weight:500}
+    .record-badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:2px}
+    .badge-we{background:#FEF2F2;color:var(--red)}.badge-wd{background:#EFF6FF;color:var(--blue)}
+    .record-actions{display:flex;gap:12px;margin-top:8px}
+    .record-actions button{background:none;border:none;font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer;font-family:inherit;padding:0}
+    .record-right{text-align:right}
+    .profit{font-size:19px;font-weight:800;letter-spacing:-.5px}
+    .profit-detail{font-size:12px;color:var(--muted);margin-top:3px;display:block}
 
-    .record {
-      background: var(--card); padding: 18px;
-      border-radius: var(--radius);
-      margin-bottom: 10px;
-      display: flex; justify-content: space-between; align-items: flex-start;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      transition: box-shadow .2s;
-    }
-    .record:active { box-shadow: var(--shadow); }
-    .record-left { display: flex; flex-direction: column; gap: 4px; }
-    .record-team { font-weight: 800; font-size: 16px; letter-spacing: -.3px; }
-    .record-date { font-size: 13px; color: var(--sub); font-weight: 500; }
-    .record-badge {
-      display: inline-block; font-size: 11px; font-weight: 700;
-      padding: 2px 8px; border-radius: 20px; margin-top: 2px;
-    }
-    .badge-we { background: #FEF2F2; color: var(--red); }
-    .badge-wd { background: #EFF6FF; color: var(--blue); }
-    .record-actions { display: flex; gap: 12px; margin-top: 8px; }
-    .record-actions button {
-      background: none; border: none;
-      font-size: 13px; color: var(--muted);
-      text-decoration: underline; cursor: pointer;
-      font-family: inherit; padding: 0;
-    }
-    .record-right { text-align: right; }
-    .profit { font-size: 19px; font-weight: 800; letter-spacing: -.5px; }
-    .profit-detail { font-size: 12px; color: var(--muted); margin-top: 3px; display: block; }
+    /* PAGINATION */
+    .pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px}
+    .pg-btn{border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-weight:700;padding:8px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;font-family:inherit}
+    .pg-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .pg-btn:disabled{opacity:.35;cursor:not-allowed}
+    .pg-arrow{border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:16px;padding:8px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+    .pg-arrow:disabled{opacity:.35;cursor:not-allowed}
 
-    /* ── PAGINATION (기록용) ── */
-    .pagination {
-      display: flex; align-items: center; justify-content: center;
-      gap: 6px; margin-top: 16px;
-    }
-    .pg-btn {
-      border: 1.5px solid var(--border); background: var(--card);
-      color: var(--text); font-size: 14px; font-weight: 700;
-      padding: 8px 14px; border-radius: var(--radius-sm);
-      cursor: pointer; transition: all .15s; font-family: inherit;
-    }
-    .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .pg-btn:disabled { opacity: .35; cursor: not-allowed; }
-    .pg-arrow {
-      border: 1.5px solid var(--border); background: var(--card);
-      color: var(--text); font-size: 16px;
-      padding: 8px 12px; border-radius: var(--radius-sm);
-      cursor: pointer; transition: all .15s;
-    }
-    .pg-arrow:disabled { opacity: .35; cursor: not-allowed; }
+    /* CHART */
+    .chart-box{background:var(--card);padding:22px;border-radius:var(--radius-lg);border:1px solid var(--border);margin-top:22px;box-shadow:var(--shadow-sm)}
 
-    /* ── SCHEDULE SWIPE ── */
-    .sched-swipe-wrap {
-      position: relative; overflow: hidden;
-      border-radius: var(--radius-lg);
-      touch-action: pan-y;
-    }
-    .sched-swipe-track {
-      display: flex;
-      transition: transform .3s cubic-bezier(.4,0,.2,1);
-      will-change: transform;
-    }
-    .sched-swipe-page {
-      min-width: 100%; flex-shrink: 0;
-    }
-    .sched-date-nav {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px; gap: 8px;
-    }
-    .sched-date-label {
-      flex: 1; text-align: center;
-      font-size: 16px; font-weight: 800; letter-spacing: -.3px;
-    }
-    .sched-nav-btn {
-      width: 38px; height: 38px;
-      border: 1.5px solid var(--border); background: var(--card);
-      border-radius: 50%; font-size: 18px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all .15s; flex-shrink: 0;
-      color: var(--text);
-    }
-    .sched-nav-btn:disabled { opacity: .3; cursor: not-allowed; }
-    .sched-nav-btn:active { background: var(--primary-light); border-color: var(--primary); }
-    .sched-dot-wrap {
-      display: flex; justify-content: center; gap: 5px; margin-top: 14px; flex-wrap: wrap;
-    }
-    .sched-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--border); transition: all .2s; cursor: pointer;
-    }
-    .sched-dot.active { background: var(--primary); width: 18px; border-radius: 3px; }
-    .sched-dot.past { background: #D1D5DB; }
+    /* SCHEDULE TOP */
+    .sched-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .sched-top h2{font-size:22px;font-weight:900;letter-spacing:-.5px}
+    .kbo-link{font-size:13px;color:var(--primary);text-decoration:none;font-weight:700;background:var(--primary-light);padding:7px 14px;border-radius:20px}
+    .filter-box{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:14px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+    .filter-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .filter-row select{font-size:14px;padding:12px 14px}
+    .update-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--sub);font-weight:500}
+    .dot{width:8px;height:8px;border-radius:50%;margin-right:7px}
+    .dot-ok{background:var(--green)}.dot-warn{background:#F59E0B}.dot-err{background:var(--red)}
+    .notice{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;font-size:13px;color:#92400E;line-height:1.6}
 
-    /* ── CHART ── */
-    .chart-box {
-      background: var(--card); padding: 22px;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      margin-top: 22px;
-      box-shadow: var(--shadow-sm);
-    }
-    .chart-title { font-size: 14px; font-weight: 700; color: var(--sub); margin-bottom: 16px; }
+    /* SWIPE */
+    .sched-swipe-wrap{position:relative;overflow:hidden;border-radius:var(--radius-lg);touch-action:pan-y}
+    .sched-swipe-track{display:flex;transition:transform .3s cubic-bezier(.4,0,.2,1);will-change:transform}
+    .sched-swipe-page{min-width:100%;flex-shrink:0}
+    .sched-date-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+    .sched-date-label{flex:1;text-align:center;font-size:17px;font-weight:800;letter-spacing:-.3px}
+    .sched-nav-btn{width:38px;height:38px;border:1.5px solid var(--border);background:var(--card);border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;color:var(--text)}
+    .sched-nav-btn:disabled{opacity:.3;cursor:not-allowed}
+    .sched-nav-btn:active{background:var(--primary-light);border-color:var(--primary)}
+    .sched-dot-wrap{display:flex;justify-content:center;gap:5px;margin-top:14px;flex-wrap:wrap}
+    .sched-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:all .2s;cursor:pointer}
+    .sched-dot.active{background:var(--primary);width:18px;border-radius:3px}
+    .sched-dot.past{background:#D1D5DB}
 
-    /* ── SCHEDULE ── */
-    .sched-top {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 16px;
-    }
-    .sched-top h2 { font-size: 22px; font-weight: 900; letter-spacing: -.5px; }
-    .kbo-link {
-      font-size: 13px; color: var(--primary);
-      text-decoration: none; font-weight: 700;
-      background: var(--primary-light); padding: 7px 14px;
-      border-radius: 20px;
-    }
+    /* KBO 경기 카드 */
+    .kbo-day-wrap{background:var(--card);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+    .kbo-day-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+    .kbo-day-date{font-size:18px;font-weight:900;letter-spacing:-.5px}
+    .kbo-day-dow{font-size:14px;font-weight:600;opacity:.85}
+    .sbadge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+    .sbadge-we{background:rgba(255,255,255,.25);color:#fff}
+    .sbadge-hol{background:rgba(255,255,255,.25);color:#fff}
+    .sbadge-star{background:rgba(255,255,255,.25);color:#fff}
+    .kbo-game-card{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;padding:18px 10px;border-top:1px solid var(--border)}
+    .kbo-team{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .kbo-logo{width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f8f9fa;border:2px solid var(--border);transition:border-color .2s;overflow:hidden}
+    .kbo-winner .kbo-logo{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+    .kbo-tname{font-size:14px;font-weight:800;letter-spacing:-.3px}
+    .kbo-score{font-size:30px;font-weight:900;letter-spacing:-1px;line-height:1;color:var(--sub)}
+    .kbo-score-win{color:var(--red)}.kbo-score-lose{color:var(--blue)}
+    .kbo-center{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 4px}
+    .kbo-time{font-size:15px;font-weight:800;color:var(--primary)}
+    .kbo-vs{font-size:13px;font-weight:700;color:var(--muted)}
+    .kbo-stadium{font-size:11px;color:var(--sub);font-weight:500;text-align:center}
+    .kbo-add-btn{margin-top:4px;background:var(--primary);color:#fff;border:none;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;cursor:pointer;font-family:inherit;white-space:nowrap}
+    .kbo-add-btn:active{opacity:.8}
+    .kbo-game-special{padding:14px;text-align:center;font-size:15px;font-weight:800;color:#854D0E;border-top:1px solid var(--border);background:#FEFCE8}
 
-    .filter-box {
-      background: var(--card); border-radius: var(--radius);
-      padding: 16px; margin-bottom: 16px;
-      border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-    }
-    .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .filter-row select { font-size: 14px; padding: 12px 14px; }
+    /* KBO 순위 */
+    .kbo-standings-wrap{background:var(--card);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+    .kbo-standings-head{background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:14px 18px;color:#fff;font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px}
+    .kbo-rank-col-head{display:grid;grid-template-columns:32px 1fr 36px 36px 36px 52px 48px 48px;align-items:center;padding:8px 12px;gap:2px;background:#F8F9FA;border-top:1px solid var(--border);font-size:11px;font-weight:700;color:var(--sub)}
+    .kbo-rank-row{display:grid;grid-template-columns:32px 1fr 36px 36px 36px 52px 48px 48px;align-items:center;padding:12px 12px;border-top:1px solid var(--border);gap:2px;transition:background .15s}
+    .kbo-rank-row:active{background:var(--primary-light)}
+    .kbo-rank-row.ps-border{border-top:2px dashed var(--primary)}
+    .kbo-rank-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+    .r1{background:#FEF08A;color:#854D0E}.r2{background:#E2E8F0;color:#374151}.r3{background:#FED7AA;color:#9A3412}.rps{background:var(--primary-light);color:var(--primary)}.rn{background:#F3F4F6;color:var(--muted)}
+    .kbo-rank-team{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;letter-spacing:-.3px;overflow:hidden}
+    .kbo-rank-logo{width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .kbo-rank-stat{font-size:13px;font-weight:600;text-align:center;color:var(--text)}
+    .kbo-rank-pct{font-weight:800;color:var(--primary)}.kbo-rank-gb{color:var(--sub)}
+    .kbo-streak-w{color:var(--red);font-weight:800;font-size:13px;text-align:center}
+    .kbo-streak-l{color:var(--blue);font-weight:800;font-size:13px;text-align:center}
 
-    .update-bar {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 11px 16px;
-      margin-bottom: 14px;
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 13px; color: var(--sub); font-weight: 500;
-    }
-    .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; }
-    .dot-ok { background: var(--green); }
-    .dot-warn { background: #F59E0B; }
-    .dot-err { background: var(--red); }
-
-    .notice {
-      background: #FFFBEB; border: 1px solid #FDE68A;
-      border-radius: var(--radius-sm); padding: 12px 16px;
-      margin-bottom: 16px; font-size: 13px; color: #92400E; line-height: 1.6;
-    }
-
-    /* Day card */
-    .day-card {
-      background: var(--card); border-radius: var(--radius);
-      border: 1px solid var(--border); overflow: hidden;
-      margin-bottom: 10px; box-shadow: var(--shadow-sm);
-    }
-    .day-header {
-      background: var(--primary-light); padding: 12px 18px;
-      font-size: 14px; font-weight: 800; color: var(--primary);
-      display: flex; align-items: center; gap: 8px;
-      letter-spacing: -.2px;
-    }
-    .sbadge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
-    .sbadge-we { background: #FEF2F2; color: var(--red); }
-    .sbadge-hol { background: #FFF7ED; color: #EA580C; }
-    .sbadge-star { background: #FEF9C3; color: #854D0E; }
-
-    .game-row {
-      padding: 14px 18px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .game-teams { font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
-    .game-meta { font-size: 13px; color: var(--sub); margin-top: 3px; font-weight: 500; }
-    .game-note { font-size: 12px; color: #EA580C; margin-top: 2px; }
-    .game-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .game-time { font-size: 14px; font-weight: 800; color: var(--primary); }
-    .score-box {
-      display: flex; align-items: center; gap: 6px;
-      background: #F8F9FA; border-radius: 8px; padding: 4px 10px;
-    }
-    .score-num {
-      font-size: 17px; font-weight: 900; letter-spacing: -1px; min-width: 20px; text-align: center;
-    }
-    .score-sep { font-size: 13px; color: var(--muted); font-weight: 600; }
-    .score-win { color: var(--red); }
-    .score-lose { color: var(--blue); }
-    .score-tie { color: var(--sub); }
-    .add-btn-sm {
-      background: var(--primary-light); color: var(--primary);
-      border: none; font-size: 12px; font-weight: 700;
-      padding: 5px 12px; border-radius: 8px; cursor: pointer;
-      font-family: inherit;
-    }
-    .add-btn-sm:active { opacity: .75; }
-
-
-    /* ── KBO 경기 카드 ── */
-    .kbo-day-wrap {
-      background: var(--card);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-    .kbo-day-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 18px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-    }
-    .kbo-day-date { font-size: 18px; font-weight: 900; letter-spacing: -.5px; }
-    .kbo-day-dow { font-size: 14px; font-weight: 600; opacity: .85; }
-
-    .kbo-game-card {
-      display: grid; grid-template-columns: 1fr auto 1fr;
-      align-items: center; gap: 0;
-      padding: 18px 14px;
-      border-top: 1px solid var(--border);
-      transition: background .15s;
-    }
-    .kbo-game-card:first-child { border-top: none; }
-    .kbo-game-card:active { background: var(--primary-light); }
-
-    .kbo-team {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 6px;
-    }
-    .kbo-away { align-items: center; }
-    .kbo-home { align-items: center; }
-
-    .kbo-logo {
-      width: 52px; height: 52px;
-      display: flex; align-items: center; justify-content: center;
-      background: #f8f9fa; border-radius: 50%;
-      padding: 4px;
-      border: 2px solid var(--border);
-      transition: border-color .2s;
-    }
-    .kbo-winner .kbo-logo { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-
-    .kbo-tname {
-      font-size: 14px; font-weight: 800; letter-spacing: -.3px;
-      color: var(--text);
-    }
-    .kbo-score {
-      font-size: 28px; font-weight: 900; letter-spacing: -1px;
-      line-height: 1; color: var(--sub);
-    }
-    .kbo-score-win { color: var(--red); }
-    .kbo-score-lose { color: var(--blue); }
-
-    .kbo-center {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 4px;
-      min-width: 72px; padding: 0 8px;
-    }
-    .kbo-vs-label {
-      font-size: 11px; font-weight: 700;
-      color: var(--sub); letter-spacing: .5px;
-    }
-    .kbo-vs {
-      font-size: 15px; font-weight: 900;
-      color: var(--muted); letter-spacing: 1px;
-    }
-    .kbo-stadium {
-      font-size: 11px; color: var(--sub);
-      font-weight: 500; text-align: center;
-    }
-    .kbo-add-btn {
-      margin-top: 4px;
-      background: var(--primary); color: #fff;
-      border: none; font-size: 11px; font-weight: 700;
-      padding: 5px 10px; border-radius: 20px;
-      cursor: pointer; font-family: inherit;
-      white-space: nowrap;
-    }
-    .kbo-add-btn:active { opacity: .8; }
-    .kbo-game-special {
-      padding: 16px; text-align: center;
-      font-size: 15px; font-weight: 800;
-      color: #854D0E; border-top: 1px solid var(--border);
-      background: #FEFCE8;
-    }
-
-    /* ── KBO 순위 테이블 개선 ── */
-    .kbo-standings-wrap {
-      background: var(--card);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-    .kbo-standings-head {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      padding: 14px 18px;
-      color: #fff;
-      font-size: 16px; font-weight: 900;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .kbo-rank-row {
-      display: grid;
-      grid-template-columns: 36px 1fr 38px 38px 38px 52px 52px 52px;
-      align-items: center;
-      padding: 12px 14px;
-      border-top: 1px solid var(--border);
-      gap: 4px;
-      transition: background .15s;
-    }
-    .kbo-rank-row:active { background: var(--primary-light); }
-    .kbo-rank-row.ps-border { border-top: 2px dashed var(--primary); }
-    .kbo-rank-col-head {
-      display: grid;
-      grid-template-columns: 36px 1fr 38px 38px 38px 52px 52px 52px;
-      align-items: center;
-      padding: 8px 14px;
-      gap: 4px;
-      background: #F8F9FA;
-      border-top: 1px solid var(--border);
-      font-size: 11px; font-weight: 700; color: var(--sub);
-    }
-    .kbo-rank-num {
-      width: 26px; height: 26px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 800;
-    }
-    .r1 { background: #FEF08A; color: #854D0E; }
-    .r2 { background: #E2E8F0; color: #374151; }
-    .r3 { background: #FED7AA; color: #9A3412; }
-    .rps { background: var(--primary-light); color: var(--primary); }
-    .rn  { background: #F3F4F6; color: var(--muted); }
-    .kbo-rank-team {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 14px; font-weight: 800; letter-spacing: -.3px;
-    }
-    .kbo-rank-logo {
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .kbo-rank-stat {
-      font-size: 13px; font-weight: 600;
-      text-align: center; color: var(--text);
-    }
-    .kbo-rank-pct { font-weight: 800; color: var(--primary); }
-    .kbo-rank-gb { color: var(--sub); }
-    .kbo-streak-w { color: var(--red); font-weight: 800; font-size: 13px; text-align:center; }
-    .kbo-streak-l { color: var(--blue); font-weight: 800; font-size: 13px; text-align:center; }
-    .empty { text-align: center; padding: 56px 20px; color: var(--sub); }
-    .empty .icon { font-size: 48px; margin-bottom: 14px; }
-    .empty strong { display: block; font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--text); }
-    .empty span { font-size: 14px; }
-
-    .loading { text-align: center; padding: 48px; color: var(--sub); }
-    .spinner {
-      width: 34px; height: 34px;
-      border: 3px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      margin: 0 auto 14px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── STANDINGS ── */
-    .standings-table {
-      width: 100%; border-collapse: separate; border-spacing: 0;
-      background: var(--card); border-radius: var(--radius-lg);
-      overflow: hidden; box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    .standings-table th {
-      background: var(--primary); color: #fff;
-      padding: 12px 10px; font-size: 12px; font-weight: 700;
-      text-align: center; letter-spacing: .3px;
-    }
-    .standings-table th:first-child { text-align: left; padding-left: 16px; }
-    .standings-table td {
-      padding: 13px 10px; font-size: 14px; font-weight: 600;
-      text-align: center; border-top: 1px solid var(--border);
-      color: var(--text);
-    }
-    .standings-table td:first-child { text-align: left; padding-left: 12px; }
-    .standings-table tr:hover td { background: var(--primary-light); }
-    .rank-num {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; border-radius: 50%;
-      font-size: 13px; font-weight: 800; margin-right: 8px;
-    }
-    .rank-1 { background: #FEF08A; color: #854D0E; }
-    .rank-2 { background: #E2E8F0; color: #374151; }
-    .rank-3 { background: #FED7AA; color: #9A3412; }
-    .rank-ps { background: var(--primary-light); color: var(--primary); }
-    .rank-other { background: transparent; color: var(--muted); }
-    .streak-w { color: var(--red); font-weight: 800; }
-    .streak-l { color: var(--blue); font-weight: 800; }
-    .standings-table { white-space: nowrap; }
-    .standings-table td, .standings-table th { white-space: nowrap; }
-    .divider-row td {
-      border-top: 2px dashed var(--primary) !important;
-    }
+    /* MISC */
+    .empty{text-align:center;padding:56px 20px;color:var(--sub)}
+    .empty .icon{font-size:48px;margin-bottom:14px}
+    .empty strong{display:block;font-size:16px;font-weight:800;margin-bottom:6px;color:var(--text)}
+    .empty span{font-size:14px}
+    .loading{text-align:center;padding:48px;color:var(--sub)}
+    .spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .score-box{display:flex;align-items:center;gap:4px;background:#F8F9FA;border-radius:8px;padding:4px 10px}
+    .score-num{font-size:17px;font-weight:900;letter-spacing:-1px;min-width:20px;text-align:center}
+    .score-sep{font-size:13px;color:var(--muted);font-weight:600}
+    .score-win{color:var(--red)}.score-lose{color:var(--blue)}.score-tie{color:var(--sub)}
   </style>
 </head>
 <body>
@@ -549,7 +178,7 @@
   <button class="tab-btn" onclick="switchTab('standings')">🏆 순위</button>
 </nav>
 
-<!-- ═══ TRACKER ═══ -->
+<!-- TRACKER -->
 <div id="tab-tracker" class="panel active">
 <div class="wrap">
   <header class="header">
@@ -599,20 +228,19 @@
   <div class="pagination" id="recordPagination"></div>
 
   <div class="chart-box">
-    <div class="chart-title">월별 수익 현황 (원)</div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:14px;color:var(--sub)">월별 수익 현황 (원)</div>
     <div style="height:200px"><canvas id="profitChart"></canvas></div>
   </div>
 </div>
 </div>
 
-<!-- ═══ SCHEDULE ═══ -->
+<!-- SCHEDULE -->
 <div id="tab-schedule" class="panel">
 <div class="wrap">
   <div class="sched-top">
     <h2>📅 KBO 일정</h2>
     <a class="kbo-link" href="https://www.koreabaseball.com/schedule/schedule.aspx" target="_blank">KBO 공식 ↗</a>
   </div>
-
   <div class="update-bar">
     <div style="display:flex;align-items:center">
       <div class="dot dot-warn" id="updateDot"></div>
@@ -620,12 +248,7 @@
     </div>
     <span id="updateTime" style="font-size:12px;color:var(--muted)"></span>
   </div>
-
-  <div class="notice">
-    ℹ️ GitHub Actions가 매일 새벽 자동으로 최신 일정을 가져옵니다.<br>
-    우천취소·변경은 <strong>KBO 공식 사이트</strong>에서 확인하세요.
-  </div>
-
+  <div class="notice">ℹ️ GitHub Actions가 매일 자동으로 최신 일정을 가져옵니다. 우천취소·변경은 <strong>KBO 공식 사이트</strong>에서 확인하세요.</div>
   <div class="filter-box">
     <div class="filter-row">
       <select id="filterTeam" onchange="filterSchedule()">
@@ -636,43 +259,32 @@
       </select>
       <select id="filterMonth" onchange="filterSchedule()">
         <option value="all">전체 기간</option>
-        <option value="06">6월</option>
-        <option value="07">7월</option>
-        <option value="08">8월</option>
-        <option value="09">9월</option>
-        <option value="10">10월</option>
+        <option value="06">6월</option><option value="07">7월</option>
+        <option value="08">8월</option><option value="09">9월</option><option value="10">10월</option>
       </select>
     </div>
   </div>
-
-  <!-- 날짜 네비게이션 -->
   <div class="sched-date-nav">
     <button class="sched-nav-btn" id="schedPrevBtn" onclick="schedMove(-1)" disabled>‹</button>
     <div class="sched-date-label" id="schedDateLabel">로딩 중...</div>
     <button class="sched-nav-btn" id="schedNextBtn" onclick="schedMove(1)" disabled>›</button>
   </div>
-
-  <!-- 스와이프 영역 -->
   <div class="sched-swipe-wrap" id="schedSwipeWrap">
     <div class="sched-swipe-track" id="schedSwipeTrack">
       <div class="loading"><div class="spinner"></div>일정 로딩 중...</div>
     </div>
   </div>
-
-  <!-- 날짜 점 인디케이터 -->
   <div class="sched-dot-wrap" id="schedDots"></div>
 </div>
 </div>
 
-
-<!-- ═══ STANDINGS ═══ -->
+<!-- STANDINGS -->
 <div id="tab-standings" class="panel">
 <div class="wrap">
   <div class="sched-top">
     <h2>🏆 팀 순위</h2>
     <span id="standingsUpdated" style="font-size:12px;color:var(--muted)"></span>
   </div>
-
   <div id="standingsList">
     <div class="loading"><div class="spinner"></div>순위 불러오는 중...</div>
   </div>
@@ -680,362 +292,380 @@
 </div>
 
 <script>
-
-// ── 팀 정보 (로고, 컬러) ──────────────────────────────
-// 팀 정보: 팀컬러 + 약자 기반 SVG 뱃지 (외부 이미지 의존 없음)
+// ── 팀 메타 ──────────────────────────────────
 const TEAM_META = {
-  'LG':  { color: '#C60C30', text: '#fff', short: 'LG' },
-  'KT':  { color: '#000000', text: '#fff', short: 'KT' },
-  '한화': { color: '#FF6600', text: '#fff', short: '한화' },
-  '두산': { color: '#131230', text: '#fff', short: '두산' },
-  'KIA': { color: '#EA0029', text: '#fff', short: 'KIA' },
-  '삼성': { color: '#1428A0', text: '#fff', short: '삼성' },
-  '롯데': { color: '#041E42', text: '#fff', short: '롯데' },
-  'NC':  { color: '#071D49', text: '#C4A44A', short: 'NC' },
-  'SSG': { color: '#CE0E2D', text: '#fff', short: 'SSG' },
-  '키움': { color: '#570514', text: '#C4A44A', short: '키움' },
+  'LG':  {color:'#C60C30',text:'#fff',short:'LG'},
+  'KT':  {color:'#000000',text:'#fff',short:'KT'},
+  '한화': {color:'#FF6600',text:'#fff',short:'한화'},
+  '두산': {color:'#131230',text:'#fff',short:'두산'},
+  'KIA': {color:'#EA0029',text:'#fff',short:'KIA'},
+  '삼성': {color:'#1428A0',text:'#fff',short:'삼성'},
+  '롯데': {color:'#041E42',text:'#fff',short:'롯데'},
+  'NC':  {color:'#071D49',text:'#C4A44A',short:'NC'},
+  'SSG': {color:'#CE0E2D',text:'#fff',short:'SSG'},
+  '키움': {color:'#570514',text:'#C4A44A',short:'키움'},
 };
-
-function teamLogo(team, size=40) {
-  const m = TEAM_META[team] || { color: '#6366f1', text: '#fff', short: team };
-  const fs = size <= 32 ? (team.length > 2 ? size*0.28 : size*0.32) : (team.length > 2 ? size*0.26 : size*0.30);
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">'
-    + '<circle cx="' + (size/2) + '" cy="' + (size/2) + '" r="' + (size/2) + '" fill="' + m.color + '"/>'
-    + '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" '
-    + 'fill="' + m.text + '" font-size="' + fs + '" font-weight="900" font-family="Pretendard,-apple-system,sans-serif">'
-    + m.short + '</text></svg>';
+function teamLogo(team, size) {
+  size = size || 40;
+  var m = TEAM_META[team] || {color:'#6366f1',text:'#fff',short:team};
+  var fs = size <= 32 ? (team.length > 2 ? size*0.28 : size*0.32) : (team.length > 2 ? size*0.26 : size*0.30);
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" xmlns="http://www.w3.org/2000/svg">'
+    +'<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+(size/2)+'" fill="'+m.color+'"/>'
+    +'<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" '
+    +'fill="'+m.text+'" font-size="'+fs+'" font-weight="900" font-family="Pretendard,-apple-system,sans-serif">'
+    +m.short+'</text></svg>';
 }
 
 // ── 탭 ──────────────────────────────────────
 function switchTab(tab) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  const idx = {tracker:0, schedule:1, standings:2}[tab] || 0;
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('tab-'+tab).classList.add('active');
+  var idx = {tracker:0,schedule:1,standings:2}[tab]||0;
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-  if ((tab === 'schedule' || tab === 'standings') && !window._schedLoaded) loadSchedule();
-  if (tab === 'standings' && window._schedLoaded) renderStandings();
+  if ((tab==='schedule'||tab==='standings') && !window._schedLoaded) loadSchedule();
+  if (tab==='standings' && window._schedLoaded) renderStandings();
 }
 
-function renderStandings() {
-  const data = window._schedData;
-  if (!data || !data.standings || data.standings.length === 0) {
-    document.getElementById('standingsList').innerHTML =
-      `<div class="empty"><div class="icon">😕</div><strong>순위 데이터가 없어요</strong><span>Actions를 실행해 schedule.json을 업데이트해 주세요.</span></div>`;
-    return;
-  }
-  document.getElementById('standingsUpdated').textContent = data.updated ? `기준: ${data.updated}` : '';
-
-  let rows = '';
-  data.standings.forEach((s, i) => {
-    const rankCls = s.rank===1?'r1':s.rank===2?'r2':s.rank===3?'r3':s.rank<=5?'rps':'rn';
-    const streakCls = s.streak.includes('W') ? 'kbo-streak-w' : 'kbo-streak-l';
-    const psBorder = s.rank === 6 ? ' ps-border' : '';
-
-    rows += `<div class="kbo-rank-row${psBorder}">
-      <div><span class="kbo-rank-num ${rankCls}">${s.rank}</span></div>
-      <div class="kbo-rank-team">
-        <div class="kbo-rank-logo">${teamLogo(s.team, 28)}</div>
-        <span>${s.team}</span>
-      </div>
-      <div class="kbo-rank-stat">${s.w}</div>
-      <div class="kbo-rank-stat">${s.l}</div>
-      <div class="kbo-rank-stat">${s.d}</div>
-      <div class="kbo-rank-stat kbo-rank-pct">${s.pct}</div>
-      <div class="kbo-rank-stat kbo-rank-gb">${s.gb}</div>
-      <div class="${streakCls}">${s.streak}</div>
-    </div>`;
-  });
-
-  document.getElementById('standingsList').innerHTML = `
-    <div class="kbo-standings-wrap">
-      <div class="kbo-standings-head">🏆 2026 KBO 리그 순위</div>
-      <div class="kbo-rank-col-head">
-        <div></div><div>팀</div>
-        <div style="text-align:center">승</div>
-        <div style="text-align:center">패</div>
-        <div style="text-align:center">무</div>
-        <div style="text-align:center">승률</div>
-        <div style="text-align:center">GB</div>
-        <div style="text-align:center">연속</div>
-      </div>
-      ${rows}
-    </div>
-    <div style="margin-top:10px;font-size:12px;color:var(--muted);text-align:center;padding:0 4px">
-      점선 위 1~5위: 포스트시즌 진출권 &nbsp;|&nbsp; <span style="color:var(--red)">■</span> 연승 &nbsp;<span style="color:var(--blue)">■</span> 연패
-    </div>`;
-}
-
-// ── 스케줄 로딩 ──────────────────────────────
-let scheduleData = [];
-let filteredDays = [];
-let schedIdx = 0; // 현재 날짜 인덱스
+// ── 스케줄 ──────────────────────────────────
+var scheduleData = [], filteredDays = [], schedIdx = 0;
 window._schedLoaded = false;
 
 async function loadSchedule() {
   try {
-    const res = await fetch('./schedule.json?t=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    var res = await fetch('./schedule.json?t='+Date.now(), {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    var data = await res.json();
     scheduleData = data.games || [];
     window._schedLoaded = true;
     window._schedData = data;
-    const dot = document.getElementById('updateDot');
-    dot.className = 'dot dot-ok';
+    document.getElementById('updateDot').className = 'dot dot-ok';
     document.getElementById('updateStatus').textContent = '최신 데이터';
-    document.getElementById('updateTime').textContent = data.updated ? `업데이트: ${data.updated}` : '';
+    document.getElementById('updateTime').textContent = data.updated ? '업데이트: '+data.updated : '';
     filterSchedule();
     if (document.getElementById('tab-standings').classList.contains('active')) renderStandings();
-  } catch (e) {
+  } catch(e) {
     document.getElementById('updateDot').className = 'dot dot-err';
     document.getElementById('updateStatus').textContent = 'schedule.json 로드 실패';
-    document.getElementById('schedSwipeTrack').innerHTML = `
-      <div class="sched-swipe-page">
-        <div class="empty">
-          <div class="icon">⚠️</div>
-          <strong>일정 파일을 찾을 수 없어요</strong>
-          <span>Actions → KBO 일정 자동 업데이트 → Run workflow를 실행해 주세요.</span>
-        </div>
-      </div>`;
+    document.getElementById('schedSwipeTrack').innerHTML = '<div class="sched-swipe-page"><div class="empty"><div class="icon">⚠️</div><strong>일정 파일 없음</strong><span>Actions → Run workflow 실행해 주세요</span></div></div>';
   }
 }
 
 function filterSchedule() {
-  const teamF = document.getElementById('filterTeam').value;
-  const monthF = document.getElementById('filterMonth').value;
-  const todayStr = new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
-
-  const games = scheduleData.filter(g => {
-    if (monthF !== 'all' && g.date.slice(5, 7) !== monthF) return false;
-    if (teamF !== '전체' && g.home !== teamF && g.away !== teamF) return false;
+  var teamF = document.getElementById('filterTeam').value;
+  var monthF = document.getElementById('filterMonth').value;
+  var todayStr = new Date(new Date().getTime()+9*60*60*1000).toISOString().slice(0,10);
+  var games = scheduleData.filter(function(g) {
+    if (monthF!=='all' && g.date.slice(5,7)!==monthF) return false;
+    if (teamF!=='전체' && g.home!==teamF && g.away!==teamF) return false;
     return true;
   });
-
-  const map = {};
-  games.forEach(g => { (map[g.date] = map[g.date] || []).push(g); });
-  filteredDays = Object.entries(map)
-    .sort(([a],[b]) => a.localeCompare(b))
-    .map(([date, gs]) => ({date, games: gs}));
-
-  // 오늘 날짜 인덱스로 이동
-  const todayIdx = filteredDays.findIndex(d => d.date >= todayStr);
-  schedIdx = todayIdx >= 0 ? todayIdx : Math.max(0, filteredDays.length - 1);
-
+  var map = {};
+  games.forEach(function(g){(map[g.date]=map[g.date]||[]).push(g)});
+  filteredDays = Object.entries(map).sort(function(a,b){return a[0].localeCompare(b[0])}).map(function(e){return {date:e[0],games:e[1]}});
+  var todayIdx = filteredDays.findIndex(function(d){return d.date>=todayStr});
+  schedIdx = todayIdx>=0 ? todayIdx : Math.max(0,filteredDays.length-1);
   buildSwipePages();
   goSchedIdx(schedIdx, false);
 }
 
 function buildSwipePages() {
-  const track = document.getElementById('schedSwipeTrack');
-  const kstNow = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
-  const today = kstNow.toISOString().slice(0, 10);
-  const DAYS = ['일','월','화','수','목','금','토'];
-  const TEAM_EMOJI = {LG:'🔵',KT:'🔴',한화:'🟠',두산:'🔵',KIA:'⚫',SSG:'🔴',삼성:'🔵',롯데:'🔵',NC:'🟢',키움:'🔴'};
-
-  if (filteredDays.length === 0) {
-    track.innerHTML = `<div class="sched-swipe-page"><div class="empty"><div class="icon">😕</div><strong>해당 일정이 없어요</strong><span>필터를 변경해보세요</span></div></div>`;
+  var track = document.getElementById('schedSwipeTrack');
+  var today = new Date(new Date().getTime()+9*60*60*1000).toISOString().slice(0,10);
+  var DAYS = ['일','월','화','수','목','금','토'];
+  if (filteredDays.length===0) {
+    track.innerHTML = '<div class="sched-swipe-page"><div class="empty"><div class="icon">😕</div><strong>해당 일정이 없어요</strong><span>필터를 변경해보세요</span></div></div>';
     document.getElementById('schedDots').innerHTML = '';
     document.getElementById('schedDateLabel').textContent = '일정 없음';
     return;
   }
-
-  let pagesHtml = '';
-  filteredDays.forEach(({date, games}) => {
-    const d = new Date(date + 'T00:00:00');
-    const dow = d.getDay();
-    const isWE = dow === 0 || dow === 6;
-    const isPast = date < today;
-
-    let badges = isWE ? `<span class="sbadge sbadge-we">주말</span>` : '';
-    if (isPast) badges += `<span class="sbadge" style="background:#F3F4F6;color:var(--muted)">종료</span>`;
-    const specialNote = games.find(g => g.note);
-    if (specialNote?.note?.includes('올스타')) badges += `<span class="sbadge sbadge-star">⭐ 올스타</span>`;
-    else if (specialNote) badges += `<span class="sbadge sbadge-hol">공휴일</span>`;
-
-    let gamesHtml = '';
-    games.forEach(g => {
+  var pagesHtml = '';
+  filteredDays.forEach(function(item) {
+    var date = item.date, games = item.games;
+    var d = new Date(date+'T00:00:00');
+    var dow = d.getDay();
+    var isWE = dow===0||dow===6;
+    var isPast = date < today;
+    var badges = isWE ? '<span class="sbadge sbadge-we">주말</span>' : '';
+    if (isPast) badges += '<span class="sbadge" style="background:rgba(255,255,255,.2);color:#fff">종료</span>';
+    var gamesHtml = '';
+    games.forEach(function(g) {
       if (g.note && !g.home) {
-        gamesHtml += `<div class="kbo-game-special">${g.note}</div>`;
+        gamesHtml += '<div class="kbo-game-special">'+g.note+'</div>';
       } else {
-        const haScore = isPast && g.score_home !== undefined;
-        const aw = g.score_away, hw = g.score_home;
-        const awWin = haScore && aw > hw;
-        const hwWin = haScore && hw > aw;
-
-        gamesHtml += `<div class="kbo-game-card">
-          <div class="kbo-team kbo-away ${awWin?'kbo-winner':''}">
-            <div class="kbo-logo">${teamLogo(g.away, 40)}</div>
-            <div class="kbo-tname">${g.away}</div>
-            ${haScore ? `<div class="kbo-score ${awWin?'kbo-score-win':hw>aw?'kbo-score-lose':''}">${aw}</div>` : ''}
-          </div>
-
-          <div class="kbo-center">
-            ${haScore
-              ? `<div class="kbo-vs-label">최종</div>`
-              : `<div class="kbo-vs-label">${g.time||'-'}</div>`
-            }
-            <div class="kbo-vs">VS</div>
-            <div class="kbo-stadium">🏟 ${g.stadium||'-'}</div>
-            ${!isPast ? `<button class="kbo-add-btn" onclick="quickAdd('${date}','${g.home}')">기록추가</button>` : ''}
-          </div>
-
-          <div class="kbo-team kbo-home ${hwWin?'kbo-winner':''}">
-            <div class="kbo-logo">${teamLogo(g.home, 40)}</div>
-            <div class="kbo-tname">${g.home}</div>
-            ${haScore ? `<div class="kbo-score ${hwWin?'kbo-score-win':aw>hw?'kbo-score-lose':''}">${hw}</div>` : ''}
-          </div>
-        </div>`;
+        var haScore = isPast && g.score_home!==undefined;
+        var aw = g.score_away, hw = g.score_home;
+        var awWin = haScore && aw>hw, hwWin = haScore && hw>aw;
+        var awScoreHtml = haScore ? '<div class="kbo-score '+(awWin?'kbo-score-win':aw<hw?'kbo-score-lose':'')+'">'+(aw)+'</div>' : '';
+        var hwScoreHtml = haScore ? '<div class="kbo-score '+(hwWin?'kbo-score-win':hw<aw?'kbo-score-lose':'')+'">'+(hw)+'</div>' : '';
+        gamesHtml += '<div class="kbo-game-card">'
+          +'<div class="kbo-team'+(awWin?' kbo-winner':'')+'">'
+          +'<div class="kbo-logo">'+teamLogo(g.away,40)+'</div>'
+          +'<div class="kbo-tname">'+g.away+'</div>'
+          +awScoreHtml+'</div>'
+          +'<div class="kbo-center">'
+          +(haScore ? '<div class="kbo-vs" style="font-size:11px;color:var(--sub)">최종</div>' : '<div class="kbo-time">'+(g.time||'-')+'</div>')
+          +'<div class="kbo-vs">VS</div>'
+          +'<div class="kbo-stadium">🏟 '+(g.stadium||'-')+'</div>'
+          +(!isPast ? '<button class="kbo-add-btn" onclick="quickAdd(\''+date+'\',\''+g.home+'\')">기록추가</button>' : '')
+          +'</div>'
+          +'<div class="kbo-team'+(hwWin?' kbo-winner':'')+'">'
+          +'<div class="kbo-logo">'+teamLogo(g.home,40)+'</div>'
+          +'<div class="kbo-tname">'+g.home+'</div>'
+          +hwScoreHtml+'</div>'
+          +'</div>';
       }
     });
-
-    pagesHtml += `<div class="sched-swipe-page">
-      <div class="kbo-day-wrap">
-        <div class="kbo-day-header">
-          <span class="kbo-day-date">${parseInt(date.slice(5,7))}월 ${parseInt(date.slice(8,10))}일</span>
-          <span class="kbo-day-dow">${['일','월','화','수','목','금','토'][new Date(date+'T00:00:00').getDay()]}요일</span>
-          <span style="flex:1"></span>
-          ${badges}
-        </div>
-        ${gamesHtml}
-      </div>
-    </div>`;
+    pagesHtml += '<div class="sched-swipe-page"><div class="kbo-day-wrap">'
+      +'<div class="kbo-day-header">'
+      +'<span class="kbo-day-date">'+(parseInt(date.slice(5,7)))+'월 '+(parseInt(date.slice(8,10)))+'일</span>'
+      +'<span class="kbo-day-dow">'+DAYS[dow]+'요일</span>'
+      +'<span style="flex:1"></span>'+badges+'</div>'
+      +gamesHtml+'</div></div>';
   });
-
   track.innerHTML = pagesHtml;
-
-  // 점 인디케이터 생성 (최대 15개, 이후 생략)
-  const dots = document.getElementById('schedDots');
-  const MAX_DOTS = 15;
-  const total = filteredDays.length;
-  if (total <= MAX_DOTS) {
-    dots.innerHTML = filteredDays.map((d, i) => {
-      const isPast = d.date < today;
-      return `<div class="sched-dot ${isPast?'past':''}" onclick="goSchedIdx(${i},true)" id="dot-${i}"></div>`;
+  var dots = document.getElementById('schedDots');
+  var MAX_DOTS = 15;
+  if (filteredDays.length<=MAX_DOTS) {
+    dots.innerHTML = filteredDays.map(function(d,i){
+      return '<div class="sched-dot'+(d.date<today?' past':'')+'" onclick="goSchedIdx('+i+',true)" id="dot-'+i+'"></div>';
     }).join('');
-  } else {
-    dots.innerHTML = '';
+  } else { dots.innerHTML=''; }
+}
+
+function goSchedIdx(idx, animate) {
+  if (filteredDays.length===0) return;
+  schedIdx = Math.max(0,Math.min(idx,filteredDays.length-1));
+  var track = document.getElementById('schedSwipeTrack');
+  track.style.transition = animate ? 'transform .3s cubic-bezier(.4,0,.2,1)' : 'none';
+  track.style.transform = 'translateX(-'+(schedIdx*100)+'%)';
+  var date = filteredDays[schedIdx].date;
+  var d = new Date(date+'T00:00:00');
+  var DAYS=['일','월','화','수','목','금','토'];
+  var MONTHS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  document.getElementById('schedDateLabel').textContent = MONTHS[d.getMonth()]+' '+d.getDate()+'일 ('+DAYS[d.getDay()]+')';
+  document.getElementById('schedPrevBtn').disabled = schedIdx===0;
+  document.getElementById('schedNextBtn').disabled = schedIdx===filteredDays.length-1;
+  document.querySelectorAll('.sched-dot').forEach(function(dot,i){dot.classList.toggle('active',i===schedIdx)});
+}
+function schedMove(dir){goSchedIdx(schedIdx+dir,true)}
+
+// 터치 스와이프
+(function(){
+  var startX=0,startY=0,isDragging=false;
+  document.addEventListener('touchstart',function(e){
+    var wrap=document.getElementById('schedSwipeWrap');
+    if(!wrap||!wrap.contains(e.target))return;
+    startX=e.touches[0].clientX;startY=e.touches[0].clientY;isDragging=true;
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!isDragging)return;isDragging=false;
+    var dx=e.changedTouches[0].clientX-startX;
+    var dy=e.changedTouches[0].clientY-startY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40)schedMove(dx<0?1:-1);
+  },{passive:true});
+})();
+
+// ── 순위 ────────────────────────────────────
+function renderStandings() {
+  var data = window._schedData;
+  if (!data||!data.standings||data.standings.length===0) {
+    document.getElementById('standingsList').innerHTML='<div class="empty"><div class="icon">😕</div><strong>순위 데이터 없음</strong><span>Actions를 실행해 주세요</span></div>';
+    return;
+  }
+  document.getElementById('standingsUpdated').textContent = data.updated ? '기준: '+data.updated : '';
+  var rows = '';
+  data.standings.forEach(function(s) {
+    var rc = s.rank===1?'r1':s.rank===2?'r2':s.rank===3?'r3':s.rank<=5?'rps':'rn';
+    var sc = s.streak.includes('W')?'kbo-streak-w':'kbo-streak-l';
+    var pb = s.rank===6?' ps-border':'';
+    rows += '<div class="kbo-rank-row'+pb+'">'
+      +'<div><span class="kbo-rank-num '+rc+'">'+s.rank+'</span></div>'
+      +'<div class="kbo-rank-team"><div class="kbo-rank-logo">'+teamLogo(s.team,26)+'</div><span>'+s.team+'</span></div>'
+      +'<div class="kbo-rank-stat">'+s.w+'</div>'
+      +'<div class="kbo-rank-stat">'+s.l+'</div>'
+      +'<div class="kbo-rank-stat">'+s.d+'</div>'
+      +'<div class="kbo-rank-stat kbo-rank-pct">'+s.pct+'</div>'
+      +'<div class="kbo-rank-stat kbo-rank-gb">'+s.gb+'</div>'
+      +'<div class="'+sc+'">'+s.streak+'</div>'
+      +'</div>';
+  });
+  document.getElementById('standingsList').innerHTML =
+    '<div class="kbo-standings-wrap">'
+    +'<div class="kbo-standings-head">🏆 2026 KBO 리그 순위</div>'
+    +'<div class="kbo-rank-col-head"><div></div><div>팀</div><div style="text-align:center">승</div><div style="text-align:center">패</div><div style="text-align:center">무</div><div style="text-align:center">승률</div><div style="text-align:center">GB</div><div style="text-align:center">연속</div></div>'
+    +rows+'</div>'
+    +'<div style="margin-top:10px;font-size:12px;color:var(--muted);text-align:center">점선 위 1~5위 포스트시즌 진출권 | <span style="color:var(--red)">■</span> 연승 <span style="color:var(--blue)">■</span> 연패</div>';
+}
+
+// ── 수익 트래커 ──────────────────────────────
+var db = JSON.parse(localStorage.getItem('kbo_final'))||[];
+var chart;
+var recordPage = 0;
+var REC_PER_PAGE = 8;
+
+function isWE(d){var day=new Date(d).getDay();return day===0||day===6}
+function sortDB(){db.sort(function(a,b){return new Date(b.date)-new Date(a.date)})}
+
+function handleSave(){
+  var id=document.getElementById('editId').value;
+  var date=document.getElementById('tDate').value;
+  var team=document.getElementById('tTeam').value;
+  var buy=parseInt(document.getElementById('tBuy').value)||0;
+  var sell=parseInt(document.getElementById('tSell').value)||0;
+  if(!date||!team)return alert('날짜와 팀을 선택해주세요.');
+  var rec={id:id?parseInt(id):Date.now(),date:date,team:team,buy:buy,sell:sell,profit:sell-buy};
+  if(id){var i=db.findIndex(function(x){return x.id===parseInt(id)});db[i]=rec;}
+  else db.push(rec);
+  sortDB();
+  localStorage.setItem('kbo_final',JSON.stringify(db));
+  resetForm();renderAll();
+}
+
+function startEdit(id){
+  var it=db.find(function(x){return x.id===id});
+  document.getElementById('editId').value=it.id;
+  document.getElementById('tDate').value=it.date;
+  document.getElementById('tTeam').value=it.team;
+  document.getElementById('tBuy').value=it.buy;
+  document.getElementById('tSell').value=it.sell;
+  document.getElementById('formTitle').innerText='🔄 기록 수정 중...';
+  document.getElementById('submitBtn').innerText='수정 완료';
+  document.getElementById('submitBtn').className='btn btn-green';
+  document.getElementById('cancelBtn').style.display='flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetForm(){
+  ['editId','tDate','tTeam','tBuy','tSell'].forEach(function(id){document.getElementById(id).value=''});
+  document.getElementById('formTitle').innerText='📝 새 기록 입력';
+  document.getElementById('submitBtn').innerText='저장하기';
+  document.getElementById('submitBtn').className='btn btn-primary';
+  document.getElementById('cancelBtn').style.display='none';
+}
+
+function deleteRecord(id){
+  if(confirm('정말 삭제하시겠습니까?')){
+    db=db.filter(function(x){return x.id!==id});
+    localStorage.setItem('kbo_final',JSON.stringify(db));
+    renderAll();
   }
 }
 
-function goSchedIdx(idx, animate=true) {
-  if (filteredDays.length === 0) return;
-  schedIdx = Math.max(0, Math.min(idx, filteredDays.length - 1));
-  const track = document.getElementById('schedSwipeTrack');
-  track.style.transition = animate ? 'transform .3s cubic-bezier(.4,0,.2,1)' : 'none';
-  track.style.transform = `translateX(-${schedIdx * 100}%)`;
+function getPageRange(current,total){
+  if(total<=7)return Array.from({length:total},function(_,i){return i});
+  var pages=[0];
+  if(current>2)pages.push('...');
+  for(var i=Math.max(1,current-1);i<=Math.min(total-2,current+1);i++)pages.push(i);
+  if(current<total-3)pages.push('...');
+  pages.push(total-1);
+  return pages;
+}
 
-  // 날짜 레이블 업데이트
-  const {date} = filteredDays[schedIdx];
-  const d = new Date(date + 'T00:00:00');
-  const DAYS = ['일','월','화','수','목','금','토'];
-  const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-  document.getElementById('schedDateLabel').textContent =
-    `${MONTHS[d.getMonth()]} ${d.getDate()}일 (${DAYS[d.getDay()]})`;
+function renderAll(){
+  sortDB();
+  var total=db.reduce(function(s,i){return s+i.profit},0);
+  var wd=db.filter(function(x){return !isWE(x.date)}).reduce(function(s,i){return s+i.profit},0);
+  var we=db.filter(function(x){return isWE(x.date)}).reduce(function(s,i){return s+i.profit},0);
+  document.getElementById('totalProfit').innerText=total.toLocaleString()+'원';
+  document.getElementById('wdProfit').innerText=wd.toLocaleString()+'원';
+  document.getElementById('weProfit').innerText=we.toLocaleString()+'원';
+  renderRecordPage();
+  updateChart();
+}
 
-  // 버튼 활성화
-  document.getElementById('schedPrevBtn').disabled = schedIdx === 0;
-  document.getElementById('schedNextBtn').disabled = schedIdx === filteredDays.length - 1;
-
-  // 점 업데이트
-  document.querySelectorAll('.sched-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === schedIdx);
+function renderRecordPage(){
+  var totalPages=Math.ceil(db.length/REC_PER_PAGE);
+  if(recordPage>=totalPages)recordPage=Math.max(0,totalPages-1);
+  var items=db.slice(recordPage*REC_PER_PAGE,(recordPage+1)*REC_PER_PAGE);
+  document.getElementById('recordPageInfo').textContent=db.length>0?db.length+'건 · '+(recordPage+1)+'/'+Math.max(1,totalPages)+'p':'';
+  document.getElementById('recordList').innerHTML=items.length===0
+    ?'<div class="empty"><div class="icon">📋</div><strong>기록이 없어요</strong><span>첫 번째 양도 기록을 입력해보세요!</span></div>'
+    :items.map(function(it){
+      return '<div class="record">'
+        +'<div class="record-left">'
+        +'<span class="record-team">'+it.team+' 홈</span>'
+        +'<span class="record-date">'+it.date+'</span>'
+        +'<span class="record-badge '+(isWE(it.date)?'badge-we':'badge-wd')+'">'+(isWE(it.date)?'주말':'평일')+'</span>'
+        +'<div class="record-actions">'
+        +'<button onclick="startEdit('+it.id+')">수정</button>'
+        +'<button onclick="deleteRecord('+it.id+')" style="color:var(--red)">삭제</button>'
+        +'</div></div>'
+        +'<div class="record-right">'
+        +'<span class="profit" style="color:'+(it.profit>=0?'var(--red)':'var(--blue)')+'">'+( it.profit>=0?'+':'')+it.profit.toLocaleString()+'원</span>'
+        +'<span class="profit-detail">'+it.sell.toLocaleString()+' − '+it.buy.toLocaleString()+'</span>'
+        +'</div></div>';
+    }).join('');
+  if(totalPages<=1){document.getElementById('recordPagination').innerHTML='';return;}
+  var html='<button class="pg-arrow" onclick="recGoPage('+(recordPage-1)+')" '+(recordPage===0?'disabled':'')+'>‹</button>';
+  getPageRange(recordPage,totalPages).forEach(function(p){
+    if(p==='...')html+='<span style="padding:0 4px;color:var(--muted)">…</span>';
+    else html+='<button class="pg-btn '+(p===recordPage?'active':'')+'" onclick="recGoPage('+p+')">'+(p+1)+'</button>';
   });
+  html+='<button class="pg-arrow" onclick="recGoPage('+(recordPage+1)+')" '+(recordPage===totalPages-1?'disabled':'')+'>›</button>';
+  document.getElementById('recordPagination').innerHTML=html;
 }
 
-function schedMove(dir) {
-  goSchedIdx(schedIdx + dir, true);
+function recGoPage(p){
+  var total=Math.ceil(db.length/REC_PER_PAGE);
+  if(p<0||p>=total)return;
+  recordPage=p;renderRecordPage();
+  document.getElementById('recordList').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// 터치 스와이프
-(function() {
-  let startX = 0, startY = 0, isDragging = false;
-  const getWrap = () => document.getElementById('schedSwipeWrap');
-
-  document.addEventListener('touchstart', e => {
-    const wrap = getWrap();
-    if (!wrap || !wrap.contains(e.target)) return;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    isDragging = true;
-  }, {passive: true});
-
-  document.addEventListener('touchend', e => {
-    if (!isDragging) return;
-    isDragging = false;
-    const dx = e.changedTouches[0].clientX - startX;
-    const dy = e.changedTouches[0].clientY - startY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      schedMove(dx < 0 ? 1 : -1);
-    }
-  }, {passive: true});
-})();
-
-function quickAdd(date, team) {
+function quickAdd(date,team){
   switchTab('tracker');
-  document.getElementById('tDate').value = date;
-  document.getElementById('tTeam').value = team;
+  document.getElementById('tDate').value=date;
+  document.getElementById('tTeam').value=team;
   document.getElementById('tBuy').focus();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function updateChart() {
-  const ctx = document.getElementById('profitChart').getContext('2d');
-  const stats = {};
-  [...db].sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(i => {
-    const m = i.date.slice(5,7) + '월'; stats[m] = (stats[m]||0) + i.profit;
-  });
-  if (chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: Object.keys(stats),
-      datasets: [{
-        data: Object.values(stats),
-        backgroundColor: Object.values(stats).map(v => v >= 0 ? 'rgba(91,95,237,.85)' : 'rgba(239,68,68,.75)'),
-        borderRadius: 8, borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true, ticks: { font: {size:12}, callback: v => v.toLocaleString()+'원' }, grid: {color:'#F2F4F8'} },
-                x: { ticks: {font:{size:13}} } }
-    }
+function updateChart(){
+  var ctx=document.getElementById('profitChart').getContext('2d');
+  var stats={};
+  var sorted=[].concat(db).sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+  sorted.forEach(function(i){var m=i.date.slice(5,7)+'월';stats[m]=(stats[m]||0)+i.profit});
+  if(chart)chart.destroy();
+  chart=new Chart(ctx,{
+    type:'bar',
+    data:{labels:Object.keys(stats),datasets:[{
+      data:Object.values(stats),
+      backgroundColor:Object.values(stats).map(function(v){return v>=0?'rgba(91,95,237,.85)':'rgba(239,68,68,.75)'}),
+      borderRadius:8,borderSkipped:false
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{y:{beginAtZero:true,ticks:{font:{size:12},callback:function(v){return v.toLocaleString()+'원'}},grid:{color:'#F2F4F8'}},
+              x:{ticks:{font:{size:13}}}}}
   });
 }
 
-// 초기화
-window.addEventListener('DOMContentLoaded', () => {
-  const m = String(new Date().getMonth() + 1).padStart(2, '0');
-  const sel = document.getElementById('filterMonth');
-  for (const opt of sel.options) { if (opt.value === m) { opt.selected = true; break; } }
+window.addEventListener('DOMContentLoaded',function(){
+  var m=String(new Date().getMonth()+1).padStart(2,'0');
+  var sel=document.getElementById('filterMonth');
+  for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===m){sel.options[i].selected=true;break}}
   renderAll();
 });
-</script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(() => console.log('SW 등록 완료'))
-          .catch(e => console.log('SW 등록 실패:', e));
-      });
-    }
 
-    // 앱이 포그라운드로 돌아올 때 schedule.json 자동 갱신
-    let lastFocusTime = Date.now();
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        const elapsed = Date.now() - lastFocusTime;
-        // 5분 이상 백그라운드였으면 자동 새로고침
-        if (elapsed > 5 * 60 * 1000) {
-          window._schedLoaded = false;
-          loadSchedule();
-        }
-        lastFocusTime = Date.now();
-      } else {
-        lastFocusTime = Date.now();
-      }
+// 포그라운드 복귀 시 자동 갱신
+var lastFocusTime=Date.now();
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){
+    var elapsed=Date.now()-lastFocusTime;
+    if(elapsed>5*60*1000){window._schedLoaded=false;loadSchedule();}
+    lastFocusTime=Date.now();
+  } else {lastFocusTime=Date.now();}
+});
+</script>
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('./sw.js')
+        .then(function(){console.log('SW 등록 완료')})
+        .catch(function(e){console.log('SW 등록 실패:',e)});
     });
-  </script>
+  }
+</script>
 </body>
 </html>
