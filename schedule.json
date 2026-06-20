@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-20 11:06",
+  "updated": "2026-06-20 12:24",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -28,11 +28,11 @@
       "rank": 3,
       "team": "삼성",
       "w": 39,
-      "l": 27,
+      "l": 28,
       "d": 2,
-      "pct": ".591",
-      "gb": "3.0",
-      "streak": "5W",
+      "pct": ".582",
+      "gb": "3.5",
+      "streak": "1L",
       "last10": "6W 1D 3L"
     },
     {
@@ -60,60 +60,60 @@
     {
       "rank": 6,
       "team": "한화",
-      "w": 32,
+      "w": 33,
       "l": 34,
       "d": 2,
-      "pct": ".485",
-      "gb": "10.0",
-      "streak": "6L",
-      "last10": "2W 1D 7L"
+      "pct": ".493",
+      "gb": "9.5",
+      "streak": "1W",
+      "last10": "3W 1D 6L"
     },
     {
-      "rank": 6,
+      "rank": 7,
       "team": "NC",
       "w": 32,
-      "l": 34,
+      "l": 35,
       "d": 1,
-      "pct": ".485",
-      "gb": "10.0",
-      "streak": "4W",
-      "last10": "7W 0D 3L"
+      "pct": ".478",
+      "gb": "10.5",
+      "streak": "1L",
+      "last10": "6W 0D 4L"
     },
     {
       "rank": 8,
       "team": "롯데",
-      "w": 27,
+      "w": 28,
       "l": 39,
       "d": 2,
-      "pct": ".409",
-      "gb": "15.0",
-      "streak": "3W",
-      "last10": "5W 1D 4L"
+      "pct": ".418",
+      "gb": "14.5",
+      "streak": "4W",
+      "last10": "6W 1D 3L"
     },
     {
       "rank": 9,
       "team": "SSG",
-      "w": 27,
+      "w": 28,
       "l": 40,
       "d": 2,
-      "pct": ".403",
-      "gb": "15.5",
-      "streak": "5L",
-      "last10": "1W 1D 8L"
+      "pct": ".412",
+      "gb": "15.0",
+      "streak": "1W",
+      "last10": "2W 1D 7L"
     },
     {
       "rank": 10,
       "team": "키움",
       "w": 26,
-      "l": 44,
+      "l": 45,
       "d": 1,
-      "pct": ".371",
-      "gb": "18.0",
-      "streak": "4L",
-      "last10": "4W 0D 6L"
+      "pct": ".366",
+      "gb": "18.5",
+      "streak": "5L",
+      "last10": "3W 0D 7L"
     }
   ],
-  "count": 209,
+  "count": 212,
   "games": [
     {
       "date": "2026-06-09",
@@ -555,6 +555,33 @@
       "time": "",
       "score_away": 2,
       "score_home": 4
+    },
+    {
+      "date": "2026-06-20",
+      "home": "NC",
+      "away": "SSG",
+      "stadium": "창원",
+      "time": "",
+      "score_away": 12,
+      "score_home": 5
+    },
+    {
+      "date": "2026-06-20",
+      "home": "키움",
+      "away": "롯데",
+      "stadium": "고척",
+      "time": "",
+      "score_away": 7,
+      "score_home": 1
+    },
+    {
+      "date": "2026-06-20",
+      "home": "한화",
+      "away": "삼성",
+      "stadium": "대전",
+      "time": "",
+      "score_away": 4,
+      "score_home": 10
     },
     {
       "date": "2026-06-21",
