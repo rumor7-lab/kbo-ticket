@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-20 12:24",
+  "updated": "2026-06-20 15:02",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -16,13 +16,13 @@
     {
       "rank": 2,
       "team": "KT",
-      "w": 40,
+      "w": 41,
       "l": 27,
       "d": 1,
-      "pct": ".597",
-      "gb": "2.5",
-      "streak": "2L",
-      "last10": "6W 0D 4L"
+      "pct": ".603",
+      "gb": "2.0",
+      "streak": "1W",
+      "last10": "7W 0D 3L"
     },
     {
       "rank": 3,
@@ -39,12 +39,12 @@
       "rank": 4,
       "team": "KIA",
       "w": 37,
-      "l": 32,
+      "l": 33,
       "d": 1,
-      "pct": ".536",
-      "gb": "6.5",
-      "streak": "3W",
-      "last10": "5W 0D 5L"
+      "pct": ".529",
+      "gb": "7.0",
+      "streak": "1L",
+      "last10": "4W 0D 6L"
     },
     {
       "rank": 5,
@@ -113,7 +113,7 @@
       "last10": "3W 0D 7L"
     }
   ],
-  "count": 212,
+  "count": 213,
   "games": [
     {
       "date": "2026-06-09",
@@ -546,6 +546,15 @@
       "time": "",
       "score_away": 2,
       "score_home": 1
+    },
+    {
+      "date": "2026-06-20",
+      "home": "KT",
+      "away": "KIA",
+      "stadium": "수원",
+      "time": "",
+      "score_away": 9,
+      "score_home": 10
     },
     {
       "date": "2026-06-20",
