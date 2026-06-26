@@ -29,6 +29,22 @@
         input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; }
         input[type="text"]#tDate { color: #94a3b8; }
         
+        /* ⚾️ KBO 일정 대진표 스타일 복원 */
+        .kbo-schedule-box { margin-top: 10px; background: #f1f5f9; padding: 12px; border-radius: 14px; display: none; }
+        .kbo-title { font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; display: block; }
+        .kbo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .kbo-match-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center; cursor: pointer; font-weight: 600; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .kbo-match-btn span { color: var(--primary); font-weight: 800; }
+
+        /* 🏆 구단 순위 테이블 스타일 추가 */
+        .rank-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid #f1f5f9; }
+        .rank-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+        .rank-table th { color: var(--text-sub); padding: 8px 4px; font-weight: 700; border-bottom: 2px solid #f1f5f9; }
+        .rank-table td { padding: 10px 4px; border-bottom: 1px solid #f8fafc; font-weight: 600; }
+        .rank-num { font-weight: 800; color: var(--primary); width: 40px; }
+        .rank-team { text-align: left; padding-left: 8px !important; font-weight: 700; }
+        .rank-input { width: 50px; padding: 4px; text-align: center; border-radius: 6px; font-size: 12px; border: 1px solid #e2e8f0; }
+
         .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
         .update-mode-btn { background: #10b981; }
         .list-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
@@ -100,7 +116,7 @@
         <input type="hidden" id="editId">
         
         <div class="form-row">
-            <input type="text" id="tDate" placeholder="경기 일정" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'">
+            <input type="text" id="tDate" placeholder="경기 일정" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" onchange="checkKboSchedule(this.value)">
             <select id="tTeam">
                 <option value="">홈구단 선택</option>
                 <option value="LG">LG 트윈스</option><option value="KT">KT 위즈</option><option value="한화">한화 이글스</option><option value="두산">두산 베어스</option><option value="KIA">KIA 타이거즈</option><option value="삼성">삼성 라이온즈</option><option value="롯데">롯데 자이언츠</option><option value="NC">NC 다이노스</option><option value="SSG">SSG 랜더스</option><option value="키움">키움 히어로즈</option>
@@ -111,18 +127,40 @@
             <input type="number" id="tSell" placeholder="양도가">
         </div>
 
+        <div id="kboBox" class="kbo-schedule-box">
+            <span class="kbo-title">⚾️ 선택한 날짜의 KBO 경기 일정 (터치 시 자동 입력)</span>
+            <div id="kboGrid" class="kbo-grid"></div>
+        </div>
+        <div style="height:6px;"></div>
+
         <button id="submitBtn" class="add-btn" onclick="handleSave()">저장하기</button>
         <button id="cancelBtn" class="add-btn" style="background:#cbd5e1; display:none; margin-top:5px;" onclick="resetForm()">취소</button>
     </div>
 
     <div class="list-header">📊 양도 기록 리스트 (최신순)</div>
-    
     <div id="recordList"></div>
 
     <div class="pagination-zone">
         <button id="prevBtn" class="page-btn" onclick="changePage(-1)">이전</button>
         <span id="pageInfo" class="page-info">1 / 1</span>
         <button id="nextBtn" class="page-btn" onclick="changePage(1)">다음</button>
+    </div>
+
+    <div class="rank-box">
+        <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-sub);">🏆 KBO 구단 순위 현황 (수동 편집 보존)</div>
+        <table class="rank-table">
+            <thead>
+                <tr>
+                    <th>순위</th>
+                    <th style="text-align: left; padding-left: 8px;">구단명</th>
+                    <th>승</th>
+                    <th>패</th>
+                    <th>무</th>
+                </tr>
+            </thead>
+            <tbody id="rankTableBody">
+                </tbody>
+        </table>
     </div>
 
     <div class="chart-box">
@@ -132,6 +170,21 @@
 </div>
 
 <script>
+    // 💡 2026 KBO 주요 대진 일정 데이터베이스 복원 (앞서 공유해주신 일정 샘플)
+    const KBO_SCHEDULE = {
+        "2026-06-24": [ {home:"LG", away:"삼성"}, {home:"두산", away:"KT"}, {home:"SSG", away:"롯데"}, {home:"한화", away:"KIA"}, {home:"키움", away:"NC"} ],
+        "2026-06-25": [ {home:"LG", away:"삼성"}, {home:"두산", away:"KT"}, {home:"SSG", away:"롯데"}, {home:"한화", away:"KIA"}, {home:"키움", away:"NC"} ]
+    };
+
+    // 💡 구단 순위 기본 데이터 구조 세팅 (로컬스토리지 'kbo_rank_db'에 자동 영구저장)
+    let rankDb = JSON.parse(localStorage.getItem('kbo_rank_db')) || [
+        { team: "KIA", w: 0, l: 0, d: 0 }, { team: "LG", w: 0, l: 0, d: 0 }, 
+        { team: "두산", w: 0, l: 0, d: 0 }, { team: "삼성", w: 0, l: 0, d: 0 }, 
+        { team: "SSG", w: 0, l: 0, d: 0 }, { team: "NC", w: 0, l: 0, d: 0 }, 
+        { team: "한화", w: 0, l: 0, d: 0 }, { team: "키움", w: 0, l: 0, d: 0 }, 
+        { team: "KT", w: 0, l: 0, d: 0 }, { team: "롯데", w: 0, l: 0, d: 0 }
+    ];
+
     let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
     let chart;
     let currentPage = 1;
@@ -146,7 +199,61 @@
         db.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
-    // 💡 수수료 자동 반영 계산식을 완전히 걷어내고 입력한 양도가-구매가 그대로 순수 정산합니다.
+    // 대진 일정 추적 제어 로직 복원
+    function checkKboSchedule(dateString) {
+        const kboBox = document.getElementById('kboBox');
+        const kboGrid = document.getElementById('kboGrid');
+        
+        if (!dateString || !KBO_SCHEDULE[dateString]) {
+            kboBox.style.display = 'none';
+            kboGrid.innerHTML = '';
+            return;
+        }
+
+        const matches = KBO_SCHEDULE[dateString];
+        kboBox.style.display = 'block';
+        kboGrid.innerHTML = matches.map(match => {
+            return `<div class="kbo-match-btn" onclick="selectKboMatch('${match.home}')"><span>${match.home}</span> vs ${match.away}</div>`;
+        }).join('');
+    }
+
+    function selectKboMatch(homeTeam) {
+        document.getElementById('tTeam').value = homeTeam;
+    }
+
+    // 순위표 값 변경 핸들러 및 승률 자동 정렬 정산 함수
+    function updateRankValue(index, field, value) {
+        rankDb[index][field] = parseInt(value) || 0;
+        
+        // 승률 기준 내림차순 정렬 연산 (승률 = 승 / (승+패))
+        rankDb.sort((a, b) => {
+            const aTotal = a.w + a.l;
+            const bTotal = b.w + b.l;
+            const aRate = aTotal > 0 ? a.w / aTotal : 0;
+            const bRate = bTotal > 0 ? b.w / bTotal : 0;
+            return bRate - aRate;
+        });
+
+        localStorage.setItem('kbo_rank_db', JSON.stringify(rankDb));
+        renderRankTable();
+    }
+
+    // 순위 표 테이블 드로잉 함수
+    function renderRankTable() {
+        const tbody = document.getElementById('rankTableBody');
+        tbody.innerHTML = rankDb.map((item, idx) => {
+            return `
+                <tr>
+                    <td class="rank-num">${idx + 1}</td>
+                    <td class="rank-team">${item.team}</td>
+                    <td><input type="number" class="rank-input" value="${item.w}" onchange="updateRankValue(${idx}, 'w', this.value)"></td>
+                    <td><input type="number" class="rank-input" value="${item.l}" onchange="updateRankValue(${idx}, 'l', this.value)"></td>
+                    <td><input type="number" class="rank-input" value="${item.d}" onchange="updateRankValue(${idx}, 'd', this.value)"></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
     function handleSave() {
         const id = document.getElementById('editId').value;
         const date = document.getElementById('tDate').value;
@@ -156,7 +263,7 @@
 
         if(!date || !team) return alert("날짜와 팀을 선택해주세요.");
 
-        const profit = sell - buy; // 순수 차액 계산
+        const profit = sell - buy; 
         const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell, profit };
 
         if(id) {
@@ -180,6 +287,7 @@
         const dateInput = document.getElementById('tDate');
         dateInput.type = 'date';
         dateInput.value = item.date;
+        checkKboSchedule(item.date);
 
         document.getElementById('tTeam').value = item.team;
         document.getElementById('tBuy').value = item.buy;
@@ -197,6 +305,9 @@
         const dateInput = document.getElementById('tDate');
         dateInput.type = 'text';
         dateInput.value = '';
+        
+        document.getElementById('kboBox').style.display = 'none';
+        document.getElementById('kboGrid').innerHTML = '';
 
         document.getElementById('tTeam').value = '';
         document.getElementById('tBuy').value = '';
@@ -279,9 +390,6 @@
         } else {
             list.innerHTML = pagedDb.map(item => {
                 const we = isWeekend(item.date);
-                
-                // 💡 만약 예전 수수료 수식 때문에 과거 내역 금액이 꼬여 보인다면, 
-                // 수정 버튼을 눌러 올바른 원가와 수수료 10%가 빠진 티켓베이 정산액을 직접 기입해 주시면 깔끔하게 정상 수정됩니다.
                 const currentProfit = item.sell - item.buy;
 
                 return `
@@ -309,7 +417,6 @@
         document.getElementById('prevBtn').disabled = (currentPage === 1);
         document.getElementById('nextBtn').disabled = (currentPage === maxPage);
 
-        // 누적 연산 수식 원상 복구
         const total = db.reduce((s, i) => s + (i.sell - i.buy), 0);
         const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + (i.sell - i.buy), 0);
         const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + (i.sell - i.buy), 0);
@@ -323,6 +430,7 @@
         document.getElementById('avgProfit').innerText = avg.toLocaleString() + "원";
         
         updateChart();
+        renderRankTable(); // 순위 테이블 렌더 연동
     }
 
     function updateChart() {
