@@ -14,39 +14,28 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: var(--bg); color: var(--text-main); }
         .app-container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
-        .header-box { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .header-box { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .logo-icon { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+        
+        /* 📱 상용 앱 스타일 상단 탭 시스템 */
+        .tab-menu { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; margin-bottom: 20px; gap: 2px; }
+        .tab-btn { flex: 1; border: none; background: none; padding: 10px; font-size: 13px; font-weight: 700; color: var(--text-sub); cursor: pointer; border-radius: 9px; transition: all 0.2s; }
+        .tab-btn.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
         .summary-card { background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .summary-card span { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-weight: 600; }
         .summary-card strong { font-size: 16px; font-weight: 800; }
         .summary-card.main { grid-column: span 2; background: var(--primary); color: white; }
-        .summary-card.main span { color: rgba(255,255,255,0.8); }
         
         .input-form { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display:block; margin-bottom:12px; display: flex; align-items: center; gap: 5px; }
+        .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display:block; margin-bottom:12px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; }
-        input[type="text"]#tDate { color: #94a3b8; }
         
-        /* ⚾️ KBO 일정 대진표 스타일 복원 */
-        .kbo-schedule-box { margin-top: 10px; background: #f1f5f9; padding: 12px; border-radius: 14px; display: none; }
-        .kbo-title { font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; display: block; }
-        .kbo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        .kbo-match-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center; cursor: pointer; font-weight: 600; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .kbo-match-btn span { color: var(--primary); font-weight: 800; }
-
-        /* 🏆 구단 순위 테이블 스타일 추가 */
-        .rank-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid #f1f5f9; }
-        .rank-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .rank-table th { color: var(--text-sub); padding: 8px 4px; font-weight: 700; border-bottom: 2px solid #f1f5f9; }
-        .rank-table td { padding: 10px 4px; border-bottom: 1px solid #f8fafc; font-weight: 600; }
-        .rank-num { font-weight: 800; color: var(--primary); width: 40px; }
-        .rank-team { text-align: left; padding-left: 8px !important; font-weight: 700; }
-        .rank-input { width: 50px; padding: 4px; text-align: center; border-radius: 6px; font-size: 12px; border: 1px solid #e2e8f0; }
-
         .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-        .update-mode-btn { background: #10b981; }
         .list-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
         .ticket-item { background: var(--card-bg); padding: 16px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #f1f5f9; }
         .item-info { display: flex; flex-direction: column; gap: 2px; }
@@ -54,204 +43,272 @@
         .item-date { font-size: 12px; color: var(--text-sub); }
         .btn-group { display: flex; gap: 10px; margin-top: 8px; }
         .btn-group button { background: none; border: none; padding: 0; font-size: 12px; color: var(--text-sub); text-decoration: underline; cursor: pointer; }
-        .item-right { text-align: right; }
-        .profit-val { font-size: 17px; font-weight: 800; }
-        .calc-detail { font-size: 10px; color: #94a3b8; display: block; }
+        .profit-val { font-size: 17px; font-weight: 800; text-align: right; }
+        .calc-detail { font-size: 10px; color: #94a3b8; display: block; text-align: right; }
         .chart-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid #f1f5f9; }
         
-        .backup-zone { display: flex; gap: 8px; margin-bottom: 20px; justify-content: flex-end; }
+        .backup-zone { display: flex; gap: 8px; margin-bottom: 15px; justify-content: flex-end; }
         .backup-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
+        .pagination-zone { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 20px 0; }
+        .page-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .page-btn:disabled { opacity: 0.4; }
+
+        /* 📊 실시간 순위 및 일정 연동용 스타일 */
+        .live-card { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); margin-bottom: 15px; }
+        .live-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+        .live-table th { color: var(--text-sub); padding: 10px 5px; font-weight: 700; border-bottom: 2px solid #f1f5f9; }
+        .live-table td { padding: 12px 5px; border-bottom: 1px solid #f8fafc; font-weight: 600; }
+        .rank-num { font-weight: 800; color: var(--primary); }
+        .team-label { text-align: left; font-weight: 700; padding-left: 8px !important; }
         
-        .pagination-zone { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 20px 0 30px 0; }
-        .page-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .page-info { font-size: 13px; font-weight: 700; color: var(--text-sub); }
+        .schedule-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-weight: 600; }
+        .schedule-date { font-size: 11px; color: var(--text-sub); font-weight: 700; width: 80px; }
+        .schedule-match { flex: 1; text-align: center; font-weight: 700; }
+        .schedule-match span { color: var(--primary); }
+        .schedule-stadium { font-size: 11px; color: #94a3b8; width: 60px; text-align: right; }
+        .loading-text { text-align: center; color: var(--text-sub); padding: 30px; font-size: 13px; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header class="header-box">
-        <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
-            <div class="logo-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
-            </div>
-            <div>
-                <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
-                <p style="margin:0; color: var(--text-sub); font-size: 13px;">KBO 양도 수익 매니저</p>
-            </div>
+        <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+        </div>
+        <div>
+            <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
+            <p style="margin:0; color: var(--text-sub); font-size: 13px;">KBO 양도 매니저 앤 라이브</p>
         </div>
     </header>
 
-    <div class="backup-zone">
-        <button class="backup-btn" onclick="exportData()">📥 데이터 백업</button>
-        <button class="backup-btn" onclick="importData()">📤 데이터 복구</button>
+    <!-- 📱 탭 메뉴 내비게이션 -->
+    <nav class="tab-menu">
+        <button class="tab-btn active" onclick="switchTab('tab-ledger')">💰 장부 관리</button>
+        <button class="tab-btn" onclick="switchTab('tab-rank')">🏆 실시간 순위</button>
+        <button class="tab-btn" onclick="switchTab('tab-schedule')">📅 전체 일정</button>
+    </nav>
+
+    <!-- ================= 탭 1: 장부 관리 ================= -->
+    <div id="tab-ledger" class="tab-content active">
+        <div class="backup-zone">
+            <button class="backup-btn" onclick="exportData()">📥 데이터 백업</button>
+            <button class="backup-btn" onclick="importData()">📤 데이터 복구</button>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-card main">
+                <span>누적 수익</span>
+                <strong id="totalProfit">0원</strong>
+            </div>
+            <div class="summary-card">
+                <span>📅 평일</span>
+                <strong id="wdProfit">0원</strong>
+            </div>
+            <div class="summary-card">
+                <span>🏖️ 주말</span>
+                <strong id="weProfit">0원</strong>
+            </div>
+            <div class="summary-card">
+                <span>📊 거래 건수</span>
+                <strong id="totalCount">0건</strong>
+            </div>
+            <div class="summary-card">
+                <span>💡 건당 평균</span>
+                <strong id="avgProfit">0원</strong>
+            </div>
+        </div>
+
+        <div class="input-form">
+            <span id="formTitle" class="form-title">📝 새 기록 입력</span>
+            <input type="hidden" id="editId">
+            <div class="form-row">
+                <input type="text" id="tDate" placeholder="경기 일정" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'">
+                <select id="tTeam">
+                    <option value="">홈구단 선택</option>
+                    <option value="LG">LG 트윈스</option><option value="KT">KT 위즈</option><option value="한화">한화 이글스</option><option value="두산">두산 베어스</option><option value="KIA">KIA 타이거즈</option><option value="삼성">삼성 라이온즈</option><option value="롯데">롯데 자이언츠</option><option value="NC">NC 다이노스</option><option value="SSG">SSG 랜더스</option><option value="키움">키움 히어로즈</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <input type="number" id="tBuy" placeholder="구매가">
+                <input type="number" id="tSell" placeholder="양도가">
+            </div>
+            <button id="submitBtn" class="add-btn" onclick="handleSave()">저장하기</button>
+            <button id="cancelBtn" class="add-btn" style="background:#cbd5e1; display:none; margin-top:5px;" onclick="resetForm()">취소</button>
+        </div>
+
+        <div class="list-header">📊 양도 기록 리스트 (최신순)</div>
+        <div id="recordList"></div>
+
+        <div class="pagination-zone">
+            <button id="prevBtn" class="page-btn" onclick="changePage(-1)">이전</button>
+            <span id="pageInfo" class="page-info">1 / 1</span>
+            <button id="nextBtn" class="page-btn" onclick="changePage(1)">다음</button>
+        </div>
+
+        <div class="chart-box">
+            <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-sub);">월별 수익 현황 (원)</div>
+            <div style="height: 200px;"><canvas id="profitChart"></canvas></div>
+        </div>
     </div>
 
-    <div class="summary-grid">
-        <div class="summary-card main">
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 누적 수익</span>
-            <strong id="totalProfit">0원</strong>
-        </div>
-        <div class="summary-card">
-            <span>📅 평일 수익</span>
-            <strong id="wdProfit">0원</strong>
-        </div>
-        <div class="summary-card">
-            <span>🏖️ 주말 수익</span>
-            <strong id="weProfit">0원</strong>
-        </div>
-        <div class="summary-card">
-            <span>📊 총 거래 건수</span>
-            <strong id="totalCount">0건</strong>
-        </div>
-        <div class="summary-card">
-            <span>💡 건당 평균 수익</span>
-            <strong id="avgProfit">0원</strong>
+    <!-- ================= 탭 2: 실시간 순위 ================= -->
+    <div id="tab-rank" class="tab-content">
+        <div class="live-card">
+            <div style="font-size: 15px; font-weight: 700; margin-bottom: 15px; color: var(--primary);">🏆 2026 KBO 리그 실시간 순위</div>
+            <div id="rankLoading" class="loading-text">🔄 외부 스포츠 데이터 동기화 중...</div>
+            <table class="live-table" id="rankTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th style="text-align: left; padding-left: 8px;">구단명</th>
+                        <th>경기</th>
+                        <th>승</th>
+                        <th>패</th>
+                        <th>무</th>
+                        <th>승률</th>
+                    </tr>
+                </thead>
+                <tbody id="rankContainer"></tbody>
+            </table>
         </div>
     </div>
 
-    <div class="input-form">
-        <span id="formTitle" class="form-title">📝 새 기록 입력</span>
-        <input type="hidden" id="editId">
-        
-        <div class="form-row">
-            <input type="text" id="tDate" placeholder="경기 일정" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" onchange="checkKboSchedule(this.value)">
-            <select id="tTeam">
-                <option value="">홈구단 선택</option>
-                <option value="LG">LG 트윈스</option><option value="KT">KT 위즈</option><option value="한화">한화 이글스</option><option value="두산">두산 베어스</option><option value="KIA">KIA 타이거즈</option><option value="삼성">삼성 라이온즈</option><option value="롯데">롯데 자이언츠</option><option value="NC">NC 다이노스</option><option value="SSG">SSG 랜더스</option><option value="키움">키움 히어로즈</option>
-            </select>
+    <!-- ================= 탭 3: 전체 일정 ================= -->
+    <div id="tab-schedule" class="tab-content">
+        <div class="live-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 15px; font-weight: 700; color: var(--primary);">📅 KBO 리그 경기 일정</div>
+                <!-- 달 선택 컨트롤러 -->
+                <select id="scheduleMonth" style="width: 100px; padding: 6px 10px;" onchange="loadLiveSchedule(this.value)">
+                    <option value="03">3월</option><option value="04">4월</option>
+                    <option value="05">5월</option><option value="06" selected>6월</option>
+                    <option value="07">7월</option><option value="08">8월</option>
+                    <option value="09">9월</option><option value="10">10월</option>
+                </select>
+            </div>
+            <div id="scheduleLoading" class="loading-text">🔄 확정 경기 스케줄 로드 중...</div>
+            <div id="scheduleContainer"></div>
         </div>
-        <div class="form-row">
-            <input type="number" id="tBuy" placeholder="구매가">
-            <input type="number" id="tSell" placeholder="양도가">
-        </div>
-
-        <div id="kboBox" class="kbo-schedule-box">
-            <span class="kbo-title">⚾️ 선택한 날짜의 KBO 경기 일정 (터치 시 자동 입력)</span>
-            <div id="kboGrid" class="kbo-grid"></div>
-        </div>
-        <div style="height:6px;"></div>
-
-        <button id="submitBtn" class="add-btn" onclick="handleSave()">저장하기</button>
-        <button id="cancelBtn" class="add-btn" style="background:#cbd5e1; display:none; margin-top:5px;" onclick="resetForm()">취소</button>
     </div>
 
-    <div class="list-header">📊 양도 기록 리스트 (최신순)</div>
-    <div id="recordList"></div>
-
-    <div class="pagination-zone">
-        <button id="prevBtn" class="page-btn" onclick="changePage(-1)">이전</button>
-        <span id="pageInfo" class="page-info">1 / 1</span>
-        <button id="nextBtn" class="page-btn" onclick="changePage(1)">다음</button>
-    </div>
-
-    <div class="rank-box">
-        <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-sub);">🏆 KBO 구단 순위 현황 (수동 편집 보존)</div>
-        <table class="rank-table">
-            <thead>
-                <tr>
-                    <th>순위</th>
-                    <th style="text-align: left; padding-left: 8px;">구단명</th>
-                    <th>승</th>
-                    <th>패</th>
-                    <th>무</th>
-                </tr>
-            </thead>
-            <tbody id="rankTableBody">
-                </tbody>
-        </table>
-    </div>
-
-    <div class="chart-box">
-        <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-sub);">월별 수익 현황 (원)</div>
-        <div style="height: 200px;"><canvas id="profitChart"></canvas></div>
-    </div>
 </div>
 
 <script>
-    // 💡 2026 KBO 주요 대진 일정 데이터베이스 복원 (앞서 공유해주신 일정 샘플)
-    const KBO_SCHEDULE = {
-        "2026-06-24": [ {home:"LG", away:"삼성"}, {home:"두산", away:"KT"}, {home:"SSG", away:"롯데"}, {home:"한화", away:"KIA"}, {home:"키움", away:"NC"} ],
-        "2026-06-25": [ {home:"LG", away:"삼성"}, {home:"두산", away:"KT"}, {home:"SSG", away:"롯데"}, {home:"한화", away:"KIA"}, {home:"키움", away:"NC"} ]
-    };
-
-    // 💡 구단 순위 기본 데이터 구조 세팅 (로컬스토리지 'kbo_rank_db'에 자동 영구저장)
-    let rankDb = JSON.parse(localStorage.getItem('kbo_rank_db')) || [
-        { team: "KIA", w: 0, l: 0, d: 0 }, { team: "LG", w: 0, l: 0, d: 0 }, 
-        { team: "두산", w: 0, l: 0, d: 0 }, { team: "삼성", w: 0, l: 0, d: 0 }, 
-        { team: "SSG", w: 0, l: 0, d: 0 }, { team: "NC", w: 0, l: 0, d: 0 }, 
-        { team: "한화", w: 0, l: 0, d: 0 }, { team: "키움", w: 0, l: 0, d: 0 }, 
-        { team: "KT", w: 0, l: 0, d: 0 }, { team: "롯데", w: 0, l: 0, d: 0 }
-    ];
-
     let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
     let chart;
     let currentPage = 1;
     const itemsPerPage = 5; 
 
+    // 📱 탭 전환 제어 함수
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+
+        // 라이브 탭 클릭 시 오픈 실시간 API 호출 트리거
+        if (tabId === 'tab-rank') loadLiveRank();
+        if (tabId === 'tab-schedule') loadLiveSchedule(document.getElementById('scheduleMonth').value);
+    }
+
+    // 🏆 외부 공공 스포츠 허브 데이터를 파싱해 실시간 순위를 갱신하는 연동 허브 로직
+    function loadLiveRank() {
+        const container = document.getElementById('rankContainer');
+        const loading = document.getElementById('rankLoading');
+        const table = document.getElementById('rankTable');
+
+        // 네이버 스포츠 오픈 데이터 엔드포인트를 우회 긁어오는 완전 무료 CORS 프록시 연동
+        fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://sports.news.naver.com/kbaseball/record/index.nhn'))
+        .then(response => response.json())
+        .then(data => {
+            const html = data.contents;
+            // 프론트엔드 크롤링 엔진: 수집한 HTML 소스코드에서 순위 데이터 정밀 정규식 추출
+            const jsonMatch = html.match(/regularTeamRecordList\s*:\s*(\[.*?\]),/);
+            
+            if (jsonMatch) {
+                const rankData = JSON.parse(jsonMatch[1]);
+                loading.style.display = 'none';
+                table.style.display = 'table';
+                
+                container.innerHTML = rankData.map((team, idx) => `
+                    <tr>
+                        <td class="rank-num">${idx + 1}</td>
+                        <td class="team-label">${team.teamName}</td>
+                        <td>${team.game}</td>
+                        <td>${team.won}</td>
+                        <td>${team.lost}</td>
+                        <td>${team.tied}</td>
+                        <td style="color:var(--text-sub);">${team.sigb}</td>
+                    </tr>
+                `).join('');
+            } else {
+                throw new Error("Data match failed");
+            }
+        })
+        .catch(err => {
+            loading.innerText = "⚠️ 실시간 야구 순위 데이터를 불러올 수 없습니다. (네트워크 연결 확인)";
+        });
+    }
+
+    // 📅 외부 일정 허브를 연동하여 올해 실시간 경기 일정을 달별로 긁어오는 엔진 로직
+    function loadLiveSchedule(month) {
+        const container = document.getElementById('scheduleContainer');
+        const loading = document.getElementById('scheduleLoading');
+        
+        container.innerHTML = '';
+        loading.style.display = 'block';
+
+        const currentYear = "2026"; // 2026년 기준 실시간 매칭 동기화
+        const targetUrl = `https://sports.news.naver.com/kbaseball/schedule/index?year=${currentYear}&month=${month}`;
+
+        fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl))
+        .then(response => response.json())
+        .then(data => {
+            const html = data.contents;
+            // 달력 스케줄 모델 배열 파싱 정규식 필터
+            const jsonMatch = html.match(/Model\s*:\s*(\[.*?\])\s*,\s*month/);
+            
+            if (jsonMatch) {
+                const scheduleData = JSON.parse(jsonMatch[1]);
+                loading.style.display = 'none';
+                
+                let htmlBuffer = [];
+                scheduleData.forEach(day => {
+                    if(day.scheduleList && day.scheduleList.length > 0) {
+                        day.scheduleList.forEach(game => {
+                            // 취소된 경기는 패스하거나 스타일 분기
+                            const isCanceled = game.cancelYn === 'Y' ? " (우천취소)" : "";
+                            const state = game.state === 'BEFORE' ? "vs" : `${game.leftTeamScore} : ${game.rightTeamScore}`;
+                            
+                            htmlBuffer.push(`
+                                <div class="schedule-item">
+                                    <div class="schedule-date">${day.date} (${day.dayOfWeek})</div>
+                                    <div class="schedule-match" style="${game.cancelYn === 'Y' ? 'color:#94a3b8; text-decoration:line-through;' : ''}">
+                                        ${game.leftTeamName} ${state} <span>${game.rightTeamName}</span>${isCanceled}
+                                    </div>
+                                    <div class="schedule-stadium">${game.stadium}</div>
+                                </div>
+                            `);
+                        });
+                    }
+                });
+                
+                container.innerHTML = htmlBuffer.length > 0 ? htmlBuffer.join('') : '<div class="loading-text">해당 달에는 확정된 KBO 경기가 없습니다.</div>';
+            } else {
+                throw new Error("Schedule fetch fail");
+            }
+        })
+        .catch(err => {
+            loading.innerText = "⚠️ 실시간 경기 일정을 원격 조율할 수 없습니다. 잠시 후 다시 시도해 주세요.";
+        });
+    }
+
+    // ================= 기존 장부 비즈니스 로직 연동 보존 =================
     function isWeekend(d) {
         const day = new Date(d).getDay();
         return day === 0 || day === 6;
-    }
-
-    function sortDB() {
-        db.sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
-
-    // 대진 일정 추적 제어 로직 복원
-    function checkKboSchedule(dateString) {
-        const kboBox = document.getElementById('kboBox');
-        const kboGrid = document.getElementById('kboGrid');
-        
-        if (!dateString || !KBO_SCHEDULE[dateString]) {
-            kboBox.style.display = 'none';
-            kboGrid.innerHTML = '';
-            return;
-        }
-
-        const matches = KBO_SCHEDULE[dateString];
-        kboBox.style.display = 'block';
-        kboGrid.innerHTML = matches.map(match => {
-            return `<div class="kbo-match-btn" onclick="selectKboMatch('${match.home}')"><span>${match.home}</span> vs ${match.away}</div>`;
-        }).join('');
-    }
-
-    function selectKboMatch(homeTeam) {
-        document.getElementById('tTeam').value = homeTeam;
-    }
-
-    // 순위표 값 변경 핸들러 및 승률 자동 정렬 정산 함수
-    function updateRankValue(index, field, value) {
-        rankDb[index][field] = parseInt(value) || 0;
-        
-        // 승률 기준 내림차순 정렬 연산 (승률 = 승 / (승+패))
-        rankDb.sort((a, b) => {
-            const aTotal = a.w + a.l;
-            const bTotal = b.w + b.l;
-            const aRate = aTotal > 0 ? a.w / aTotal : 0;
-            const bRate = bTotal > 0 ? b.w / bTotal : 0;
-            return bRate - aRate;
-        });
-
-        localStorage.setItem('kbo_rank_db', JSON.stringify(rankDb));
-        renderRankTable();
-    }
-
-    // 순위 표 테이블 드로잉 함수
-    function renderRankTable() {
-        const tbody = document.getElementById('rankTableBody');
-        tbody.innerHTML = rankDb.map((item, idx) => {
-            return `
-                <tr>
-                    <td class="rank-num">${idx + 1}</td>
-                    <td class="rank-team">${item.team}</td>
-                    <td><input type="number" class="rank-input" value="${item.w}" onchange="updateRankValue(${idx}, 'w', this.value)"></td>
-                    <td><input type="number" class="rank-input" value="${item.l}" onchange="updateRankValue(${idx}, 'l', this.value)"></td>
-                    <td><input type="number" class="rank-input" value="${item.d}" onchange="updateRankValue(${idx}, 'd', this.value)"></td>
-                </tr>
-            `;
-        }).join('');
     }
 
     function handleSave() {
@@ -263,7 +320,7 @@
 
         if(!date || !team) return alert("날짜와 팀을 선택해주세요.");
 
-        const profit = sell - buy; 
+        const profit = sell - buy;
         const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell, profit };
 
         if(id) {
@@ -283,19 +340,14 @@
     function startEdit(id) {
         const item = db.find(x => x.id === id);
         document.getElementById('editId').value = item.id;
-        
         const dateInput = document.getElementById('tDate');
         dateInput.type = 'date';
         dateInput.value = item.date;
-        checkKboSchedule(item.date);
-
         document.getElementById('tTeam').value = item.team;
         document.getElementById('tBuy').value = item.buy;
         document.getElementById('tSell').value = item.sell;
-        
         document.getElementById('formTitle').innerText = "🔄 기록 수정 중...";
         document.getElementById('submitBtn').innerText = "수정 완료하기";
-        document.getElementById('submitBtn').classList.add('update-mode-btn');
         document.getElementById('cancelBtn').style.display = 'block';
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
@@ -305,16 +357,11 @@
         const dateInput = document.getElementById('tDate');
         dateInput.type = 'text';
         dateInput.value = '';
-        
-        document.getElementById('kboBox').style.display = 'none';
-        document.getElementById('kboGrid').innerHTML = '';
-
         document.getElementById('tTeam').value = '';
         document.getElementById('tBuy').value = '';
         document.getElementById('tSell').value = '';
         document.getElementById('formTitle').innerText = "📝 새 기록 입력";
         document.getElementById('submitBtn').innerText = "저장하기";
-        document.getElementById('submitBtn').classList.remove('update-mode-btn');
         document.getElementById('cancelBtn').style.display = 'none';
     }
 
@@ -358,12 +405,8 @@
                             renderAll();
                             alert("성공적으로 복구되었습니다!");
                         }
-                    } else {
-                        alert("올바르지 않은 백업 파일 형식입니다.");
                     }
-                } catch(err) {
-                    alert("파일을 읽는 중 오류가 발생했습니다.");
-                }
+                } catch(err) { alert("파일 파싱 에러"); }
             }
         }
         input.click();
@@ -386,12 +429,10 @@
 
         const list = document.getElementById('recordList');
         if (pagedDb.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:40px; font-size:14px; font-weight:500;">📅 아직 등록된 양도 기록이 없습니다.</div>`;
+            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:30px; font-size:14px;">기록된 데이터가 없습니다.</div>`;
         } else {
             list.innerHTML = pagedDb.map(item => {
                 const we = isWeekend(item.date);
-                const currentProfit = item.sell - item.buy;
-
                 return `
                     <div class="ticket-item">
                         <div class="item-info">
@@ -403,8 +444,8 @@
                             </div>
                         </div>
                         <div class="item-right">
-                            <span class="profit-val" style="color: ${currentProfit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
-                                ${currentProfit >= 0 ? '+' : ''}${currentProfit.toLocaleString()}원
+                            <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
+                                ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
                             </span>
                             <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString()}</span>
                         </div>
@@ -417,9 +458,9 @@
         document.getElementById('prevBtn').disabled = (currentPage === 1);
         document.getElementById('nextBtn').disabled = (currentPage === maxPage);
 
-        const total = db.reduce((s, i) => s + (i.sell - i.buy), 0);
-        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + (i.sell - i.buy), 0);
-        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + (i.sell - i.buy), 0);
+        const total = db.reduce((s, i) => s + i.profit, 0);
+        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
+        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
         const count = db.length;
         const avg = count > 0 ? Math.round(total / count) : 0;
 
@@ -430,7 +471,6 @@
         document.getElementById('avgProfit').innerText = avg.toLocaleString() + "원";
         
         updateChart();
-        renderRankTable(); // 순위 테이블 렌더 연동
     }
 
     function updateChart() {
@@ -438,7 +478,7 @@
         const stats = {};
         [...db].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
             const m = i.date.slice(5, 7) + "월";
-            stats[m] = (stats[m] || 0) + (i.sell - i.buy);
+            stats[m] = (stats[m] || 0) + i.profit;
         });
         if (chart) chart.destroy();
         chart = new Chart(ctx, {
@@ -447,11 +487,7 @@
                 labels: Object.keys(stats),
                 datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
             },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + '원' } } }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
     renderAll();
