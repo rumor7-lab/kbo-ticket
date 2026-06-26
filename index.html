@@ -8,8 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3172/3172551.png">
-    <link rel="manifest" href="data:application/manifest+json,{'name':'TicketFlow','short_name':'TicketFlow','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#4f46e5','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3172/3172551.png','sizes':'512x512','type':'image/png'}]}">
+    <link class="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3172/3172551.png">
+    <link class="manifest" href="data:application/manifest+json,{'name':'TicketFlow','short_name':'TicketFlow','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#4f46e5','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3172/3172551.png','sizes':'512x512','type':'image/png'}]}">
     <style>
         :root { 
             --bg: #0f172a; 
@@ -62,7 +62,7 @@
 
         .add-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--accent-neon)); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 8px 24px var(--primary-glow); transition: all 0.2s; }
         .add-btn:active { transform: scale(0.98); opacity: 0.9; }
-        .update-mode-btn { background: linear-gradient(135deg, #059669, #10b981; box-shadow: 0 8px 24px rgba(16,185,129,0.3); }
+        .update-mode-btn { background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 8px 24px rgba(16,185,129,0.3); }
         
         .list-header { font-size: 17px; font-weight: 800; margin-bottom: 14px; color: #ffffff; display: flex; align-items: center; justify-content: space-between; }
         .ticket-item { background: var(--card-bg); padding: 18px; border-radius: 24px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.02); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
@@ -208,7 +208,22 @@
         db.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
-    // 💡 1단계 차단: 스캔 시에는 순수한 원본 100% 금액만 양도가(tSell) 칸에 주입합니다.
+    // 💡 [안전 장치 코어] 이미 유저가 과거에 10% 제외 처리하여 저장해버린 원본 유실 데이터를 강제 역추적 복원하는 보안 필터
+    function getCleanOriginalSell(item) {
+        let rawSell = parseInt(item.sell) || 0;
+        // KBO 티켓 가격은 무조건 천원/만원 단위로 끝납니다. 
+        // 만약 54,000원처럼 수수료가 이미 깎여 저장된 상태라면, 끝자리가 000원으로 맞아떨어지더라도
+        // profit 계산 구조나 꼬임 방지를 위해 1,000원 단위로 정확히 복원 루틴을 태웁니다.
+        if (item.profit !== undefined && rawSell > 0) {
+            // 과거 버전의 잔재(sell 자체에 수수료 90%만 남겨 전송했던 버그 이력 역추적)
+            // 판단 기준: 판매 원본값 확인을 위해 역산 처리 검증
+            if (rawSell % 10000 !== 0 && rawSell % 900 === 0) {
+                return Math.round(rawSell / 0.9);
+            }
+        }
+        return rawSell;
+    }
+
     function scanTicketBayImage(input) {
         const file = input.files[0];
         if(!file) return;
@@ -266,6 +281,8 @@
                     checkKboSchedule(formattedDate);
                 }
                 if(detectedTeam) document.getElementById('tTeam').value = detectedTeam;
+                
+                // 수수료 전혀 건드리지 않은 이미지 문자 순수 정가액 그대로 주입
                 if(detectedPrice > 0) document.getElementById('tSell').value = detectedPrice;
                 if(calculatedBuyPrice > 0) document.getElementById('tBuy').value = calculatedBuyPrice;
 
@@ -300,7 +317,6 @@
         document.getElementById('tTeam').value = homeTeam;
     }
 
-    // 💡 2단계 차단: DB 저장 시점에도 수수료를 빼지 않고, 순수한 원가(buy)와 판매가(sell) 데이터만 원본 그대로 깔끔하게 밀어 넣습니다.
     function handleSave() {
         const id = document.getElementById('editId').value;
         const date = document.getElementById('tDate').value;
@@ -310,6 +326,7 @@
 
         if(!date || !team) return alert("날짜와 팀을 선택해주세요.");
 
+        // 원본 데이터를 그대로 배열장부에 추가 저장 (세이브 시 10% 디덕션 선반영 수식 제거)
         const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell };
 
         if(id) {
@@ -337,7 +354,10 @@
 
         document.getElementById('tTeam').value = item.team;
         document.getElementById('tBuy').value = item.buy;
-        document.getElementById('tSell').value = item.sell;
+        
+        // 수정할 때도 원본 자동복원 필터 통과 후 노출
+        document.getElementById('tSell').value = getCleanOriginalSell(item);
+        
         document.getElementById('formTitle').innerText = "🔄 정산서 정보 전면 수정 중...";
         document.getElementById('submitBtn').innerText = "수정본 제출하기";
         document.getElementById('submitBtn').classList.add('update-mode-btn');
@@ -423,8 +443,7 @@
         renderAll();
     }
 
-    // 💡 3단계 완결: 오직 렌더링하고 통계를 정산하는 화면 표출 순간에만 실시간으로 '양도가 * 0.9'를 적용합니다.
-    // 기존 데이터와 신규 데이터 모두 이 수식 하나로만 통제되므로 중복 차감 버그가 원천 차단됩니다.
+    // 💡 화면 렌더링 시 과거 비정상 데이터 우회 연산 가동
     function renderAll() {
         sortDB();
         const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
@@ -439,9 +458,10 @@
             list.innerHTML = pagedDb.map(item => {
                 const we = isWeekend(item.date);
                 
-                // 실시간 단일 수수료 계산
-                const tbayFee = Math.round(item.sell * 0.1);
-                const settlement = item.sell - tbayFee;
+                // 역추적 필터 통과한 깨끗한 순수 판매원가 추출
+                const cleanSell = getCleanOriginalSell(item);
+                const tbayFee = Math.round(cleanSell * 0.1);
+                const settlement = cleanSell - tbayFee;
                 const recordProfit = settlement - item.buy;
 
                 return `
@@ -470,10 +490,22 @@
         document.getElementById('prevBtn').disabled = (currentPage === 1);
         document.getElementById('nextBtn').disabled = (currentPage === maxPage);
 
-        // 상단 실시간 통계 연산 통합
-        const total = db.reduce((s, i) => s + (Math.round(i.sell * 0.9) - i.buy), 0);
-        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + (Math.round(i.sell * 0.9) - i.buy), 0);
-        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + (Math.round(i.sell * 0.9) - i.buy), 0);
+        // 상단 자산 현황 대시보드 스케줄러 동기화 연산
+        const total = db.reduce((s, i) => {
+            const cleanSell = getCleanOriginalSell(i);
+            return s + (Math.round(cleanSell * 0.9) - i.buy);
+        }, 0);
+        
+        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => {
+            const cleanSell = getCleanOriginalSell(i);
+            return s + (Math.round(cleanSell * 0.9) - i.buy);
+        }, 0);
+        
+        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => {
+            const cleanSell = getCleanOriginalSell(i);
+            return s + (Math.round(cleanSell * 0.9) - i.buy);
+        }, 0);
+        
         const count = db.length;
         const avg = count > 0 ? Math.round(total / count) : 0;
 
@@ -491,7 +523,8 @@
         const stats = {};
         [...db].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
             const m = i.date.slice(5, 7) + "월";
-            const recordProfit = Math.round(i.sell * 0.9) - i.buy;
+            const cleanSell = getCleanOriginalSell(i);
+            const recordProfit = Math.round(cleanSell * 0.9) - i.buy;
             stats[m] = (stats[m] || 0) + recordProfit;
         });
         if (chart) chart.destroy();
