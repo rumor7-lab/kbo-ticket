@@ -17,7 +17,6 @@
         .header-box { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .logo-icon { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
         
-        /* 📱 상용 앱 스타일 상단 탭 시스템 */
         .tab-menu { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; margin-bottom: 20px; gap: 2px; }
         .tab-btn { flex: 1; border: none; background: none; padding: 10px; font-size: 13px; font-weight: 700; color: var(--text-sub); cursor: pointer; border-radius: 9px; transition: all 0.2s; }
         .tab-btn.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
@@ -53,20 +52,9 @@
         .page-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .page-btn:disabled { opacity: 0.4; }
 
-        /* 📊 실시간 순위 및 일정 연동용 스타일 */
-        .live-card { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); margin-bottom: 15px; }
-        .live-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .live-table th { color: var(--text-sub); padding: 10px 5px; font-weight: 700; border-bottom: 2px solid #f1f5f9; }
-        .live-table td { padding: 12px 5px; border-bottom: 1px solid #f8fafc; font-weight: 600; }
-        .rank-num { font-weight: 800; color: var(--primary); }
-        .team-label { text-align: left; font-weight: 700; padding-left: 8px !important; }
-        
-        .schedule-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-weight: 600; }
-        .schedule-date { font-size: 11px; color: var(--text-sub); font-weight: 700; width: 80px; }
-        .schedule-match { flex: 1; text-align: center; font-weight: 700; }
-        .schedule-match span { color: var(--primary); }
-        .schedule-stadium { font-size: 11px; color: #94a3b8; width: 60px; text-align: right; }
-        .loading-text { text-align: center; color: var(--text-sub); padding: 30px; font-size: 13px; font-weight: 600; }
+        /* 📊 웹뷰 프레임 컴포넌트 스타일 */
+        .webview-container { width: 100%; height: 600px; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
@@ -82,14 +70,12 @@
         </div>
     </header>
 
-    <!-- 📱 탭 메뉴 내비게이션 -->
     <nav class="tab-menu">
         <button class="tab-btn active" onclick="switchTab('tab-ledger')">💰 장부 관리</button>
         <button class="tab-btn" onclick="switchTab('tab-rank')">🏆 실시간 순위</button>
         <button class="tab-btn" onclick="switchTab('tab-schedule')">📅 전체 일정</button>
     </nav>
 
-    <!-- ================= 탭 1: 장부 관리 ================= -->
     <div id="tab-ledger" class="tab-content active">
         <div class="backup-zone">
             <button class="backup-btn" onclick="exportData()">📥 데이터 백업</button>
@@ -152,43 +138,15 @@
         </div>
     </div>
 
-    <!-- ================= 탭 2: 실시간 순위 ================= -->
     <div id="tab-rank" class="tab-content">
-        <div class="live-card">
-            <div style="font-size: 15px; font-weight: 700; margin-bottom: 15px; color: var(--primary);">🏆 2026 KBO 리그 실시간 순위</div>
-            <div id="rankLoading" class="loading-text">🔄 외부 스포츠 데이터 동기화 중...</div>
-            <table class="live-table" id="rankTable" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>순위</th>
-                        <th style="text-align: left; padding-left: 8px;">구단명</th>
-                        <th>경기</th>
-                        <th>승</th>
-                        <th>패</th>
-                        <th>무</th>
-                        <th>승률</th>
-                    </tr>
-                </thead>
-                <tbody id="rankContainer"></tbody>
-            </table>
+        <div class="webview-container">
+            <iframe src="https://m.sports.naver.com/kbaseball/record/index"></iframe>
         </div>
     </div>
 
-    <!-- ================= 탭 3: 전체 일정 ================= -->
     <div id="tab-schedule" class="tab-content">
-        <div class="live-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div style="font-size: 15px; font-weight: 700; color: var(--primary);">📅 KBO 리그 경기 일정</div>
-                <!-- 달 선택 컨트롤러 -->
-                <select id="scheduleMonth" style="width: 100px; padding: 6px 10px;" onchange="loadLiveSchedule(this.value)">
-                    <option value="03">3월</option><option value="04">4월</option>
-                    <option value="05">5월</option><option value="06" selected>6월</option>
-                    <option value="07">7월</option><option value="08">8월</option>
-                    <option value="09">9월</option><option value="10">10월</option>
-                </select>
-            </div>
-            <div id="scheduleLoading" class="loading-text">🔄 확정 경기 스케줄 로드 중...</div>
-            <div id="scheduleContainer"></div>
+        <div class="webview-container">
+            <iframe src="https://m.sports.naver.com/kbaseball/schedule/index"></iframe>
         </div>
     </div>
 
@@ -200,115 +158,12 @@
     let currentPage = 1;
     const itemsPerPage = 5; 
 
-    // 📱 탭 전환 제어 함수
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         
         document.getElementById(tabId).classList.add('active');
         event.currentTarget.classList.add('active');
-
-        // 라이브 탭 클릭 시 오픈 실시간 API 호출 트리거
-        if (tabId === 'tab-rank') loadLiveRank();
-        if (tabId === 'tab-schedule') loadLiveSchedule(document.getElementById('scheduleMonth').value);
-    }
-
-    // 🏆 외부 공공 스포츠 허브 데이터를 파싱해 실시간 순위를 갱신하는 연동 허브 로직
-    function loadLiveRank() {
-        const container = document.getElementById('rankContainer');
-        const loading = document.getElementById('rankLoading');
-        const table = document.getElementById('rankTable');
-
-        // 네이버 스포츠 오픈 데이터 엔드포인트를 우회 긁어오는 완전 무료 CORS 프록시 연동
-        fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://sports.news.naver.com/kbaseball/record/index.nhn'))
-        .then(response => response.json())
-        .then(data => {
-            const html = data.contents;
-            // 프론트엔드 크롤링 엔진: 수집한 HTML 소스코드에서 순위 데이터 정밀 정규식 추출
-            const jsonMatch = html.match(/regularTeamRecordList\s*:\s*(\[.*?\]),/);
-            
-            if (jsonMatch) {
-                const rankData = JSON.parse(jsonMatch[1]);
-                loading.style.display = 'none';
-                table.style.display = 'table';
-                
-                container.innerHTML = rankData.map((team, idx) => `
-                    <tr>
-                        <td class="rank-num">${idx + 1}</td>
-                        <td class="team-label">${team.teamName}</td>
-                        <td>${team.game}</td>
-                        <td>${team.won}</td>
-                        <td>${team.lost}</td>
-                        <td>${team.tied}</td>
-                        <td style="color:var(--text-sub);">${team.sigb}</td>
-                    </tr>
-                `).join('');
-            } else {
-                throw new Error("Data match failed");
-            }
-        })
-        .catch(err => {
-            loading.innerText = "⚠️ 실시간 야구 순위 데이터를 불러올 수 없습니다. (네트워크 연결 확인)";
-        });
-    }
-
-    // 📅 외부 일정 허브를 연동하여 올해 실시간 경기 일정을 달별로 긁어오는 엔진 로직
-    function loadLiveSchedule(month) {
-        const container = document.getElementById('scheduleContainer');
-        const loading = document.getElementById('scheduleLoading');
-        
-        container.innerHTML = '';
-        loading.style.display = 'block';
-
-        const currentYear = "2026"; // 2026년 기준 실시간 매칭 동기화
-        const targetUrl = `https://sports.news.naver.com/kbaseball/schedule/index?year=${currentYear}&month=${month}`;
-
-        fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl))
-        .then(response => response.json())
-        .then(data => {
-            const html = data.contents;
-            // 달력 스케줄 모델 배열 파싱 정규식 필터
-            const jsonMatch = html.match(/Model\s*:\s*(\[.*?\])\s*,\s*month/);
-            
-            if (jsonMatch) {
-                const scheduleData = JSON.parse(jsonMatch[1]);
-                loading.style.display = 'none';
-                
-                let htmlBuffer = [];
-                scheduleData.forEach(day => {
-                    if(day.scheduleList && day.scheduleList.length > 0) {
-                        day.scheduleList.forEach(game => {
-                            // 취소된 경기는 패스하거나 스타일 분기
-                            const isCanceled = game.cancelYn === 'Y' ? " (우천취소)" : "";
-                            const state = game.state === 'BEFORE' ? "vs" : `${game.leftTeamScore} : ${game.rightTeamScore}`;
-                            
-                            htmlBuffer.push(`
-                                <div class="schedule-item">
-                                    <div class="schedule-date">${day.date} (${day.dayOfWeek})</div>
-                                    <div class="schedule-match" style="${game.cancelYn === 'Y' ? 'color:#94a3b8; text-decoration:line-through;' : ''}">
-                                        ${game.leftTeamName} ${state} <span>${game.rightTeamName}</span>${isCanceled}
-                                    </div>
-                                    <div class="schedule-stadium">${game.stadium}</div>
-                                </div>
-                            `);
-                        });
-                    }
-                });
-                
-                container.innerHTML = htmlBuffer.length > 0 ? htmlBuffer.join('') : '<div class="loading-text">해당 달에는 확정된 KBO 경기가 없습니다.</div>';
-            } else {
-                throw new Error("Schedule fetch fail");
-            }
-        })
-        .catch(err => {
-            loading.innerText = "⚠️ 실시간 경기 일정을 원격 조율할 수 없습니다. 잠시 후 다시 시도해 주세요.";
-        });
-    }
-
-    // ================= 기존 장부 비즈니스 로직 연동 보존 =================
-    function isWeekend(d) {
-        const day = new Date(d).getDay();
-        return day === 0 || day === 6;
     }
 
     function handleSave() {
@@ -324,173 +179,4 @@
         const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell, profit };
 
         if(id) {
-            const idx = db.findIndex(x => x.id === parseInt(id));
-            db[idx] = record;
-        } else {
-            db.push(record);
-            currentPage = 1;
-        }
-
-        sortDB();
-        localStorage.setItem('kbo_final', JSON.stringify(db));
-        resetForm();
-        renderAll();
-    }
-
-    function startEdit(id) {
-        const item = db.find(x => x.id === id);
-        document.getElementById('editId').value = item.id;
-        const dateInput = document.getElementById('tDate');
-        dateInput.type = 'date';
-        dateInput.value = item.date;
-        document.getElementById('tTeam').value = item.team;
-        document.getElementById('tBuy').value = item.buy;
-        document.getElementById('tSell').value = item.sell;
-        document.getElementById('formTitle').innerText = "🔄 기록 수정 중...";
-        document.getElementById('submitBtn').innerText = "수정 완료하기";
-        document.getElementById('cancelBtn').style.display = 'block';
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
-
-    function resetForm() {
-        document.getElementById('editId').value = '';
-        const dateInput = document.getElementById('tDate');
-        dateInput.type = 'text';
-        dateInput.value = '';
-        document.getElementById('tTeam').value = '';
-        document.getElementById('tBuy').value = '';
-        document.getElementById('tSell').value = '';
-        document.getElementById('formTitle').innerText = "📝 새 기록 입력";
-        document.getElementById('submitBtn').innerText = "저장하기";
-        document.getElementById('cancelBtn').style.display = 'none';
-    }
-
-    function deleteRecord(id) {
-        if(confirm("정말 삭제하시겠습니까?")) {
-            db = db.filter(x => x.id !== id);
-            localStorage.setItem('kbo_final', JSON.stringify(db));
-            const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
-            if(currentPage > maxPage) currentPage = maxPage;
-            renderAll();
-        }
-    }
-
-    function exportData() {
-        if(db.length === 0) return alert("백업할 데이터가 없습니다.");
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `ticket_flow_backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = e => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.readAsText(file, 'UTF-8');
-            reader.onload = readerEvent => {
-                try {
-                    const content = JSON.parse(readerEvent.target.result);
-                    if(Array.isArray(content)) {
-                        if(confirm("기존 데이터를 덮어쓰고 복구하시겠습니까?")) {
-                            db = content;
-                            localStorage.setItem('kbo_final', JSON.stringify(db));
-                            currentPage = 1;
-                            renderAll();
-                            alert("성공적으로 복구되었습니다!");
-                        }
-                    }
-                } catch(err) { alert("파일 파싱 에러"); }
-            }
-        }
-        input.click();
-    }
-
-    function changePage(direction) {
-        const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
-        currentPage += direction;
-        if(currentPage < 1) currentPage = 1;
-        if(currentPage > maxPage) currentPage = maxPage;
-        renderAll();
-    }
-
-    function renderAll() {
-        sortDB();
-        const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const pagedDb = db.slice(startIndex, endIndex);
-
-        const list = document.getElementById('recordList');
-        if (pagedDb.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:30px; font-size:14px;">기록된 데이터가 없습니다.</div>`;
-        } else {
-            list.innerHTML = pagedDb.map(item => {
-                const we = isWeekend(item.date);
-                return `
-                    <div class="ticket-item">
-                        <div class="item-info">
-                            <span class="item-team">${item.team} 홈</span>
-                            <span class="item-date">${item.date} (${we ? '주말' : '평일'})</span>
-                            <div class="btn-group">
-                                <button onclick="startEdit(${item.id})">수정</button>
-                                <button onclick="deleteRecord(${item.id})" style="color:#f87171">삭제</button>
-                            </div>
-                        </div>
-                        <div class="item-right">
-                            <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
-                                ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
-                            </span>
-                            <span class="calc-detail">${item.sell.toLocaleString()} - ${item.buy.toLocaleString()}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        document.getElementById('pageInfo').innerText = `${currentPage} / ${maxPage}`;
-        document.getElementById('prevBtn').disabled = (currentPage === 1);
-        document.getElementById('nextBtn').disabled = (currentPage === maxPage);
-
-        const total = db.reduce((s, i) => s + i.profit, 0);
-        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-        const count = db.length;
-        const avg = count > 0 ? Math.round(total / count) : 0;
-
-        document.getElementById('totalProfit').innerText = total.toLocaleString() + "원";
-        document.getElementById('wdProfit').innerText = wd.toLocaleString() + "원";
-        document.getElementById('weProfit').innerText = we.toLocaleString() + "원";
-        document.getElementById('totalCount').innerText = count.toLocaleString() + "건";
-        document.getElementById('avgProfit').innerText = avg.toLocaleString() + "원";
-        
-        updateChart();
-    }
-
-    function updateChart() {
-        const ctx = document.getElementById('profitChart').getContext('2d');
-        const stats = {};
-        [...db].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
-            const m = i.date.slice(5, 7) + "월";
-            stats[m] = (stats[m] || 0) + i.profit;
-        });
-        if (chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(stats),
-                datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-    }
-    renderAll();
-</script>
-</body>
-</html>
+            const idx = db.findIndex(x => x.id === parseInt(id
