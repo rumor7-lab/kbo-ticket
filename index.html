@@ -9,58 +9,81 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3172/3172551.png">
-    <link rel="manifest" href="data:application/manifest+json,{'name':'TicketFlow','short_name':'TicketFlow','start_url':'.','display':'standalone','background_color':'#ffffff','theme_color':'#6366f1','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3172/3172551.png','sizes':'512x512','type':'image/png'}]}">
+    <link rel="manifest" href="data:application/manifest+json,{'name':'TicketFlow','short_name':'TicketFlow','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#4f46e5','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/3172/3172551.png','sizes':'512x512','type':'image/png'}]}">
     <style>
-        :root { --primary: #6366f1; --bg: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-sub: #64748b; --accent-up: #ef4444; --accent-down: #3b82f6; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: var(--bg); color: var(--text-main); }
-        .app-container { max-width: 480px; margin: 0 auto; padding: 20px; padding-bottom: 50px; }
-        .header-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .logo-icon { width: 42px; height: 42px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-        .summary-card { background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        .summary-card span { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-weight: 600; }
-        .summary-card strong { font-size: 16px; font-weight: 800; }
-        .summary-card.main { grid-column: span 2; background: var(--primary); color: white; }
-        .summary-card.main span { color: rgba(255,255,255,0.8); }
+        :root { 
+            --bg: #0f172a; 
+            --card-bg: #1e293b; 
+            --card-sub: #334155;
+            --primary: #4f46e5; 
+            --primary-glow: rgba(79, 70, 229, 0.4);
+            --accent-neon: #6366f1;
+            --text-main: #f8fafc; 
+            --text-sub: #94a3b8; 
+            --accent-up: #f43f5e; 
+            --accent-down: #38bdf8; 
+        }
         
-        .input-form { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display:block; margin-bottom:12px; display: flex; align-items: center; gap: 5px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; }
-        input[type="text"]#tDate { color: #94a3b8; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif; }
+        body { margin: 0; background-color: var(--bg); color: var(--text-main); -webkit-font-smoothing: antialiased; padding-bottom: 60px; }
+        .app-container { max-width: 480px; margin: 0 auto; padding: 24px 16px; }
         
-        .scan-zone { margin-bottom: 15px; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 12px; text-align: center; }
-        .scan-label { font-size: 13px; font-weight: 700; color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .scan-status { font-size: 11px; color: var(--text-sub); margin-top: 5px; display: none; font-weight: 600; }
+        .header-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .logo-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary), var(--accent-neon)); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 20px var(--primary-glow); }
+        .app-title { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(to right, #ffffff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+        .summary-card { background: var(--card-bg); padding: 18px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.04); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .summary-card span { font-size: 12px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-weight: 600; }
+        .summary-card strong { font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: -0.2px; }
+        .summary-card.main { grid-column: span 2; background: linear-gradient(135deg, #312e81, #1e1b4b); border: 1px solid rgba(99, 102, 241, 0.2); }
+        .summary-card.main strong { font-size: 28px; color: #67e8f9; text-shadow: 0 2px 10px rgba(103, 233, 249, 0.2); }
+        
+        .input-form { background: var(--card-bg); padding: 24px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); margin-bottom: 28px; }
+        .form-title { font-size: 15px; font-weight: 800; color: #ffffff; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        
+        input, select { width: 100%; padding: 14px 16px; background: var(--card-sub); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; font-size: 14px; color: #ffffff; font-weight: 600; outline: none; transition: all 0.2s ease; }
+        input:focus, select:focus { border-color: var(--accent-neon); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); background: #3d4f68; }
+        input[type="text"]#tDate { color: var(--text-sub); }
+        
+        .scan-zone { margin-bottom: 18px; background: linear-gradient(135deg, rgba(79,70,229,0.1), rgba(99,102,241,0.05)); border: 2px dashed rgba(99,102,241,0.3); border-radius: 16px; padding: 16px; transition: all 0.2s; }
+        .scan-zone:active { background: rgba(79,70,229,0.15); transform: scale(0.99); }
+        .scan-label { font-size: 14px; font-weight: 800; color: #a5b4fc; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .scan-status { font-size: 12px; color: #67e8f9; margin-top: 8px; display: none; font-weight: 700; text-align: center; }
 
-        .kbo-schedule-box { margin-top: 12px; background: #f1f5f9; padding: 12px; border-radius: 14px; display: none; }
-        .kbo-title { font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; display: block; }
-        .kbo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        .kbo-match-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px; font-size: 12px; text-align: center; cursor: pointer; font-weight: 600; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: all 0.1s; }
-        .kbo-match-btn:active { transform: scale(0.97); background: #e0e7ff; }
-        .kbo-match-btn span { color: var(--primary); font-weight: 800; }
+        .kbo-schedule-box { margin-top: 14px; background: var(--card-sub); padding: 14px; border-radius: 16px; display: none; }
+        .kbo-title { font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 10px; display: block; }
+        .kbo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .kbo-match-btn { background: #1e293b; border: 1px solid rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; font-size: 13px; text-align: center; cursor: pointer; font-weight: 700; color: #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.15s; }
+        .kbo-match-btn:active { transform: scale(0.95); background: var(--primary); color: white; }
+        .kbo-match-btn span { color: #818cf8; font-weight: 900; }
 
-        .add-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-        .update-mode-btn { background: #10b981; }
-        .list-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-        .ticket-item { background: var(--card-bg); padding: 16px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #f1f5f9; }
-        .item-info { display: flex; flex-direction: column; gap: 2px; }
-        .item-team { font-weight: 800; font-size: 15px; }
-        .item-date { font-size: 12px; color: var(--text-sub); }
-        .btn-group { display: flex; gap: 10px; margin-top: 8px; }
-        .btn-group button { background: none; border: none; padding: 0; font-size: 12px; color: var(--text-sub); text-decoration: underline; cursor: pointer; }
-        .item-right { text-align: right; }
-        .profit-val { font-size: 17px; font-weight: 800; }
-        .calc-detail { font-size: 10px; color: #94a3b8; display: block; }
-        .chart-box { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-top: 24px; border: 1px solid #f1f5f9; }
-        .backup-zone { display: flex; gap: 8px; margin-bottom: 20px; justify-content: flex-end; }
-        .backup-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; }
+        .add-btn { width: 100%; background: linear-gradient(135deg, var(--primary), var(--accent-neon)); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 8px 24px var(--primary-glow); transition: all 0.2s; }
+        .add-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .update-mode-btn { background: linear-gradient(135deg, #059669, #10b981; box-shadow: 0 8px 24px rgba(16,185,129,0.3); }
         
-        .pagination-zone { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 20px 0 30px 0; }
-        .page-btn { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-main); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .list-header { font-size: 17px; font-weight: 800; margin-bottom: 14px; color: #ffffff; display: flex; align-items: center; justify-content: space-between; }
+        .ticket-item { background: var(--card-bg); padding: 18px; border-radius: 24px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.02); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .item-info { display: flex; flex-direction: column; gap: 4px; }
+        .item-team { font-weight: 800; font-size: 16px; color: #ffffff; }
+        .item-date { font-size: 12px; color: var(--text-sub); font-weight: 500; }
+        .btn-group { display: flex; gap: 14px; margin-top: 10px; }
+        .btn-group button { background: none; border: none; padding: 0; font-size: 12px; color: var(--text-sub); font-weight: 600; cursor: pointer; }
+        
+        .item-right { text-align: right; display: flex; flex-direction: column; gap: 3px; }
+        .profit-val { font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
+        .calc-detail { font-size: 11px; color: var(--text-sub); display: block; font-weight: 500; }
+        
+        .chart-box { background: var(--card-bg); padding: 24px; border-radius: 28px; margin-top: 28px; border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        
+        .backup-zone { display: flex; gap: 10px; margin-bottom: 24px; justify-content: flex-end; }
+        .backup-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; color: #cbd5e1; cursor: pointer; }
+        
+        .pagination-zone { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 24px 0; }
+        .page-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.04); padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; color: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .page-btn:disabled { opacity: 0.2; cursor: not-allowed; }
         .page-info { font-size: 13px; font-weight: 700; color: var(--text-sub); }
     </style>
 </head>
@@ -70,49 +93,49 @@
     <header class="header-box">
         <div class="header-left">
             <div class="logo-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
             </div>
             <div>
-                <h1 style="margin:0; font-size: 22px;">Ticket Flow</h1>
-                <p style="margin:0; color: var(--text-sub); font-size: 13px;">KBO 양도 수익 매니저</p>
+                <h1 class="app-title">Ticket Flow</h1>
+                <p style="margin:2px 0 0 0; color: var(--text-sub); font-size: 12px; font-weight: 600; letter-spacing: 0.5px;">PRO MANAGER</p>
             </div>
         </div>
     </header>
 
     <div class="backup-zone">
-        <button class="backup-btn" onclick="exportData()">📥 데이터 백업</button>
-        <button class="backup-btn" onclick="importData()">📤 데이터 복구</button>
+        <button class="backup-btn" onclick="exportData()">📥 백업</button>
+        <button class="backup-btn" onclick="importData()">📤 복구</button>
     </div>
 
     <div class="summary-grid">
         <div class="summary-card main">
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 누적 수익 (수수료 10% 제외 반영)</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 순이익 합계 (수수료 10% 자동 반영)</span>
             <strong id="totalProfit">0원</strong>
         </div>
         <div class="summary-card">
-            <span>📅 평일 수익</span>
+            <span>📅 평일 순수익</span>
             <strong id="wdProfit">0원</strong>
         </div>
         <div class="summary-card">
-            <span>🏖️ 주말 수익</span>
+            <span>🏖️ 주말 순수익</span>
             <strong id="weProfit">0원</strong>
         </div>
         <div class="summary-card">
-            <span>📊 총 거래 건수</span>
+            <span>📈 총 거래</span>
             <strong id="totalCount">0건</strong>
         </div>
         <div class="summary-card">
-            <span>💡 건당 평균 수익</span>
+            <span>💡 건당 평균</span>
             <strong id="avgProfit">0원</strong>
         </div>
     </div>
 
     <div class="input-form">
-        <span id="formTitle" class="form-title">📝 새 기록 입력</span>
+        <span id="formTitle" class="form-title">📝 거래 명세서 입력</span>
         <input type="hidden" id="editId">
         
         <div class="scan-zone">
-            <label for="imageScanner" class="scan-label">📸 티켓베이 캡처 사진 스캔</label>
+            <label for="imageScanner" class="scan-label">📸 티켓베이 캡처 스캔 자동 완성</label>
             <input type="file" id="imageScanner" accept="image/*" style="display:none;" onchange="scanTicketBayImage(this)">
             <div id="scanStatus" class="scan-status">AI 이미지 분석 대기 중...</div>
         </div>
@@ -125,21 +148,21 @@
             </select>
         </div>
         <div class="form-row">
-            <input type="number" id="tBuy" placeholder="구매가 (원가)">
-            <input type="number" id="tSell" placeholder="양도가 (티켓베이 판매가)">
+            <input type="number" id="tBuy" placeholder="구매 총원가">
+            <input type="number" id="tSell" placeholder="양도 판매가">
         </div>
         
         <div id="kboBox" class="kbo-schedule-box">
-            <span class="kbo-title">⚾️ 선택한 날짜의 KBO 경기 (터치 시 자동 입력)</span>
+            <span class="kbo-title">⚾️ KBO 확정 매치업 리스트 (터치 매칭)</span>
             <div id="kboGrid" class="kbo-grid"></div>
         </div>
-        <div style="height:12px;"></div>
+        <div style="height:8px;"></div>
 
-        <button id="submitBtn" class="add-btn" onclick="handleSave()">저장하기</button>
-        <button id="cancelBtn" class="add-btn" style="background:#cbd5e1; display:none; margin-top:5px;" onclick="resetForm()">취소</button>
+        <button id="submitBtn" class="add-btn" onclick="handleSave()">장부 기록하기</button>
+        <button id="cancelBtn" class="add-btn" style="background:#475569; box-shadow:none; display:none; margin-top:6px;" onclick="resetForm()">작업 취소</button>
     </div>
 
-    <div class="list-header">📊 양도 기록 리스트 (최신순)</div>
+    <div class="list-header">📊 정산 장부 리스트</div>
     
     <div id="recordList"></div>
 
@@ -150,7 +173,7 @@
     </div>
 
     <div class="chart-box">
-        <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px; color: var(--text-sub);">월별 수익 현황 (원)</div>
+        <div style="font-size: 15px; font-weight: 800; margin-bottom: 18px; color: #ffffff;">월별 정산 흐름 (원)</div>
         <div style="height: 200px;"><canvas id="profitChart"></canvas></div>
     </div>
 </div>
@@ -185,13 +208,14 @@
         db.sort((a, b) => new Date(b.date) - new Date(a.date));
     }
 
+    // 💡 1단계 차단: 스캔 시에는 순수한 원본 100% 금액만 양도가(tSell) 칸에 주입합니다.
     function scanTicketBayImage(input) {
         const file = input.files[0];
         if(!file) return;
 
         const statusText = document.getElementById('scanStatus');
         statusText.style.display = 'block';
-        statusText.innerText = "⏳ 사진 정밀 분석 중...";
+        statusText.innerText = "⏳ 고성능 AI가 이미지 텍스트 판독 중...";
 
         Tesseract.recognize(file, 'kor+eng')
             .then(({ data: { text } }) => {
@@ -242,17 +266,15 @@
                     checkKboSchedule(formattedDate);
                 }
                 if(detectedTeam) document.getElementById('tTeam').value = detectedTeam;
-                
-                // 💡 버그 수정: 스캔 시 수수료 10%를 미리 빼지 않고 화면의 원본 판매가를 그대로 꽂아줍니다.
                 if(detectedPrice > 0) document.getElementById('tSell').value = detectedPrice;
                 if(calculatedBuyPrice > 0) document.getElementById('tBuy').value = calculatedBuyPrice;
 
-                statusText.innerText = "✅ 스캔 및 정가 매칭 완료!";
-                statusText.style.color = "#10b981";
+                statusText.innerText = "✅ 금융 명세 스캔 완료!";
+                statusText.style.color = "#34d399";
                 setTimeout(() => { statusText.style.display = 'none'; statusText.style.color = 'var(--text-sub)'; }, 4000);
             })
             .catch(err => {
-                statusText.innerText = "❌ 스캔 실패. 수동으로 입력해주세요.";
+                statusText.innerText = "❌ 스캔 실패. 직접 입력해주세요.";
                 statusText.style.color = "var(--accent-up)";
             });
     }
@@ -278,6 +300,7 @@
         document.getElementById('tTeam').value = homeTeam;
     }
 
+    // 💡 2단계 차단: DB 저장 시점에도 수수료를 빼지 않고, 순수한 원가(buy)와 판매가(sell) 데이터만 원본 그대로 깔끔하게 밀어 넣습니다.
     function handleSave() {
         const id = document.getElementById('editId').value;
         const date = document.getElementById('tDate').value;
@@ -287,11 +310,7 @@
 
         if(!date || !team) return alert("날짜와 팀을 선택해주세요.");
 
-        // 💡 오직 저장하는 이 단계에서만 판매 금액의 10% 수수료를 한 번 제외하고 순수익을 냅니다.
-        const actualSell = sell * 0.9;
-        const profit = Math.round(actualSell - buy);
-
-        const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell, profit };
+        const record = { id: id ? parseInt(id) : Date.now(), date, team, buy, sell };
 
         if(id) {
             const idx = db.findIndex(x => x.id === parseInt(id));
@@ -319,8 +338,8 @@
         document.getElementById('tTeam').value = item.team;
         document.getElementById('tBuy').value = item.buy;
         document.getElementById('tSell').value = item.sell;
-        document.getElementById('formTitle').innerText = "🔄 기록 수정 중...";
-        document.getElementById('submitBtn').innerText = "수정 완료하기";
+        document.getElementById('formTitle').innerText = "🔄 정산서 정보 전면 수정 중...";
+        document.getElementById('submitBtn').innerText = "수정본 제출하기";
         document.getElementById('submitBtn').classList.add('update-mode-btn');
         document.getElementById('cancelBtn').style.display = 'block';
         window.scrollTo({top: 0, behavior: 'smooth'});
@@ -339,14 +358,14 @@
         document.getElementById('tTeam').value = '';
         document.getElementById('tBuy').value = '';
         document.getElementById('tSell').value = '';
-        document.getElementById('formTitle').innerText = "📝 새 기록 입력";
-        document.getElementById('submitBtn').innerText = "저장하기";
+        document.getElementById('formTitle').innerText = "📝 거래 명세서 입력";
+        document.getElementById('submitBtn').innerText = "장부 기록하기";
         document.getElementById('submitBtn').classList.remove('update-mode-btn');
         document.getElementById('cancelBtn').style.display = 'none';
     }
 
     function deleteRecord(id) {
-        if(confirm("정말 삭제하시겠습니까?")) {
+        if(confirm("이 내역을 완전히 영구 삭제하시겠습니까?")) {
             db = db.filter(x => x.id !== id);
             localStorage.setItem('kbo_final', JSON.stringify(db));
             const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
@@ -356,11 +375,11 @@
     }
 
     function exportData() {
-        if(db.length === 0) return alert("백업할 데이터가 없습니다.");
+        if(db.length === 0) return alert("내보낼 장부 데이터가 없습니다.");
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `ticket_flow_backup_${new Date().toISOString().slice(0,10)}.json`);
+        downloadAnchor.setAttribute("download", `ticket_flow_premium_${new Date().toISOString().slice(0,10)}.json`);
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
@@ -378,18 +397,18 @@
                 try {
                     const content = JSON.parse(readerEvent.target.result);
                     if(Array.isArray(content)) {
-                        if(confirm("기존 데이터를 덮어쓰고 복구하시겠습니까?")) {
+                        if(confirm("보관된 파일로 전체 복구 처리를 진행할까요?")) {
                             db = content;
                             localStorage.setItem('kbo_final', JSON.stringify(db));
                             currentPage = 1;
                             renderAll();
-                            alert("성공적으로 복구되었습니다!");
+                            alert("성공적으로 프리미엄 마진 데이터가 대동기화 되었습니다!");
                         }
                     } else {
-                        alert("올바르지 않은 백업 파일 형식입니다.");
+                        alert("복구용 JSON 규격에 위배되는 파일입니다.");
                     }
                 } catch(err) {
-                    alert("파일을 읽는 중 오류가 발생했습니다.");
+                    alert("시스템 에러: 파일을 복원할 수 없습니다.");
                 }
             }
         }
@@ -404,6 +423,8 @@
         renderAll();
     }
 
+    // 💡 3단계 완결: 오직 렌더링하고 통계를 정산하는 화면 표출 순간에만 실시간으로 '양도가 * 0.9'를 적용합니다.
+    // 기존 데이터와 신규 데이터 모두 이 수식 하나로만 통제되므로 중복 차감 버그가 원천 차단됩니다.
     function renderAll() {
         sortDB();
         const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
@@ -413,29 +434,32 @@
 
         const list = document.getElementById('recordList');
         if (pagedDb.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:40px; font-size:14px; font-weight:500;">📅 아직 등록된 양도 기록이 없습니다.<br>위 양식으로 새 내역을 등록해보세요!</div>`;
+            list.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding:50px; font-size:14px; font-weight:600; background:var(--card-bg); border-radius:24px;">📈 입출고 거래 기록이 공백 상태입니다.</div>`;
         } else {
             list.innerHTML = pagedDb.map(item => {
                 const we = isWeekend(item.date);
+                
+                // 실시간 단일 수수료 계산
                 const tbayFee = Math.round(item.sell * 0.1);
                 const settlement = item.sell - tbayFee;
+                const recordProfit = settlement - item.buy;
 
                 return `
                     <div class="ticket-item">
                         <div class="item-info">
-                            <span class="item-team">${item.team} 홈</span>
-                            <span class="item-date">${item.date} (${we ? '주말' : '평일'})</span>
+                            <span class="item-team">${item.team} 홈경기 대진</span>
+                            <span class="item-date">${item.date} • ${we ? '주말 프리미엄' : '평일 베이스'}</span>
                             <div class="btn-group">
-                                <button onclick="startEdit(${item.id})">수정</button>
-                                <button onclick="deleteRecord(${item.id})" style="color:#f87171">삭제</button>
+                                <button onclick="startEdit(${item.id})">⚙️ 수정</button>
+                                <button onclick="deleteRecord(${item.id})" style="color:var(--accent-up)">🗑️ 삭제</button>
                             </div>
                         </div>
                         <div class="item-right">
-                            <span class="profit-val" style="color: ${item.profit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
-                                ${item.profit >= 0 ? '+' : ''}${item.profit.toLocaleString()}원
+                            <span class="profit-val" style="color: ${recordProfit >= 0 ? 'var(--accent-up)' : 'var(--accent-down)'}">
+                                ${recordProfit >= 0 ? '+' : ''}${recordProfit.toLocaleString()}원
                             </span>
-                            <span class="calc-detail">정산 ${settlement.toLocaleString()} (판매 ${item.sell.toLocaleString()} - 수수료 ${tbayFee.toLocaleString()})</span>
-                            <span class="calc-detail">원가 - ${item.buy.toLocaleString()}원</span>
+                            <span class="calc-detail">정산액 ${settlement.toLocaleString()}원 <span style="font-size:9px; color:#64748b;">(수수료 -${tbayFee.toLocaleString()})</span></span>
+                            <span class="calc-detail" style="color:#64748b;">원가 지출 ${item.buy.toLocaleString()}원</span>
                         </div>
                     </div>
                 `;
@@ -446,9 +470,10 @@
         document.getElementById('prevBtn').disabled = (currentPage === 1);
         document.getElementById('nextBtn').disabled = (currentPage === maxPage);
 
-        const total = db.reduce((s, i) => s + i.profit, 0);
-        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
-        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + i.profit, 0);
+        // 상단 실시간 통계 연산 통합
+        const total = db.reduce((s, i) => s + (Math.round(i.sell * 0.9) - i.buy), 0);
+        const wd = db.filter(x => !isWeekend(x.date)).reduce((s, i) => s + (Math.round(i.sell * 0.9) - i.buy), 0);
+        const we = db.filter(x => isWeekend(x.date)).reduce((s, i) => s + (Math.round(i.sell * 0.9) - i.buy), 0);
         const count = db.length;
         const avg = count > 0 ? Math.round(total / count) : 0;
 
@@ -466,19 +491,29 @@
         const stats = {};
         [...db].sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
             const m = i.date.slice(5, 7) + "월";
-            stats[m] = (stats[m] || 0) + i.profit;
+            const recordProfit = Math.round(i.sell * 0.9) - i.buy;
+            stats[m] = (stats[m] || 0) + recordProfit;
         });
         if (chart) chart.destroy();
         chart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: Object.keys(stats),
-                datasets: [{ data: Object.values(stats), backgroundColor: '#6366f1', borderRadius: 8 }]
+                datasets: [{ 
+                    data: Object.values(stats), 
+                    backgroundColor: '#4f46e5',
+                    hoverBackgroundColor: '#6366f1',
+                    borderRadius: 10,
+                    borderSkipped: false
+                }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + '원' } } }
+                scales: { 
+                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, beginAtZero: true, ticks: { color: '#94a3b8', callback: v => v.toLocaleString() + '원' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
             }
         });
     }
