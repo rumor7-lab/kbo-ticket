@@ -161,17 +161,14 @@
         "2026-06-25": [ {home:"LG", away:"삼성"}, {home:"두산", away:"KT"}, {home:"SSG", away:"롯데"}, {home:"한화", away:"KIA"}, {home:"키움", away:"NC"} ]
     };
 
-    // 💡 [신규] 구단별 좌석 정가 데이터베이스 테이블 (장당 원가 + 수수료 1,000원 선반영 금액)
-    // 패턴 매칭용 키워드(그린, 네이비 등)와 주중(weekday)/주말(weekend) 단가를 세팅합니다.
     const TICKET_PRICES = {
         "LG": [
-            { keyword: "그린", weekday: 12000, weekend: 13000 },  // 외야그린석/외야그린응원석
+            { keyword: "그린", weekday: 12000, weekend: 13000 },
             { keyword: "네이비", weekday: 16000, weekend: 19000 },
             { keyword: "오렌지", weekday: 19000, weekend: 21000 },
             { keyword: "블루", weekday: 21000, weekend: 24000 },
             { keyword: "레드", weekday: 17000, weekend: 19000 }
         ]
-        // 나중에 타 구단도 동일한 규격으로 "KIA": [ ... ] 형태로 추가 가능합니다!
     };
 
     let db = JSON.parse(localStorage.getItem('kbo_final')) || [];
@@ -194,11 +191,10 @@
 
         const statusText = document.getElementById('scanStatus');
         statusText.style.display = 'block';
-        statusText.innerText = "⏳ 사진 정밀 분석 중... 구단 좌석 정가표를 매칭하고 있습니다.";
+        statusText.innerText = "⏳ 사진 정밀 분석 중...";
 
         Tesseract.recognize(file, 'kor+eng')
             .then(({ data: { text } }) => {
-                // 1. 날짜 판독
                 const dateMatch = text.match(/2026\.[0-1][0-9]\.[0-3][0-9]/);
                 let formattedDate = "";
                 let weekendYn = false;
@@ -207,18 +203,15 @@
                     weekendYn = isWeekend(formattedDate);
                 }
                 
-                // 2. 홈 구단 판독
                 const teams = ["LG", "KT", "한화", "두산", "KIA", "삼성", "롯데", "NC", "SSG", "키움"];
                 let detectedTeam = "";
                 for(let t of teams) {
                     if(text.includes(t)) { detectedTeam = t; break; }
                 }
 
-                // 3. 수량(티켓 장수) 판독
                 const countMatch = text.match(/([1-4])장/);
                 let ticketCount = countMatch ? parseInt(countMatch[1]) : 1;
 
-                // 4. 양도가 판독
                 const priceMatches = text.match(/([0-9,]+)원/g);
                 let detectedPrice = 0;
                 if(priceMatches && priceMatches.length > 0) {
@@ -226,14 +219,11 @@
                     detectedPrice = parseInt(lastPrice.replace(/[^0-9]/g, '')) || 0;
                 }
 
-                // 💡 [핵심 보완] 구단 좌석 정가 매칭 로직 구동
                 let calculatedBuyPrice = 0;
                 if (detectedTeam && TICKET_PRICES[detectedTeam]) {
                     const teamRules = TICKET_PRICES[detectedTeam];
-                    // 이미지 텍스트 안에 키워드가 포함되어 있는지 정밀 매칭
                     for (let rule of teamRules) {
                         if (text.includes(rule.keyword)) {
-                            // 평일/주말 요금 분류 적용
                             const singlePrice = weekendYn ? rule.weekend : rule.weekday;
                             calculatedBuyPrice = singlePrice * ticketCount;
                             break;
@@ -241,12 +231,10 @@
                     }
                 }
 
-                // 매칭 실패 시 예외 방어용 디폴트 수식 (양도가의 60%)
                 if (calculatedBuyPrice === 0 && detectedPrice > 0) {
                     calculatedBuyPrice = Math.round((detectedPrice * 0.6) / 1000) * 1000;
                 }
 
-                // 입력 폼 최종 반영
                 if(formattedDate) {
                     const dateInput = document.getElementById('tDate');
                     dateInput.type = 'date';
@@ -254,10 +242,12 @@
                     checkKboSchedule(formattedDate);
                 }
                 if(detectedTeam) document.getElementById('tTeam').value = detectedTeam;
+                
+                // 💡 버그 수정: 스캔 시 수수료 10%를 미리 빼지 않고 화면의 원본 판매가를 그대로 꽂아줍니다.
                 if(detectedPrice > 0) document.getElementById('tSell').value = detectedPrice;
                 if(calculatedBuyPrice > 0) document.getElementById('tBuy').value = calculatedBuyPrice;
 
-                statusText.innerText = "✅ 구단 좌석 매칭 완료! 정가가 자동으로 주입되었습니다.";
+                statusText.innerText = "✅ 스캔 및 정가 매칭 완료!";
                 statusText.style.color = "#10b981";
                 setTimeout(() => { statusText.style.display = 'none'; statusText.style.color = 'var(--text-sub)'; }, 4000);
             })
@@ -297,6 +287,7 @@
 
         if(!date || !team) return alert("날짜와 팀을 선택해주세요.");
 
+        // 💡 오직 저장하는 이 단계에서만 판매 금액의 10% 수수료를 한 번 제외하고 순수익을 냅니다.
         const actualSell = sell * 0.9;
         const profit = Math.round(actualSell - buy);
 
