@@ -28,6 +28,7 @@
         .summary-card span { font-size: 11px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-weight: 600; }
         .summary-card strong { font-size: 16px; font-weight: 800; }
         .summary-card.main { grid-column: span 2; background: var(--primary); color: white; }
+        .summary-card.main span { color: rgba(255,255,255,0.8); }
         
         .input-form { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 24px; }
         .form-title { font-size: 14px; font-weight: 700; color: var(--text-sub); display:block; margin-bottom:12px; }
@@ -83,7 +84,7 @@
 
         <div class="summary-grid">
             <div class="summary-card main">
-                <span>누적 수익</span>
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> 누적 수익</span>
                 <strong id="totalProfit">0원</strong>
             </div>
             <div class="summary-card">
@@ -289,7 +290,6 @@
         renderAll();
     }
 
-    // 💡 오류를 완전히 도려내고 순수 입력값 기반으로 다시 세팅한 연산 렌더링 스크립트
     function renderAll() {
         sortDB();
         const maxPage = Math.ceil(db.length / itemsPerPage) || 1;
@@ -305,7 +305,7 @@
                 const we = isWeekend(item.date);
                 const buyVal = parseInt(item.buy) || 0;
                 const sellVal = parseInt(item.sell) || 0;
-                const currentProfit = sellVal - buyVal; // 10% 자동 계산을 완전히 빼고 순수 차액 계산
+                const currentProfit = sellVal - buyVal;
 
                 return `
                     <div class="ticket-item">
@@ -332,7 +332,6 @@
         document.getElementById('prevBtn').disabled = (currentPage === 1);
         document.getElementById('nextBtn').disabled = (currentPage === maxPage);
 
-        // 상단 통계 지표 정산 원상 복구 완료
         let total = 0, wd = 0, we = 0;
         db.forEach(i => {
             const b = parseInt(i.buy) || 0;
