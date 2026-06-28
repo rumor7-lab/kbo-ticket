@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-28 07:53",
+  "updated": "2026-06-28 09:49",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -113,7 +113,7 @@
       "last10": "1W 0D 9L"
     }
   ],
-  "count": 214,
+  "count": 209,
   "games": [
     {
       "date": "2026-06-16",
@@ -600,41 +600,6 @@
       "time": "",
       "score_away": 3,
       "score_home": 4
-    },
-    {
-      "date": "2026-06-28",
-      "home": "NC",
-      "away": "키움",
-      "stadium": "창원",
-      "time": "17:00"
-    },
-    {
-      "date": "2026-06-28",
-      "home": "SSG",
-      "away": "한화",
-      "stadium": "인천",
-      "time": "17:00"
-    },
-    {
-      "date": "2026-06-28",
-      "home": "두산",
-      "away": "KIA",
-      "stadium": "잠실",
-      "time": "17:00"
-    },
-    {
-      "date": "2026-06-28",
-      "home": "롯데",
-      "away": "LG",
-      "stadium": "사직",
-      "time": "17:00"
-    },
-    {
-      "date": "2026-06-28",
-      "home": "삼성",
-      "away": "KT",
-      "stadium": "대구",
-      "time": "17:00"
     },
     {
       "date": "2026-06-30",
