@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-30 13:06",
+  "updated": "2026-06-30 15:25",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -16,12 +16,12 @@
     {
       "rank": 2,
       "team": "삼성",
-      "w": 44,
+      "w": 45,
       "l": 30,
       "d": 2,
-      "pct": ".595",
-      "gb": "2.0",
-      "streak": "4W",
+      "pct": ".600",
+      "gb": "1.5",
+      "streak": "5W",
       "last10": "6W 1D 3L"
     },
     {
@@ -72,12 +72,12 @@
       "rank": 7,
       "team": "NC",
       "w": 35,
-      "l": 39,
+      "l": 40,
       "d": 1,
-      "pct": ".473",
-      "gb": "11.0",
-      "streak": "1W",
-      "last10": "5W 0D 5L"
+      "pct": ".467",
+      "gb": "11.5",
+      "streak": "1L",
+      "last10": "4W 0D 6L"
     },
     {
       "rank": 8,
@@ -113,7 +113,7 @@
       "last10": "2W 0D 8L"
     }
   ],
-  "count": 213,
+  "count": 214,
   "games": [
     {
       "date": "2026-06-23",
@@ -393,6 +393,15 @@
       "time": "",
       "score_away": 3,
       "score_home": 10
+    },
+    {
+      "date": "2026-06-30",
+      "home": "NC",
+      "away": "삼성",
+      "stadium": "창원",
+      "time": "",
+      "score_away": 13,
+      "score_home": 7
     },
     {
       "date": "2026-06-30",
