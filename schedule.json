@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-01 13:32",
+  "updated": "2026-07-01 15:40",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -40,11 +40,11 @@
       "team": "KIA",
       "w": 43,
       "l": 35,
-      "d": 1,
+      "d": 2,
       "pct": ".551",
       "gb": "5.5",
       "streak": "2W",
-      "last10": "7W 0D 3L"
+      "last10": "6W 1D 3L"
     },
     {
       "rank": 5,
@@ -95,11 +95,11 @@
       "team": "SSG",
       "w": 30,
       "l": 46,
-      "d": 2,
+      "d": 3,
       "pct": ".395",
       "gb": "17.5",
       "streak": "5L",
-      "last10": "3W 0D 7L"
+      "last10": "3W 1D 6L"
     },
     {
       "rank": 10,
@@ -113,7 +113,7 @@
       "last10": "2W 0D 8L"
     }
   ],
-  "count": 213,
+  "count": 214,
   "games": [
     {
       "date": "2026-06-23",
@@ -419,6 +419,15 @@
       "stadium": "고척",
       "time": "",
       "score_away": 0,
+      "score_home": 6
+    },
+    {
+      "date": "2026-07-01",
+      "home": "KIA",
+      "away": "SSG",
+      "stadium": "광주",
+      "time": "",
+      "score_away": 6,
       "score_home": 6
     },
     {
