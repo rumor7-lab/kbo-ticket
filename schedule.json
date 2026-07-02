@@ -1,38 +1,38 @@
 {
-  "updated": "2026-07-02 11:25",
+  "updated": "2026-07-02 12:54",
   "source": "mykbostats.com",
   "standings": [
     {
       "rank": 1,
       "team": "LG",
-      "w": 49,
+      "w": 50,
       "l": 30,
       "d": 0,
-      "pct": ".620",
+      "pct": ".625",
       "gb": "0.0",
-      "streak": "1W",
+      "streak": "2W",
       "last10": "6W 0D 4L"
     },
     {
       "rank": 2,
       "team": "삼성",
-      "w": 45,
+      "w": 46,
       "l": 31,
       "d": 2,
-      "pct": ".592",
+      "pct": ".597",
       "gb": "2.5",
-      "streak": "1L",
-      "last10": "6W 0D 4L"
+      "streak": "1W",
+      "last10": "7W 0D 3L"
     },
     {
       "rank": 3,
       "team": "KT",
       "w": 44,
-      "l": 32,
+      "l": 33,
       "d": 1,
-      "pct": ".579",
-      "gb": "3.5",
-      "streak": "1W",
+      "pct": ".571",
+      "gb": "4.5",
+      "streak": "1L",
       "last10": "4W 0D 6L"
     },
     {
@@ -42,7 +42,7 @@
       "l": 35,
       "d": 2,
       "pct": ".551",
-      "gb": "5.5",
+      "gb": "6.0",
       "streak": "2W",
       "last10": "6W 1D 3L"
     },
@@ -53,30 +53,30 @@
       "l": 39,
       "d": 2,
       "pct": ".500",
-      "gb": "9.5",
+      "gb": "10.0",
       "streak": "1L",
       "last10": "5W 0D 5L"
     },
     {
-      "rank": 6,
+      "rank": 5,
       "team": "한화",
-      "w": 37,
+      "w": 38,
       "l": 38,
       "d": 2,
-      "pct": ".493",
+      "pct": ".500",
       "gb": "10.0",
-      "streak": "1L",
-      "last10": "5W 1D 4L"
+      "streak": "1W",
+      "last10": "6W 0D 4L"
     },
     {
       "rank": 7,
       "team": "NC",
       "w": 36,
-      "l": 40,
+      "l": 41,
       "d": 1,
-      "pct": ".474",
-      "gb": "11.5",
-      "streak": "1W",
+      "pct": ".468",
+      "gb": "12.5",
+      "streak": "1L",
       "last10": "4W 0D 6L"
     },
     {
@@ -86,7 +86,7 @@
       "l": 42,
       "d": 2,
       "pct": ".447",
-      "gb": "13.5",
+      "gb": "14.0",
       "streak": "1W",
       "last10": "7W 0D 3L"
     },
@@ -97,7 +97,7 @@
       "l": 46,
       "d": 3,
       "pct": ".395",
-      "gb": "17.5",
+      "gb": "18.0",
       "streak": "5L",
       "last10": "3W 1D 6L"
     },
@@ -105,15 +105,15 @@
       "rank": 10,
       "team": "키움",
       "w": 28,
-      "l": 52,
+      "l": 53,
       "d": 1,
-      "pct": ".350",
-      "gb": "21.5",
-      "streak": "1L",
+      "pct": ".346",
+      "gb": "22.5",
+      "streak": "2L",
       "last10": "2W 0D 8L"
     }
   ],
-  "count": 209,
+  "count": 212,
   "games": [
     {
       "date": "2026-06-23",
@@ -465,6 +465,33 @@
       "time": "",
       "score_away": 7,
       "score_home": 4
+    },
+    {
+      "date": "2026-07-02",
+      "home": "NC",
+      "away": "삼성",
+      "stadium": "창원",
+      "time": "",
+      "score_away": 6,
+      "score_home": 1
+    },
+    {
+      "date": "2026-07-02",
+      "home": "키움",
+      "away": "LG",
+      "stadium": "고척",
+      "time": "",
+      "score_away": 7,
+      "score_home": 5
+    },
+    {
+      "date": "2026-07-02",
+      "home": "한화",
+      "away": "KT",
+      "stadium": "대전",
+      "time": "",
+      "score_away": 3,
+      "score_home": 14
     },
     {
       "date": "2026-07-03",
