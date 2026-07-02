@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-02 12:54",
+  "updated": "2026-07-02 15:14",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -38,27 +38,27 @@
     {
       "rank": 4,
       "team": "KIA",
-      "w": 43,
+      "w": 44,
       "l": 35,
       "d": 2,
-      "pct": ".551",
-      "gb": "6.0",
-      "streak": "2W",
-      "last10": "6W 1D 3L"
+      "pct": ".557",
+      "gb": "5.5",
+      "streak": "3W",
+      "last10": "7W 1D 2L"
     },
     {
       "rank": 5,
       "team": "두산",
-      "w": 39,
+      "w": 40,
       "l": 39,
       "d": 2,
-      "pct": ".500",
-      "gb": "10.0",
-      "streak": "1L",
-      "last10": "5W 0D 5L"
+      "pct": ".506",
+      "gb": "9.5",
+      "streak": "1W",
+      "last10": "6W 0D 4L"
     },
     {
-      "rank": 5,
+      "rank": 6,
       "team": "한화",
       "w": 38,
       "l": 38,
@@ -83,23 +83,23 @@
       "rank": 8,
       "team": "롯데",
       "w": 34,
-      "l": 42,
+      "l": 43,
       "d": 2,
-      "pct": ".447",
-      "gb": "14.0",
-      "streak": "1W",
-      "last10": "7W 0D 3L"
+      "pct": ".442",
+      "gb": "14.5",
+      "streak": "1L",
+      "last10": "6W 0D 4L"
     },
     {
       "rank": 9,
       "team": "SSG",
       "w": 30,
-      "l": 46,
+      "l": 47,
       "d": 3,
-      "pct": ".395",
-      "gb": "18.0",
-      "streak": "5L",
-      "last10": "3W 1D 6L"
+      "pct": ".390",
+      "gb": "18.5",
+      "streak": "6L",
+      "last10": "2W 1D 7L"
     },
     {
       "rank": 10,
@@ -113,7 +113,7 @@
       "last10": "2W 0D 8L"
     }
   ],
-  "count": 212,
+  "count": 214,
   "games": [
     {
       "date": "2026-06-23",
@@ -468,12 +468,30 @@
     },
     {
       "date": "2026-07-02",
+      "home": "KIA",
+      "away": "SSG",
+      "stadium": "광주",
+      "time": "",
+      "score_away": 7,
+      "score_home": 8
+    },
+    {
+      "date": "2026-07-02",
       "home": "NC",
       "away": "삼성",
       "stadium": "창원",
       "time": "",
       "score_away": 6,
       "score_home": 1
+    },
+    {
+      "date": "2026-07-02",
+      "home": "두산",
+      "away": "롯데",
+      "stadium": "잠실",
+      "time": "",
+      "score_away": 3,
+      "score_home": 8
     },
     {
       "date": "2026-07-02",
