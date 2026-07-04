@@ -1,119 +1,119 @@
 {
-  "updated": "2026-07-04 12:02",
+  "updated": "2026-07-04 14:28",
   "source": "mykbostats.com",
   "standings": [
     {
       "rank": 1,
       "team": "LG",
-      "w": 50,
+      "w": 51,
       "l": 31,
       "d": 0,
-      "pct": ".617",
+      "pct": ".622",
       "gb": "0.0",
-      "streak": "1L",
+      "streak": "1W",
       "last10": "5W 0D 5L"
     },
     {
       "rank": 2,
       "team": "삼성",
-      "w": 47,
+      "w": 48,
       "l": 31,
       "d": 2,
-      "pct": ".603",
+      "pct": ".608",
       "gb": "1.5",
-      "streak": "2W",
-      "last10": "7W 0D 3L"
+      "streak": "3W",
+      "last10": "8W 0D 2L"
     },
     {
       "rank": 3,
       "team": "KT",
       "w": 44,
-      "l": 34,
+      "l": 35,
       "d": 1,
-      "pct": ".564",
-      "gb": "4.5",
-      "streak": "2L",
+      "pct": ".557",
+      "gb": "5.5",
+      "streak": "3L",
       "last10": "3W 0D 7L"
     },
     {
       "rank": 4,
       "team": "KIA",
       "w": 44,
-      "l": 36,
+      "l": 37,
       "d": 2,
-      "pct": ".550",
-      "gb": "5.5",
-      "streak": "1L",
-      "last10": "6W 1D 3L"
+      "pct": ".543",
+      "gb": "6.5",
+      "streak": "2L",
+      "last10": "5W 1D 4L"
     },
     {
       "rank": 5,
-      "team": "한화",
-      "w": 39,
-      "l": 38,
+      "team": "두산",
+      "w": 41,
+      "l": 40,
       "d": 2,
       "pct": ".506",
-      "gb": "9.0",
-      "streak": "2W",
-      "last10": "6W 0D 4L"
+      "gb": "9.5",
+      "streak": "1W",
+      "last10": "7W 0D 3L"
     },
     {
       "rank": 6,
-      "team": "두산",
-      "w": 40,
-      "l": 40,
+      "team": "한화",
+      "w": 39,
+      "l": 39,
       "d": 2,
       "pct": ".500",
-      "gb": "9.5",
+      "gb": "10.0",
       "streak": "1L",
       "last10": "6W 0D 4L"
     },
     {
       "rank": 7,
       "team": "NC",
-      "w": 37,
+      "w": 38,
       "l": 41,
       "d": 1,
-      "pct": ".474",
+      "pct": ".481",
       "gb": "11.5",
-      "streak": "1W",
-      "last10": "5W 0D 5L"
+      "streak": "2W",
+      "last10": "6W 0D 4L"
     },
     {
       "rank": 8,
       "team": "롯데",
-      "w": 35,
+      "w": 36,
       "l": 43,
       "d": 2,
-      "pct": ".449",
+      "pct": ".456",
       "gb": "13.5",
-      "streak": "1W",
+      "streak": "2W",
       "last10": "6W 0D 4L"
     },
     {
       "rank": 9,
       "team": "SSG",
       "w": 30,
-      "l": 48,
+      "l": 49,
       "d": 3,
-      "pct": ".385",
-      "gb": "18.5",
-      "streak": "7L",
+      "pct": ".380",
+      "gb": "19.5",
+      "streak": "8L",
       "last10": "1W 1D 8L"
     },
     {
       "rank": 10,
       "team": "키움",
       "w": 29,
-      "l": 53,
+      "l": 54,
       "d": 1,
-      "pct": ".354",
-      "gb": "21.5",
-      "streak": "1W",
+      "pct": ".349",
+      "gb": "22.5",
+      "streak": "1L",
       "last10": "3W 0D 7L"
     }
   ],
-  "count": 210,
+  "count": 214,
   "games": [
     {
       "date": "2026-06-23",
@@ -558,12 +558,48 @@
     },
     {
       "date": "2026-07-04",
+      "home": "KIA",
+      "away": "NC",
+      "stadium": "광주",
+      "time": "",
+      "score_away": 5,
+      "score_home": 4
+    },
+    {
+      "date": "2026-07-04",
       "home": "KT",
       "away": "롯데",
       "stadium": "수원",
       "time": "",
       "score_away": 4,
       "score_home": 1
+    },
+    {
+      "date": "2026-07-04",
+      "home": "LG",
+      "away": "한화",
+      "stadium": "잠실",
+      "time": "",
+      "score_away": 3,
+      "score_home": 5
+    },
+    {
+      "date": "2026-07-04",
+      "home": "SSG",
+      "away": "삼성",
+      "stadium": "인천",
+      "time": "",
+      "score_away": 13,
+      "score_home": 7
+    },
+    {
+      "date": "2026-07-04",
+      "home": "키움",
+      "away": "두산",
+      "stadium": "고척",
+      "time": "",
+      "score_away": 8,
+      "score_home": 5
     },
     {
       "date": "2026-07-05",
