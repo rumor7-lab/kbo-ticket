@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-05 07:30",
+  "updated": "2026-07-05 09:32",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -49,12 +49,12 @@
     {
       "rank": 5,
       "team": "두산",
-      "w": 41,
+      "w": 42,
       "l": 40,
       "d": 2,
-      "pct": ".506",
-      "gb": "9.5",
-      "streak": "1W",
+      "pct": ".512",
+      "gb": "9.0",
+      "streak": "2W",
       "last10": "7W 0D 3L"
     },
     {
@@ -105,15 +105,15 @@
       "rank": 10,
       "team": "키움",
       "w": 29,
-      "l": 54,
+      "l": 55,
       "d": 1,
-      "pct": ".349",
-      "gb": "22.5",
-      "streak": "1L",
+      "pct": ".345",
+      "gb": "23.0",
+      "streak": "2L",
       "last10": "3W 0D 7L"
     }
   ],
-  "count": 213,
+  "count": 210,
   "games": [
     {
       "date": "2026-06-23",
@@ -603,31 +603,12 @@
     },
     {
       "date": "2026-07-05",
-      "home": "KIA",
-      "away": "NC",
-      "stadium": "광주",
-      "time": "18:00"
-    },
-    {
-      "date": "2026-07-05",
-      "home": "KT",
-      "away": "롯데",
-      "stadium": "수원",
-      "time": "18:00"
-    },
-    {
-      "date": "2026-07-05",
-      "home": "LG",
-      "away": "한화",
-      "stadium": "잠실",
-      "time": "18:00"
-    },
-    {
-      "date": "2026-07-05",
-      "home": "SSG",
-      "away": "삼성",
-      "stadium": "인천",
-      "time": "18:00"
+      "home": "키움",
+      "away": "두산",
+      "stadium": "고척",
+      "time": "",
+      "score_away": 8,
+      "score_home": 1
     },
     {
       "date": "2026-07-07",
