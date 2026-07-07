@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-07 13:13",
+  "updated": "2026-07-07 15:42",
   "source": "mykbostats.com",
   "standings": [
     {
@@ -61,23 +61,23 @@
       "rank": 6,
       "team": "한화",
       "w": 39,
-      "l": 39,
+      "l": 40,
       "d": 2,
-      "pct": ".500",
-      "gb": "9.5",
-      "streak": "1L",
-      "last10": "6W 0D 4L"
+      "pct": ".494",
+      "gb": "10.0",
+      "streak": "2L",
+      "last10": "5W 0D 5L"
     },
     {
       "rank": 7,
       "team": "NC",
-      "w": 38,
+      "w": 39,
       "l": 41,
       "d": 1,
-      "pct": ".481",
-      "gb": "11.0",
-      "streak": "2W",
-      "last10": "6W 0D 4L"
+      "pct": ".488",
+      "gb": "10.5",
+      "streak": "3W",
+      "last10": "7W 0D 3L"
     },
     {
       "rank": 8,
